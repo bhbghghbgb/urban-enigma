@@ -1,10 +1,12 @@
-var express = require('express');
-const cors = require('cors');
-var app = express();
-var bodyParser = require('body-parser');
+import express from "express";
+import cors from "cors"
+import bodyParser from "body-parser";
 
-const dotenv = require('dotenv');
-dotenv.config({path: './env.shared'});
+var app = express();
+
+import { config } from "dotenv"
+
+config({ path: './env.shared' });
 
 // Sử dụng body-parser middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,9 +16,9 @@ app.use(cors());
 /**
  * Backend với MongoDB 
  */
-
-const db = require('./app/config/connect');
-const { ObjectId } = require('mongodb');
+import db from './app/config/connect'
+import mongoose from "mongoose";
+const ObjectId = mongoose.Types.ObjectId
 /**
  * Product
  */
@@ -26,10 +28,10 @@ app.get('/products', async (req, res) => {
   try {
     const products = await db.collection('Product').find().toArray();
     res.json(products);
-    console.log('Success');
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-    console.log('Failed');
+    console.log('/products Success');
+  } catch (err) {
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 });
 
@@ -38,15 +40,15 @@ app.get('/products/:id', async (req, res) => {
   try {
     const product = await db.collection('Product').findOne({ _id: new ObjectId(req.params.id) });
     res.json(product);
-    console.log('Success');
+    console.log('/products/:id Success');
   } catch (err) {
-    res.status(500).json({ message: err.message });
-    console.log('Failed');
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 });
 
 // Tạo API Post để add document cho collection product - PASS
-app.post('/products/add', function (req, res) {
+app.post('/products/add', async (req, res) => {
   try {
     const { name, image, description, price, popular, category } = req.body;
     const product = {
@@ -57,17 +59,16 @@ app.post('/products/add', function (req, res) {
       popular: popular,
       category: category,
     };
-    db.collection("Product").insertOne(product, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    });
-  } catch (error) {
-    console.log(error);
+    await db.collection("Product").insertOne(product);
+    console.log('/products/add Success')
+  } catch (err) {
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 })
 
 // Tạo API Put để sửa dữ liệu document cho collection product - PASS
-app.put('/products/update/:id', function (req, res) {
+app.put('/products/update/:id', async (req, res) => {
   try {
     const { name, image, description, price, popular, category } = req.body;
     var myQuery = { _id: new ObjectId(req.params.id) };
@@ -81,24 +82,22 @@ app.put('/products/update/:id', function (req, res) {
         category: category,
       }
     }
-    db.collection("Product").updateOne(myQuery, newValues, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    });
-  } catch (error) {
-    console.log(error);
+    await db.collection("Product").updateOne(myQuery, newValues);
+    console.log('/products/update/:id Success')
+  } catch (err) {
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 })
 
 // Tạo API Delete để xóa dữ liệu document cho collection product - PASS
-app.delete('/products/delete/:id', function (req, res) {
+app.delete('/products/delete/:id', async (req, res) => {
   try {
-    db.collection('Product').deleteOne({ _id: new ObjectId(req.params.id) }, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    })
+    await db.collection('Product').deleteOne({ _id: new ObjectId(req.params.id) })
+    console.log('/products/delete/:id Success')
   } catch (err) {
-    console.log(err)
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err)
   }
 })
 
@@ -110,10 +109,10 @@ app.get('/category', async (req, res) => {
   try {
     const catogery = await db.collection('Category').find().toArray();
     res.json(catogery);
-    console.log('Success');
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-    console.log('Failed');
+    console.log('/category Success');
+  } catch (err) {
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 });
 
@@ -122,10 +121,10 @@ app.get('/category/:id', async (req, res) => {
   try {
     const category = await db.collection('Category').findOne({ _id: new ObjectId(req.params.id) });
     res.json(category);
-    console.log('Success');
+    console.log('/category/:id Success');
   } catch (err) {
-    res.status(500).json({ message: err.message });
-    console.log('Failed');
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 })
 
@@ -136,12 +135,11 @@ app.post('/category/add', async (req, res) => {
     const category = {
       name: name,
     };
-    db.collection('Category').insertOne(category, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    });
+    db.collection('Category').insertOne(category);
+    console.log('/category/add Success');
   } catch (err) {
-    console.log(err);
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 })
 
@@ -155,20 +153,19 @@ app.put('/category/update/:id', async (req, res) => {
         name: name,
       }
     }
-    db.collection('Category').updateOne(myQuery, newData, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    })
+    await db.collection('Category').updateOne(myQuery, newData)
+    console.log('/category/update/:id Success');
   } catch (err) {
-    console.log(err);
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 })
 
 
 // Tạo API xóa dữ liệu category - PASS
-async function checkCategoryId(category) {
+async function isCategoryExist(categoryId: string) {
   try {
-    const productCount = await db.collection('Product').countDocuments({ category: category })
+    const productCount = await db.collection('Product').countDocuments({ category: categoryId })
     return productCount > 0;
   } catch (error) {
     console.log(error);
@@ -178,13 +175,14 @@ async function checkCategoryId(category) {
 
 app.delete('/category/delete/:id', async (req, res) => {
   try {
-    const categoryExists = await checkCategoryId(req.params.id);
+    const categoryExists = await isCategoryExist(req.params.id);
     if (!categoryExists) {
       await db.collection('Category').deleteOne({ _id: new ObjectId(req.params.id) });
-      console.log('Success');
+      console.log('/category/delete/:id Success');
     }
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 })
 
@@ -192,7 +190,7 @@ app.delete('/category/delete/:id', async (req, res) => {
  * Account
  */
 // Tạo API Thêm dữ liệu Account - PASS
-async function checkUserNameExist(username) {
+async function isUserNameExist(username: string) {
   try {
     const existingUsername = await db.collection('Account').countDocuments({ username: username });
     return existingUsername > 0;
@@ -206,9 +204,10 @@ app.get('/account/:username', async (req, res) => {
   try {
     const account = await db.collection('Account').findOne({ username: req.params.username });
     res.json(account);
+    console.log('/account/:username Success');
   } catch (err) {
-    res.status(500).json({ message: err.message });
-    console.error('Failed');
+    res.status(500).json({ message: (err as Error).message });
+    console.error(err);
   }
 })
 
@@ -220,13 +219,14 @@ app.post('/account/add', async (req, res) => {
       password: password,
       role: role
     }
-    const checkUsername = await checkUserNameExist(account.username);
+    const checkUsername = await isUserNameExist(account.username);
     if (!checkUsername) {
-      await db.collection('Account').insertOne(account, function (err, result) {
-        if (err) throw err;
-        console.log(result);
-      })
+      await db.collection('Account').insertOne(account)
+      console.log('/account/add Success');
+      
+      return
     }
+    console.log('/account/add Exists')
   } catch (err) {
     console.log(err);
   }
@@ -241,14 +241,12 @@ app.put('/account/update/:username', async (req, res) => {
         password: req.body.password,
       }
     }
-    const checkUsername = await checkUserNameExist(req.params.username);
+    const checkUsername = await isUserNameExist(req.params.username);
     if (checkUsername) {
-      await db.collection('Account').updateOne(myQuery, newPassword, function (err, result) {
-        if (err) throw err;
-        console.log(err);
-      })
+      await db.collection('Account').updateOne(myQuery, newPassword)
     }
   } catch (err) {
+    res.status(500).json({ message: (err as Error).message });
     console.log(err);
   }
 })
@@ -262,14 +260,12 @@ app.put('/account/update/staff/:username', async (req, res) => {
         role: req.body.role,
       }
     }
-    const checkUsername = await checkUserNameExist(req.params.username);
+    const checkUsername = await isUserNameExist(req.params.username);
     if (checkUsername) {
-      await db.collection('Account').updateOne(myQuery, newRole, function (err, result) {
-        if (err) throw err;
-        console.log(err);
-      })
+      await db.collection('Account').updateOne(myQuery, newRole)
     }
   } catch (err) {
+    res.status(500).json({ message: (err as Error).message });
     console.log(err);
   }
 })
@@ -284,7 +280,7 @@ app.get('/user/staff', async (req, res) => {
     res.json(staff);
     console.log('Success');
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: (err as Error).message });
     console.log(err);
   }
 })
@@ -296,7 +292,7 @@ app.get('/user/:id', async (req, res) => {
     res.json(staff);
     console.log('Success');
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: (err as Error).message });
     console.log(err);
   }
 })
@@ -315,11 +311,9 @@ app.post('/user/add/staff', async (req, res) => {
       username: username,
       isStaff: true
     }
-    await db.collection('User').insertOne(staff, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    })
+    await db.collection('User').insertOne(staff)
   } catch (err) {
+    res.status(500).json({ message: (err as Error).message });
     console.log(err);
   }
 })
@@ -340,10 +334,7 @@ app.put('/user/update/staff/:id', async (req, res) => {
         isStaff: true
       }
     }
-    await db.collection('User').updateOne(myQuery, newData, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    })
+    await db.collection('User').updateOne(myQuery, newData)
   } catch (err) {
     console.log(err);
   }
@@ -362,10 +353,7 @@ app.post('/user/add/customer', async (req, res) => {
       membershipPoints: membershipPoints,
       username: username
     }
-    await db.collection('User').insertOne(customer, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    })
+    await db.collection('User').insertOne(customer)
   } catch (err) {
     console.log(err);
   }
@@ -386,10 +374,7 @@ app.put('/user/update/customer/:id', async (req, res) => {
         membershipPoints: membershipPoints
       }
     }
-    await db.collection('User').updateOne(myQuery, newData, function (err, result) {
-      if (err) throw err;
-      console.log(result);
-    })
+    await db.collection('User').updateOne(myQuery, newData)
   } catch (err) {
     console.log(err);
   }
