@@ -17,7 +17,7 @@
 // module.exports = sqlConnection;
 const mongoose = require('mongoose');
 mongoose.connect(
-  'mongodb+srv://puenwyn:W1H5UlfgQPZiYrq3@cluster0.i5dplip.mongodb.net/CoffeeApp?retryWrites=true&w=majority',
+  process.env.DB_CONNECT_STRING,
   {
     dbName: 'CoffeeApp',
     useNewUrlParser: true,

@@ -1,6 +1,6 @@
 module.exports = function (router) {
     var productController = require('../controllers/product.controller');
-    const _Js = require('../common/_Js');
+    const _Js = require('../config/_Js');
     router.get('/', productController.list);
     router.get('/detail', productController.detail);
     router.get('/search/:id', productController.search);

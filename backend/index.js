@@ -1,7 +1,11 @@
 var express = require('express');
-var app = express();
 const cors = require('cors');
+var app = express();
 var bodyParser = require('body-parser');
+
+const dotenv = require('dotenv');
+dotenv.config({path: './env.shared'});
+
 // Sử dụng body-parser middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
