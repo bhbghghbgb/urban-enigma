@@ -4,6 +4,7 @@ import { config } from "dotenv";
 import "passport";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { sign } from "jsonwebtoken";
 import { resultError, resultOk } from "./utils/jsonresponse.util";
 import { Schema, model } from "mongoose";
@@ -26,7 +27,9 @@ app
   .post((req: Request, res: Response) => {
     res.send("Express + TypeScript Server POST");
   });
-
+interface IAccountJwtPayload {
+  username: string;
+}
 interface IAccount {
   username: string;
   password: string;
@@ -44,25 +47,41 @@ passport.use(
       passReqToCallback: false,
       session: false,
     },
-    function (username, password, done) {
+    async function (username, password, done) {
       try {
-        Account.findOne(
-          { username: username },
-          function (err: any, account: IAccount) {
-            if (err) {
-              return done(err);
-            }
-            if (!account) {
-              return done(null, false);
-            }
-            if (!comparePassword(password, account.password)) {
-              return done(null, false);
-            }
-            return done(null, account);
-          }
-        );
+        const account = await Account.findOne({ username });
+        if (!account) {
+          return done(null, false, { message: "Username not found." });
+        }
+        const passwordMatch = await comparePassword(password, account.password);
+        if (!passwordMatch) {
+          return done(null, false, { message: "Password mismatch." });
+        }
+        return done(null, account, { message: `Logging in as ${username}.` });
       } catch (err) {
-        return done(err)
+        return done(err, { message: "Server exception." });
+      }
+    }
+  )
+);
+passport.use(
+  new JwtStrategy(
+    {
+      secretOrKey: process.env.JWT_SECRET as string,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    },
+    async function (jwtPayload: IAccountJwtPayload, done) {
+      try {
+        const username = jwtPayload.username;
+        const account = await Account.findOne({ username: username });
+        if (!account) {
+          return done(null, false, { message: "Malformed bearer token." });
+        }
+        return done(null, account, {
+          message: `Bearer authorized ${username}.`,
+        });
+      } catch (err) {
+        return done(err, { message: "Server exception." });
       }
     }
   )
@@ -70,20 +89,26 @@ passport.use(
 app.post("/login", function (req: Request, res: Response, next) {
   passport.authenticate(
     "local",
-    function (err: any, user: any, info: object, status: number) {
+    function (err: any, account: any, info: object, status: number) {
       if (err) {
         return next(err);
       }
-      if (!user) {
-        return res.status(401).json(resultError("User not found?"));
+      if (!account) {
+        return res
+          .status(401)
+          .json(resultError("User not found?", info, status));
       }
-      resultOk({
-        bearer: sign(
-          { username: user.username },
-          process.env.JWT_SECRET as string,
-          { expiresIn: "7d" }
-        ),
-      });
+      return res.json(
+        resultOk({
+          bearer: sign(
+            { username: account.username } as IAccountJwtPayload,
+            process.env.JWT_SECRET as string,
+            { expiresIn: "7d" }
+          ),
+          info,
+          status,
+        })
+      );
     }
   );
 });
