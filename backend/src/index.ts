@@ -1,14 +1,16 @@
 // src/index.js
 import express, { Express, Request, Response } from "express";
+import { Schema, model } from "mongoose";
 import { config } from "dotenv";
-import "passport";
+
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { sign } from "jsonwebtoken";
+const ConnectRoles = require("connect-roles"); // library donesn't have type declaration
+
 import { resultError, resultOk } from "./utils/jsonresponse.util";
-import { Schema, model } from "mongoose";
-import { comparePassword } from "./utils/password.util";
+import { comparePassword, hashPassword } from "./utils/password.util";
 
 const { error } = config({ path: "./.env.shared" });
 if (error) {
@@ -19,6 +21,7 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(passport.initialize());
+app.use(express.json());
 app
   .route("/")
   .get((req: Request, res: Response) => {
@@ -27,18 +30,23 @@ app
   .post((req: Request, res: Response) => {
     res.send("Express + TypeScript Server POST");
   });
+// bearer token jwt payload containing only account unique and indentifiable
 interface IAccountJwtPayload {
   username: string;
 }
 interface IAccount {
   username: string;
   password: string;
+  userType: string;
 }
 const accountSchema = new Schema<IAccount>({
   username: { type: String, required: true },
   password: { type: String, required: true },
+  userType: { type: String, required: true },
 });
 const Account = model<IAccount>("Account", accountSchema);
+// passport strategy for logging in with username/password pair when not logged in yet
+// subsequent authorized actions should use bearer token
 passport.use(
   new LocalStrategy(
     {
@@ -57,13 +65,16 @@ passport.use(
         if (!passwordMatch) {
           return done(null, false, { message: "Password mismatch." });
         }
-        return done(null, account, { message: `Logging in as ${username}.` });
+        return done(null, account, {
+          message: `Logging in as ${username}, role ${account.userType}`,
+        });
       } catch (err) {
-        return done(err, { message: "Server exception." });
+        return done(err, { message: (err as Error).message });
       }
     }
   )
 );
+// passport strategy for authorized actions with a bearer token
 passport.use(
   new JwtStrategy(
     {
@@ -81,13 +92,13 @@ passport.use(
           message: `Bearer authorized ${username}.`,
         });
       } catch (err) {
-        return done(err, { message: "Server exception." });
+        return done(err, { message: (err as Error).message });
       }
     }
   )
 );
 app.post("/login", function (req: Request, res: Response, next) {
-  passport.authenticate(
+  return passport.authenticate(
     "local",
     function (err: any, account: any, info: object, status: number) {
       if (err) {
@@ -112,7 +123,34 @@ app.post("/login", function (req: Request, res: Response, next) {
     }
   );
 });
-
+app.post("/signup", async function (req: Request, res: Response) {
+  try {
+    const username = req.body.username;
+    const hashedPassword = await hashPassword(req.body.password);
+    if ((await Account.countDocuments({ username })) > 0) {
+      return res
+        .status(409)
+        .json(resultError(`Username exists. (${username})`));
+    }
+    const userType = req.body.userType;
+    await Account.create({
+      username,
+      password: hashedPassword,
+      userType: userType,
+    });
+    return res.json(
+      resultOk(
+        undefined,
+        `Account created. Username ${username}. Role ${userType}`
+      )
+    );
+  } catch (err) {
+    return res.status(500).json(resultError((err as Error).message));
+  }
+});
+app.get("/test/authorized", function (req: Request, res: Response) {
+  // TODO
+});
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);
 });
