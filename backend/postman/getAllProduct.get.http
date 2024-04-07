@@ -1,0 +1,2 @@
+@url = http://localhost:3001/
+GET {{url}}v1/api/product/getAll
