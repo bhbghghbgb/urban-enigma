@@ -1,6 +1,6 @@
 // src/index.js
 import express, { Express, Request, Response } from "express";
-import { Schema, model } from "mongoose";
+import { Schema, model, connect } from "mongoose";
 import { config } from "dotenv";
 
 import passport from "passport";
@@ -52,10 +52,11 @@ passport.use(
     {
       usernameField: "username",
       passwordField: "password",
-      passReqToCallback: false,
+      passReqToCallback: true,
       session: false,
     },
-    async function (username, password, done) {
+    async function (req: Request, username, password, done) {
+      console.log(req);
       try {
         const account = await Account.findOne({ username });
         if (!account) {
@@ -83,6 +84,7 @@ passport.use(
       passReqToCallback: true,
     },
     async function (req: Request, jwtPayload: IAccountJwtPayload, done) {
+      console.log(req);
       try {
         const username = jwtPayload.username;
         const account = await Account.findOne({ username: username });
@@ -101,14 +103,14 @@ passport.use(
 app.post("/login", function (req: Request, res: Response, next) {
   return passport.authenticate(
     "local",
-    function (err: any, account: any, info: object, status: number) {
+    function (err: any, account: IAccount, info: object, status: number) {
       if (err) {
         return next(err);
       }
       if (!account) {
         return res
           .status(401)
-          .json(resultError("User not found?", info, status));
+          .json(resultError("User not found.", info, status));
       }
       return res.json(
         resultOk({
@@ -122,27 +124,30 @@ app.post("/login", function (req: Request, res: Response, next) {
         })
       );
     }
-  );
+  )(req, res, next);
 });
 app.get("/test/authorized/admin", function (req: Request, res: Response, next) {
-  passport.authenticate(
+  return passport.authenticate(
     "jwt",
-    function (err: any, account: any, info: object, status: number) {
+    function (err: any, account: IAccount, info: object, status: number) {
       if (err) {
         return next(err);
       }
-      if (
-        !account ||
-        !account.roles ||
-        !(account.roles as [String]).includes("admin")
-      ) {
+      const role = account.userType;
+      if (!account || role !== "admin") {
         return res
           .status(401)
-          .json(resultError("No admin access.", info, status));
+          .json(
+            resultError(
+              `No admin access. Role requesting is ${role}`,
+              info,
+              status
+            )
+          );
       }
       return res.json(resultOk(info, "Admin authorized.", status));
     }
-  );
+  )(req, res, next);
 });
 app.post("/signup", async function (req: Request, res: Response) {
   try {
@@ -169,6 +174,9 @@ app.post("/signup", async function (req: Request, res: Response) {
     return res.status(500).json(resultError((err as Error).message));
   }
 });
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
-});
+
+connect(process.env.DB_CONNECT_STRING as string).then(() =>
+  app.listen(port, () => {
+    console.log(`[server]: Server is running at http://localhost:${port}`);
+  })
+);
