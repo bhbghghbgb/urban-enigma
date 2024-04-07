@@ -7,7 +7,6 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
 import { sign } from "jsonwebtoken";
-const ConnectRoles = require("connect-roles"); // library donesn't have type declaration
 
 import { resultError, resultOk } from "./utils/jsonresponse.util";
 import { comparePassword, hashPassword } from "./utils/password.util";
@@ -22,6 +21,7 @@ const port = process.env.PORT || 3000;
 
 app.use(passport.initialize());
 app.use(express.json());
+
 app
   .route("/")
   .get((req: Request, res: Response) => {
@@ -80,8 +80,9 @@ passport.use(
     {
       secretOrKey: process.env.JWT_SECRET as string,
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      passReqToCallback: true,
     },
-    async function (jwtPayload: IAccountJwtPayload, done) {
+    async function (req: Request, jwtPayload: IAccountJwtPayload, done) {
       try {
         const username = jwtPayload.username;
         const account = await Account.findOne({ username: username });
@@ -89,7 +90,7 @@ passport.use(
           return done(null, false, { message: "Malformed bearer token." });
         }
         return done(null, account, {
-          message: `Bearer authorized ${username}.`,
+          message: `Bearer authorized ${username}. Role ${account.userType}`,
         });
       } catch (err) {
         return done(err, { message: (err as Error).message });
@@ -123,6 +124,26 @@ app.post("/login", function (req: Request, res: Response, next) {
     }
   );
 });
+app.get("/test/authorized/admin", function (req: Request, res: Response, next) {
+  passport.authenticate(
+    "jwt",
+    function (err: any, account: any, info: object, status: number) {
+      if (err) {
+        return next(err);
+      }
+      if (
+        !account ||
+        !account.roles ||
+        !(account.roles as [String]).includes("admin")
+      ) {
+        return res
+          .status(401)
+          .json(resultError("No admin access.", info, status));
+      }
+      return res.json(resultOk(info, "Admin authorized.", status));
+    }
+  );
+});
 app.post("/signup", async function (req: Request, res: Response) {
   try {
     const username = req.body.username;
@@ -147,9 +168,6 @@ app.post("/signup", async function (req: Request, res: Response) {
   } catch (err) {
     return res.status(500).json(resultError((err as Error).message));
   }
-});
-app.get("/test/authorized", function (req: Request, res: Response) {
-  // TODO
 });
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

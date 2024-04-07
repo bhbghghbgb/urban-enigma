@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.comparePassword = void 0;
+exports.hashPassword = exports.comparePassword = void 0;
 const bcrypt_1 = require("bcrypt");
 function comparePassword(literal, hashed) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -17,4 +17,10 @@ function comparePassword(literal, hashed) {
     });
 }
 exports.comparePassword = comparePassword;
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGFzc3dvcmQudXRpbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy91dGlscy9wYXNzd29yZC51dGlsLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7OztBQUFBLG1DQUFpQztBQUNqQyxTQUFzQixlQUFlLENBQUMsT0FBZSxFQUFFLE1BQWM7O1FBQ25FLE9BQU8sSUFBQSxnQkFBTyxFQUFDLE9BQU8sRUFBRSxNQUFNLENBQUMsQ0FBQztJQUNsQyxDQUFDO0NBQUE7QUFGRCwwQ0FFQyJ9
+function hashPassword(literal) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return (0, bcrypt_1.hash)(literal, 10);
+    });
+}
+exports.hashPassword = hashPassword;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoicGFzc3dvcmQudXRpbC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uL3NyYy91dGlscy9wYXNzd29yZC51dGlsLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7Ozs7OztBQUFBLG1DQUF1QztBQUN2QyxTQUFzQixlQUFlLENBQUMsT0FBZSxFQUFFLE1BQWM7O1FBQ25FLE9BQU8sSUFBQSxnQkFBTyxFQUFDLE9BQU8sRUFBRSxNQUFNLENBQUMsQ0FBQztJQUNsQyxDQUFDO0NBQUE7QUFGRCwwQ0FFQztBQUNELFNBQXNCLFlBQVksQ0FBQyxPQUFlOztRQUNoRCxPQUFPLElBQUEsYUFBSSxFQUFDLE9BQU8sRUFBRSxFQUFFLENBQUMsQ0FBQTtJQUMxQixDQUFDO0NBQUE7QUFGRCxvQ0FFQyJ9
