@@ -1,4 +1,5 @@
-const {Schema, models, Types} = require('mongoose');
+import {Schema, models, Types} from 'mongoose';
+
 const Collection_Name = 'Product';
 const ProductSchema = new Schema({
     name: {
@@ -34,4 +35,4 @@ const ProductSchema = new Schema({
     timestamps: true,
     collection: Collection_Name
 });
-module.exports = models(Collection_Name, ProductSchema);
+export default models(Collection_Name, ProductSchema);

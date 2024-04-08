@@ -98,14 +98,45 @@ const getProductsWithRating = async () => {
     }
 }
 
+const getProductsWithRating_Hung = async () => {
+    try {
+        return await Product.aggregate([
+            {
+                $lookup: {
+                    from: 'ratings',
+                    localField: '_id',
+                    foreignField: 'product',
+                    as: 'ratings',
+                },
+            },
+            {
+                $addFields: {
+                    avgRating: {
+                        $avg: '$ratings.rating',
+                    },
+                },
+            },
+            {
+                $project: {
+                    ratings: 0,
+                },
+            },
+        ]);
+    } catch (err) {
+        throw err;
+    }
+};
+
 
 module.exports = {
     getProducts,
     getAllProductsPopular,
     getAllProductsOfCategory,
     findProductById,
+    findProductByName,
     createProduct,
     updateProductById,
     deleteProductById,
-    getFullProducts: getProductsWithRating
+    getProductsWithRating,
+    getProductsWithRating_Hung
 };

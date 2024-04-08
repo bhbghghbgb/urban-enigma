@@ -8,17 +8,19 @@ router.get('/product/getAll', product.getAll);
 //getAllProductsPopular
 router.get('/product/getAllProductsPopular', product.getAllProductsPopular);
 //getAllProductsOfCategory
-router.get('/product/getAllProductsOfCategory', product.getAllProductsOfCategory);
+router.get('/product/getAllProductsOfCategory/:id', product.getAllProductsOfCategory);
 //findProductById
-router.get('/product/findProductById', product.findProductById);
+router.get('/product/findProductById/:id', product.findProductById);
 //findProductByName
-router.get('/product/findProductByName', product.findProductByName);
+router.get('/product/findProductByName/:name', product.findProductByName);
 //createProduct
 router.post('/product/createProduct', product.createProduct);
 //updateProductById
-router.put('/product/updateProductById', product.updateProductById);
+router.put('/product/updateProductById/:id', product.updateProductById);
 //deleteProductById
-router.delete('/product/deleteProductById', product.deleteProductById);
+router.delete('/product/deleteProductById/:id', product.deleteProductById);
 //getFullProducts
-router.get('/product/getFullProducts', product.getFullProducts);
+router.get('/product/getFullProducts', product.getProductsWithRating);
+// Tối ưu lại getProductsWithRating nhưng chưa test
+router.get('/product/getProductsWithRating_Hung/:id', product.getProductsWithRating_Hung);
 module.exports = router;

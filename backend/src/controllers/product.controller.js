@@ -8,7 +8,8 @@ import {
     createProduct as _createProduct,
     updateProductById as _updateProductById,
     deleteProductById as _deleteProductById,
-    getFullProducts as _getFullProduct
+    getProductsWithRating as _getProductsWithRating,
+    getProductsWithRating_Hung as _getProductsWithRating_Hung
 } from '../services/product.service';
 
 class productController {
@@ -101,15 +102,23 @@ class productController {
         }
     }
 
-    getFullProducts = async (req, res) => {
+    getProductsWithRating = async (req, res) => {
         try {
-            const products = await _getFullProduct();
+            const products = await _getProductsWithRating();
             res.status(200).json(products);
         } catch (err) {
             res.status(500).json({message: err.message});
         }
     }
 
+    getProductsWithRating_Hung = async (req, res) => {
+        try {
+            const products = await _getProductsWithRating_Hung();
+            res.status(200).json(products);
+        } catch (err) {
+            res.status(500).json({message: err.message});
+        }
+    }
 }
 
 const Product = new productController()
