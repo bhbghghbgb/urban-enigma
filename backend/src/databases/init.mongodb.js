@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 const {db: {url}} = require('../configs/config.mongodb')
 // Sử dụng singleton pattern để tránh tạo ra nhiều kết nối
 class Database {
-    Contructor() {
+    constructor() {
         this.connect();
     }
 
