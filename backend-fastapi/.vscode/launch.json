@@ -1,0 +1,32 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "hypercorn",
+            "args": [
+                "asgi:main:app",
+                "--reload",
+                "--debug",
+                "--worker-class",
+                "trio",
+                // "--workers",
+                // "2",
+                // "--max-requests",
+                // "69",
+                "--access-logfile",
+                "-",
+                "--error-logfile",
+                "-",
+                "--bind",
+                "localhost:3001"
+            ],
+            "jinja": true
+        }
+    ]
+}
