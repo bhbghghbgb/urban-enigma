@@ -1,5 +1,5 @@
 'use strict'
-import {Schema, model} from 'mongoose'
+import {Schema, models} from 'mongoose'
 
 const commonUser = new Schema({
     name: {type: String, required: true, trim: true},
@@ -29,7 +29,7 @@ const customerSchema = new Schema({
     collection: "Customer"
 })
 
-const Staff = model('Staff', staffSchema);
-const Customer = model('Customer', customerSchema);
+const Staff = models('Staff', staffSchema);
+const Customer = models('Customer', customerSchema);
 
 module.exports = {Staff, Customer}

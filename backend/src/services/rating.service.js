@@ -3,85 +3,80 @@ import Rating from '../models/rating.model';
 import Product from '../models/product.model';
 import {Customer} from '../models/user.model';
 
-const checkRating= async (user, product) => {
-    try {
-        const ratingCount = await Rating.countDocuments({ user: user, product: product })
-        return ratingCount > 0;
-    } catch (err) {
-        return false;
-    }
-}
-
-const createRating = async (product, customer, rating) => {
+const createRating = async (productId, customerId, rating) => {
     try {
         const [productExist, userExist] = await Promise.all([
-            Product.findById(product),
-            Customer.findById(customer),
+            Product.findById(productId),
+            Customer.findById(customerId),
         ]);
 
-        if (!productExist) {
-            const errorProduct = new Error('Product not found');
-            errorProduct.statusCode = 404;
-            throw errorProduct;
+        if (!productExist || !userExist) {
+            const error = new Error(
+                `${!productExist ? 'Product' : ''} ${
+                    !productExist && !userExist ? 'and' : ''
+                } ${!userExist ? 'User' : ''} not found`
+            );
+            error.statusCode = 404;
+            throw error;
         }
 
-        if (!userExist) {
-            const errorUser = new Error('User not found');
-            errorUser.statusCode = 404;
-            throw errorUser;
-        }
-
-        const ratingExists = await Rating.findOne({ customer, product });
+        const ratingExists = await Rating.exists({ customer: customerId, product: productId });
         if (ratingExists) {
             const error = new Error('Rating already exists');
-            error.statusCode = 400;
+            error.statusCode = 409; // Conflict
             throw error;
         }
 
         const ratingModel = new Rating({
-            customer,
-            product,
-            rating: rating,
+            customer: customerId,
+            product: productId,
+            rating,
         });
-
         await ratingModel.save();
     } catch (err) {
         throw err;
     }
 };
 
-const changeRating = async (product, customer, rating) => {
+const changeRating = async (productId, customerId, rating) => {
     try {
         const [productExist, customerExist] = await Promise.all([
-            Product.findById(product),
-            Customer.findById(customer),
+            Product.findById(productId),
+            Customer.findById(customerId),
         ]);
+
         if (!productExist) {
-            const errorProduct = new Error('Product not found');
-            errorProduct.statusCode = 404;
-            errorProduct.name = 'ProductNotFound';
-            throw errorProduct;
-        }
-        if (!customerExist) {
-            const errorCustomer = new Error('User not found');
-            errorCustomer.statusCode = 404;
-            errorCustomer.name = 'UserNotFound';
-            throw errorCustomer;
+            const error = new Error('Product not found');
+            error.name = 'ProductNotFound';
+            error.statusCode = 404;
+            throw error;
         }
 
-        if (checkRating(customer, product)) {
-            var myQuery = { customer: customer, product: product };
-            var newData = {
-                $set: {
-                    rating: rating
-                }
-            };
-            await Rating.updateOne(myQuery, newData);
-        } else {
+        if (!customerExist) {
+            const error = new Error('User not found');
+            error.name = 'UserNotFound';
+            error.statusCode = 404;
+            throw error;
         }
+
+        const query = { customer: customerId, product: productId };
+        const ratingData = { $set: { rating } };
+        const options = { new: true, useFindAndModify: false };
+
+        const updatedRating = await Rating.findOneAndUpdate(query, ratingData, options);
+
+        if (!updatedRating) {
+            const error = new Error('Rating not found');
+            error.statusCode = 404;
+            throw error;
+        }
+
+        return updatedRating;
     } catch (err) {
         throw err;
     }
-
-
-}
+};
+module.exports = {
+    createRating,
+    changeRating
+};
