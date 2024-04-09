@@ -22,5 +22,5 @@ router.delete('/product/deleteProductById/:id', product.deleteProductById);
 //getFullProducts
 router.get('/product/getFullProducts', product.getProductsWithRating);
 // Tối ưu lại getProductsWithRating nhưng chưa test
-router.get('/product/getProductsWithRating_Hung/:id', product.getProductsWithRating_Hung);
+router.get('/product/getProductsWithRating_Hung', product.getProductsWithRating_Hung);
 module.exports = router;
