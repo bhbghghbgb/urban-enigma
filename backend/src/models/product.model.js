@@ -35,4 +35,4 @@ const ProductSchema = new Schema({
     timestamps: true,
     collection: Collection_Name
 });
-export default models(Collection_Name, ProductSchema);
+module.exports =  models(Collection_Name, ProductSchema);

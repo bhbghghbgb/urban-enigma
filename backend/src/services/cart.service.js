@@ -1,6 +1,6 @@
 'use strict'
 import Cart from '../models/cart.model';
-import {Product} from '../models/product.model';
+import Product from '../models/product.model';
 import {Customer} from '../models/user.model.js';
 
 const getCartOfUser = async (customerId) => {
