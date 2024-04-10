@@ -4,23 +4,23 @@ import {Router} from 'express';
 const router = Router();
 import product from '../../controllers/product.controller'
 // getAll
-router.get('/product/getAll', product.getAll);
+router.get('/product', product.getAll);
 //getAllProductsPopular
-router.get('/product/getAllProductsPopular', product.getAllProductsPopular);
+router.get('/products/popular', product.getAllProductsPopular);
 //getAllProductsOfCategory
-router.get('/product/getAllProductsOfCategory/:id', product.getAllProductsOfCategory);
+router.get('/products/category/:id', product.getAllProductsOfCategory);
 //findProductById
-router.get('/product/findProductById/:id', product.findProductById);
+router.get('/products/:id', product.findProductById);
 //findProductByName
-router.get('/product/findProductByName/:name', product.findProductByName);
+router.get('/products/name/:name', product.findProductByName);
 //createProduct
-router.post('/product/createProduct', product.createProduct);
+router.post('/products', product.createProduct);
 //updateProductById
-router.put('/product/updateProductById/:id', product.updateProductById);
+router.put('/products/update/:id', product.updateProductById);
 //deleteProductById
-router.delete('/product/deleteProductById/:id', product.deleteProductById);
+router.delete('/product/delete/:id', product.deleteProductById);
 //getFullProducts
-router.get('/product/getFullProducts', product.getProductsWithRating);
+router.get('/product/rating', product.getProductsWithRating);
 // Tối ưu lại getProductsWithRating nhưng chưa test
-router.get('/product/getProductsWithRating_Hung', product.getProductsWithRating_Hung);
+router.get('/product/rating_H', product.getProductsWithRating_Hung);
 module.exports = router;
