@@ -5,9 +5,8 @@ name = "pypi"
 
 [packages]
 fastapi = "*"
-trio = "*"
-hypercorn = {extras = ["trio"], version = "*"}
-pymongo = {extras = ["srv"], version = "*"}
+uvicorn = {extras = ["standard"], version = "*"}
+beanie = "*"
 
 [dev-packages]
 
