@@ -8,7 +8,7 @@ const app = express()
 import '/databases/init.mongodb'
 
 // Init routers
-app.use('/', require('./routes/index.js'))
+app.use('/', require('./routes/index.js').default)
 
 // error handler
 

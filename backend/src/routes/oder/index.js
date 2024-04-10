@@ -10,6 +10,6 @@ router.get('/oder/:id', Oder.findOrderById);
 //createOrder
 router.post('/oder/create', Oder.createOrder);
 //updateStatus
-router.patch('/oder/:is/status/update', Oder.updateStatus);
+router.patch('/oder/:id/status/update', Oder.updateStatus);
 //getOrdersOfStatus
 router.get('/oder/status/:status', Oder.getOrdersOfStatus);
