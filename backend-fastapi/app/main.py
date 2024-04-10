@@ -5,6 +5,8 @@ from beanie import Document, init_beanie
 from fastapi import FastAPI
 from motor.motor_asyncio import AsyncIOMotorClient
 
+from app.settings import DATABASE_CONNECTION_URL
+
 
 class Account(Document):
     username: str
@@ -26,9 +28,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
-client = AsyncIOMotorClient(
-    "mongodb+srv://new-user:KkuqGxB8oST1y7PB@cluster0.0tglxoe.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-)
+client = AsyncIOMotorClient(DATABASE_CONNECTION_URL)
 database = client.get_database("test")
 
 

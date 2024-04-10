@@ -5,19 +5,34 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "cwd": "${workspaceFolder}"
+        },
+        {
             "name": "Python Debugger: FastAPI",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "main:app",
+                "app.main:app",
                 "--reload",
                 "--host",
                 "localhost",
                 "--port",
                 "3001"
             ],
-            "jinja": true
+            "jinja": true,
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "cwd": "${workspaceFolder}"
         }
     ]
 }
