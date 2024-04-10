@@ -53,7 +53,6 @@ class productController {
             } else {
                 res.status(404).json({message: 'Product is not fount'});
             }
-            return;
         } catch (err) {
             res.status(500).json({message: err.message});
         }
@@ -67,7 +66,6 @@ class productController {
             } else {
                 res.status(404).json({message: 'Product is not fount'});
             }
-            return;
         } catch (err) {
             res.status(500).json({message: err.message});
         }

@@ -1,6 +1,5 @@
 'use strict'
 import {
-    checkRating as _checkRatingService,
     createRating as _createRatingService,
     changeRating as _changeRatingService,
 } from '../services/rating.service';

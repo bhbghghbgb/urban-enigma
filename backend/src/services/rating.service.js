@@ -27,12 +27,11 @@ const createRating = async (productId, customerId, rating) => {
             throw error;
         }
 
-        const ratingModel = new Rating({
+        await Rating.create({
             customer: customerId,
             product: productId,
             rating,
-        });
-        await ratingModel.save();
+        })
     } catch (err) {
         throw err;
     }
