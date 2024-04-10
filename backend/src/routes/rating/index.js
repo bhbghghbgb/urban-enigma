@@ -4,7 +4,7 @@ import {Router} from 'express';
 const router = Router();
 const rating = require('../../controllers/rating.controller')
 // createRating
-router.post('/rating/createRating/:productId/:customerId', rating.createRating);
+router.post('/products/:product/customers/:customer/ratings', rating.createRating);
 // changeRating
-router.put('/rating/changeRating/:productId/:customerId', rating.changeRating);
+router.put('/products/:product/customers/:customer/ratings', rating.changeRating);
 module.exports = router;
