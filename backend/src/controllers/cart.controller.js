@@ -20,7 +20,7 @@ class cartController{
 
     addToCart = async (req, res) => {
         try {
-            const cart = await _addToCart(req.params.user, req.body.product);
+            await _addToCart(req.params.user, req.params.product);
             res.status(200).json({ message: 'Add to cart successfully!' });
         } catch (error) {
             res.status(error.statusCode).json({message: error.message});
@@ -29,7 +29,7 @@ class cartController{
 
     decreaseProductOfCart = async (req, res) => {
         try {
-            const cart = await _decreaseProductOfCart(req.params.user, req.body.product);
+            const cart = await _decreaseProductOfCart(req.params.user, req.params.product);
             res.status(200).json({ message: 'Decrease product of cart successfully!' });
         } catch (error) {
             res.status(error.statusCode).json({message: error.message});
@@ -38,7 +38,7 @@ class cartController{
 
     increaseProductOfCart = async (req, res) => {
         try {
-            const cart = await _increaseProductOfCart(req.params.user, req.body.product);
+            const cart = await _increaseProductOfCart(req.params.user, req.params.product);
             res.status(200).json({ message: 'Increase product of cart successfully!' });
         } catch (error) {
             res.status(error.statusCode).json({message: error.message});
