@@ -4,19 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "*"
+fastapi = {extras = ["all"], version = "*"}
 uvicorn = {extras = ["standard"], version = "*"}
 beanie = "*"
-python-decouple = "*"
 isodate = "*"
 rich = "*"
-fastapi-jwt = "*"
-python-multipart = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
-email-validator = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
 
 [dev-packages]
-python-decouple-typed = "*"
 
 [requires]
 python_version = "3.12"

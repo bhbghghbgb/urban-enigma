@@ -1,16 +1,16 @@
-from decouple import AutoConfig
-from isodate import parse_duration
-
-from app.utils.print import pprint_constants
-
-config = AutoConfig()
-AUTH_KEY = config("AUTH_KEY")
-AUTH_REFRESH_KEY = config("AUTH_REFRESH_KEY")
-AUTH_KEY_ALGO = config("AUTH_KEY_ALGO")
-AUTH_TOKEN_EXPIRED = parse_duration(config("AUTH_TOKEN_EXPIRED"))
-AUTH_REFRESH_TOKEN_EXPIRED = parse_duration(config("AUTH_REFRESH_TOKEN_EXPIRED"))
+from datetime import timedelta
+from pydantic_settings import BaseSettings
 
 
-if __name__ == "__main__":
-    print("Print defined settings")
-    pprint_constants(globals())
+class Settings(BaseSettings):
+    auth_access_key: str = (
+        "dd6a6faa0ffd4c9c1ac47feb4e9d2284d9fe39959b590f70a92ca7b4ef4c6701"
+    )
+    auth_access_expire: timedelta = timedelta(days=1)
+    auth_refresh_key: str = (
+        "220ef76c6f609a5c6101457b8d62a5934bb2dff6159454673790afcd7ebbbe36"
+    )
+    auth_refresh_expire: timedelta = timedelta(days=7)
+
+
+AUTH_SETTINGS = Settings()

@@ -1,28 +1,18 @@
-"""Account models."""
-
 from datetime import datetime
 from typing import Annotated, Literal, Optional
 
 from beanie import Document
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    EmailStr,
-    PastDate,
-    SecretStr,
-    StringConstraints,
-)
+from pydantic import BaseModel, ConfigDict, EmailStr, PastDate, StringConstraints
 
-from app.accounts.settings import (
-    PASSWORD_PATTERN,
-    USERNAME_PATTERN,
-    VIETNAMESE_PHONE_PATTERN,
-)
+from app.accounts.settings import ACCOUNT_SETTINGS
+from app.auth.models import TokenData
 
 
 class AccountAuth(BaseModel):
     """Account signup and login auth."""
 
+    # password pattern uses lookahead
+    model_config = ConfigDict(regex_engine="python-re")
     username: Annotated[
         str,
         StringConstraints(
@@ -30,7 +20,7 @@ class AccountAuth(BaseModel):
             to_lower=True,
             min_length=6,
             max_length=32,
-            pattern=USERNAME_PATTERN,
+            pattern=ACCOUNT_SETTINGS.username_pattern,
         ),
     ]
     password: Annotated[
@@ -38,13 +28,11 @@ class AccountAuth(BaseModel):
         StringConstraints(
             min_length=8,
             max_length=128,
-            pattern=PASSWORD_PATTERN,
+            pattern=ACCOUNT_SETTINGS.password_pattern,
         ),
     ]
     role: Literal["customer", "shipper"]
-
-    # password pattern uses lookahead
-    model_config = ConfigDict(regex_engine="python-re")
+    disabled: bool = False
 
 
 class AccountUpdatable(BaseModel):
@@ -59,7 +47,7 @@ class AccountUpdatable(BaseModel):
                 strip_whitespace=True,
                 min_length=10,
                 max_length=12,
-                pattern=VIETNAMESE_PHONE_PATTERN,
+                pattern=ACCOUNT_SETTINGS.vietnamese_phone_pattern,
             ),
         ]
     ] = None
@@ -80,17 +68,20 @@ class Account(Document, AccountAuth, AccountUpdatable):
     class Settings:
         name = "accounts"
 
-    class Config:
-        schema_extras = {
-            "example": {
-                "username": "memaybeo",
-                "password": "mOt ha1 b@",
-                "email": "bamaymup@microgle.com",
-                "vietnamese_phone": "84366777888",
-                "full_name": "Ta La Vuong Lao Gia",
-                "date_of_birth": 978307200000,
-            }
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "username": "memaybeo",
+                    "password": "mOt ha1 b@",
+                    "email": "bamaymup@microgle.com",
+                    "vietnamese_phone": "84366777888",
+                    "full_name": "Ta La Vuong Lao Gia",
+                    "date_of_birth": 978307200000,
+                }
+            ]
         }
+    }
 
     def __hash__(self) -> int:
         return hash(self.id)
@@ -104,9 +95,9 @@ class Account(Document, AccountAuth, AccountUpdatable):
         return self.id.generation_time if self.id else None
 
     @property
-    def jwt_subject(self) -> dict[str, str]:
-        """JWT subject fields. Use the returned value for JWT authorization purposes."""
-        return {"username": self.username}
+    def jwt_subject(self) -> TokenData:
+        """JWT subject field. Use the returned value for JWT authorization purposes."""
+        return TokenData(username=self.username)
 
     @classmethod
     async def find_by_email(cls, email: str):

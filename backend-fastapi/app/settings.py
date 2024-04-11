@@ -1,4 +1,8 @@
-from decouple import config
+from pydantic_settings import BaseSettings
 
 
-DATABASE_CONNECTION_URL = config("DATABASE_CONNECTION_URL")
+class Settings(BaseSettings):
+    database_connection_url: str = ""
+
+
+APP_SETTINGS = Settings()
