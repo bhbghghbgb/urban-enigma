@@ -1,8 +1,9 @@
-from decouple import config
+from decouple import AutoConfig
 from isodate import parse_duration
 
 from app.utils.print import pprint_constants
 
+config = AutoConfig()
 AUTH_KEY = config("AUTH_KEY")
 AUTH_REFRESH_KEY = config("AUTH_REFRESH_KEY")
 AUTH_KEY_ALGO = config("AUTH_KEY_ALGO")

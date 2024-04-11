@@ -7,10 +7,13 @@ name = "pypi"
 fastapi = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 beanie = "*"
-pyjwt = "*"
 python-decouple = "*"
 isodate = "*"
 rich = "*"
+fastapi-jwt = "*"
+python-multipart = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
+email-validator = "*"
 
 [dev-packages]
 python-decouple-typed = "*"
