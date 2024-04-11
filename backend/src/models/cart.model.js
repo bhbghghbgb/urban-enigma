@@ -1,5 +1,5 @@
 'use strict'
-import {Schema, models, Types} from 'mongoose';
+import {Schema, model, Types} from 'mongoose';
 const Collection_Name = 'Cart'
 const cartSchema = new Schema({
     customer: { type: Types.ObjectId, ref: 'Customer', required: true, trim: true },
@@ -11,4 +11,4 @@ const cartSchema = new Schema({
     }]
 });
 
-module.exports = models(Collection_Name, cartSchema);
+module.exports = model(Collection_Name, cartSchema);

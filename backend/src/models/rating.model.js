@@ -1,5 +1,5 @@
 'use strict'
-import {Schema, models, Types} from 'mongoose';
+import {Schema, model, Types} from 'mongoose';
 
 const Collection_Name = 'Rating'
 const ratingSchema = new Schema({
@@ -10,4 +10,4 @@ const ratingSchema = new Schema({
     timestamps: true,
     collection: Collection_Name
 });
-module.exports = models(Collection_Name, ratingSchema);
+module.exports = model(Collection_Name, ratingSchema);

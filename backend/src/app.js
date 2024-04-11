@@ -5,11 +5,11 @@ const app = express()
 // Init middlewares
 
 // Init Db
-import '/databases/init.mongodb'
+import 'databases/init.mongodb.js'
 
 // Init routers
-app.use('/', require('./routes/index.js').default)
+app.use('/', require('./routes/index.js'))
 
 // error handler
 
-module.exports = app;
+export default app;

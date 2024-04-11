@@ -1,5 +1,5 @@
 'use strict'
-import {Schema, models, Types} from "mongoose"
+import {Schema, model, Types} from "mongoose"
 const Collection_Name = "Order"
 
 const orderSchema = new Schema({
@@ -19,4 +19,4 @@ const orderSchema = new Schema({
 });
 
 
-module.exports =  models(Collection_Name, orderSchema);
+module.exports =  model(Collection_Name, orderSchema);

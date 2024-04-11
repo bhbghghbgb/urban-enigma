@@ -1,12 +1,12 @@
 'use strict'
-import {Schema, models} from 'mongoose'
+import {Schema, model, Types} from 'mongoose'
 
 const commonUser = new Schema({
     name: {type: String, required: true, trim: true},
     gender: {type: String, required: true},
     dateOfBirth: {type: Date, required: true},
     phone: {type: String, required: true},
-    account: {type: Schema.Types.ObjectId, ref: 'Account', required: true}
+    account: {type: Types.ObjectId, ref: 'Account', required: true}
 }, {
     timestamps: true,
 })
@@ -29,7 +29,7 @@ const customerSchema = new Schema({
     collection: "Customer"
 })
 
-const Staff = models('Staff', staffSchema);
-const Customer = models('Customer', customerSchema);
+const Staff = model('Staff', staffSchema);
+const Customer = model('Customer', customerSchema);
 
 module.exports = {Staff, Customer}

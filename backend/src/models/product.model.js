@@ -1,4 +1,4 @@
-import {Schema, models, Types} from 'mongoose';
+import {Schema, model, Types} from 'mongoose';
 
 const Collection_Name = 'Product';
 const ProductSchema = new Schema({
@@ -35,4 +35,4 @@ const ProductSchema = new Schema({
     timestamps: true,
     collection: Collection_Name
 });
-module.exports =  models(Collection_Name, ProductSchema);
+module.exports =  model(Collection_Name, ProductSchema);
