@@ -29,12 +29,10 @@ class categoryController{
         try {
             const {name} = req.body;
             const category = await categoryService.createCategory(name);
-            res.status(201).json(
-                {
-                    message: 'Category created successfully',
-                    metadata: category
-                }
-            );
+            res.status(201).json({
+                message: 'Category created successfully',
+                metadata: {category}
+            });
         } catch (err) {
             res.status(500).json({message: err.message});
         }
@@ -44,10 +42,13 @@ class categoryController{
     updateCategoryById = async (req, res) => {
         try {
             const categoryId = req.params.id;
-            await categoryService.updateCategoryById(categoryId, req.body);
-            res.status(200).json({message: 'Category updated successfully'});
+            const category = await categoryService.updateCategoryById(categoryId, req.body.name);
+            if (category === null) {
+                return res.status(404).json({message: 'Category not found'});
+            }
+            res.status(200).json({message: 'Category updated successfully', metadata: category});
         } catch (err) {
-            res.status(err.statusCode).json({message: err.message});
+            res.status(404).json({message: err.message});
         }
     };
 

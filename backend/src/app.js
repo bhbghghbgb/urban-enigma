@@ -9,6 +9,7 @@ import 'databases/init.mongodb.js'
 
 // Init routers
 app.use('/', require('./routes/index.js'))
+app.use(express.json)
 
 // error handler
 

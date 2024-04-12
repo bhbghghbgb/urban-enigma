@@ -4,7 +4,7 @@ import Product from '../models/product.model.js';
 class CategoryService {
     getAllCategories = async () => {
         try {
-            return await Category.find({})
+            return await Category.find({});
         } catch (err) {
             throw err;
         }
@@ -29,18 +29,7 @@ class CategoryService {
 
     updateCategoryById = async (id, name) => {
         try {
-            const category = await Category.findByIdAndUpdate(
-                id,
-                { $set: { name } },
-                { new: true, runValidators: true }
-            );
-
-            if (!category) {
-                const error = new Error('Category not found');
-                error.statusCode = 404;
-                throw error;
-            }
-
+            return await Category.findByIdAndUpdate(id, {name}, {new: true});
         } catch (err) {
             throw err;
         }
