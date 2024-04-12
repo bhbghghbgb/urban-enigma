@@ -10,7 +10,7 @@ const getCartOfUser = async (customerId) => {
         error.statusCode = 404;
         throw error;
     }
-    return await Cart.findOne({customer: customerId}).populate('products.product');
+    return Cart.findOne({customer: customerId}).populate('products.product');
 }
 
 const addToCart = async (customerId, productId) => {
