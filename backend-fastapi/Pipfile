@@ -4,10 +4,13 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-fastapi = "*"
-trio = "*"
-hypercorn = {extras = ["trio"], version = "*"}
-pymongo = {extras = ["srv"], version = "*"}
+fastapi = {extras = ["all"], version = "*"}
+uvicorn = {extras = ["standard"], version = "*"}
+beanie = "*"
+isodate = "*"
+rich = "*"
+passlib = {extras = ["bcrypt"], version = "*"}
+python-jose = {extras = ["cryptography"], version = "*"}
 
 [dev-packages]
 
