@@ -25,7 +25,9 @@ fun FilterChipShow(title: String, selected: String, onSelected: (String) -> Unit
             containerColor = Color(0xFFEDE0CF)
         ),
         border = FilterChipDefaults.filterChipBorder(
-            borderColor = Color.White
+            borderColor = Color.White,
+            enabled = true,
+            selected = true
         )
     )
 }

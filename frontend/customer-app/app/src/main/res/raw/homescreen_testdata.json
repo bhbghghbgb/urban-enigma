@@ -1,0 +1,64 @@
+{
+  "banners": [
+    {
+      "_id": "b1",
+      "name": "Summer Collection",
+      "description": "Explore our exclusive summer collection!",
+      "popular": true,
+      "image": "https://mars.jpl.nasa.gov/msl-raw-images/msss/01000/mcam/1000MR0044631300503690E01_DXXX.jpg",
+      "rating": 4.5,
+      "comment_count": 10,
+      "rating_count": 8,
+      "category": {
+        "_id": "c1",
+        "name": "Fashion"
+      }
+    },
+    {
+      "_id": "b2",
+      "name": "New Arrivals",
+      "description": "Check out the latest trends!",
+      "popular": false,
+      "image": "https://mars.jpl.nasa.gov/msl-raw-images/msss/01000/mcam/1000MR0044631290503689E01_DXXX.jpg",
+      "rating": 4.0,
+      "comment_count": 5,
+      "rating_count": 5,
+      "category": {
+        "_id": "c2",
+        "name": "Accessories"
+      }
+    }
+  ],
+  "best_sellers": [
+    {
+      "_id": "bs1",
+      "name": "Classic Watch",
+      "description": "A timeless piece for every occasion.",
+      "popular": true,
+      "image": "https://mars.jpl.nasa.gov/msl-raw-images/msss/01000/mcam/1000ML0044631300305227E03_DXXX.jpg",
+      "rating": 4.8,
+      "comment_count": 15,
+      "rating_count": 13,
+      "category": {
+        "_id": "c3",
+        "name": "Watches"
+      }
+    }
+  ],
+  "for_you": [
+    {
+      "_id": "fy1",
+      "name": "Handcrafted Vase",
+      "description": "Add a touch of elegance to your home.",
+      "popular": true,
+      "image": "https://mars.jpl.nasa.gov/msl-raw-images/msss/01000/mcam/1000ML0044631290305226E03_DXXX.jpg",
+      "rating": 4.7,
+      "comment_count": 8,
+      "rating_count": 8,
+      "category": {
+        "_id": "c4",
+        "name": "Home Decor"
+      }
+    }
+  ]
+}
