@@ -30,6 +30,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.learncode.model.NavigationItem
+import com.example.learncode.viewmodel.OrderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -40,7 +41,7 @@ fun NavigateHomeScreen() {
 
     navController.addOnDestinationChangedListener { _, destination, _ ->
         showBottomBar.value = when (destination.route) {
-            "menuproduct", "detail", "information" -> false
+            "menuproduct", "detail/{_id}", "information" -> false
             else -> true
         }
     }
@@ -100,8 +101,8 @@ fun BottomNavGraph(navController: NavHostController, bottom: @Composable () -> U
             MenuProducts(navController)
         }
 
-        composable("detail") {
-            DetailScreen(navController)
+        composable("detail/{_id}") {
+            DetailScreen(navController, it.arguments?.getString("_id").toString())
         }
         composable("information") {
             InformationOrder(navController = navController)

@@ -1,0 +1,30 @@
+[
+    {
+        "merged": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-mergeDebugResources-32:\\layout\\activity_main.xml",
+        "source": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-main-35:\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "com.example.delivery.app-mergeDebugResources-32:/layout/detail_order.xml",
+        "source": "com.example.delivery.app-main-35:/layout/detail_order.xml"
+    },
+    {
+        "merged": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-mergeDebugResources-32:\\layout\\fragment_home.xml",
+        "source": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-main-35:\\layout\\fragment_home.xml"
+    },
+    {
+        "merged": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-mergeDebugResources-32:\\layout\\fragment_history.xml",
+        "source": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-main-35:\\layout\\fragment_history.xml"
+    },
+    {
+        "merged": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-mergeDebugResources-32:\\layout\\login_delivery.xml",
+        "source": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-main-35:\\layout\\login_delivery.xml"
+    },
+    {
+        "merged": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-mergeDebugResources-32:\\layout\\fragment_profile.xml",
+        "source": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-main-35:\\layout\\fragment_profile.xml"
+    },
+    {
+        "merged": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-mergeDebugResources-32:\\layout\\home_delivery.xml",
+        "source": "C:\\Users\\ACER\\.gradle\\daemon\\8.0\\com.example.delivery.app-main-35:\\layout\\home_delivery.xml"
+    }
+]

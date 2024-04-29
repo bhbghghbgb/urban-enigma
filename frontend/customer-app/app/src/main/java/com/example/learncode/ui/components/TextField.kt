@@ -3,8 +3,14 @@ package com.example.learncode.ui.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
@@ -12,6 +18,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -24,20 +31,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.example.learncode.ui.theme.fontPoppinsRegular
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTextFieldNumber(placeholder: String) {
+fun CustomTextFieldNumber(
+    placeholder: String,
+    onValueChanged: (String) -> Unit,
+    errorText: String = ""
+) {
     var text by rememberSaveable { mutableStateOf("") }
     TextField(
         modifier = Modifier.fillMaxWidth(),
         value = text,
-        onValueChange = {newValue ->
+        onValueChange = { newValue ->
             if (newValue.isDigitsOnly()) {
                 text = newValue
+                onValueChanged(newValue)
             }
         },
         placeholder = {
@@ -47,8 +60,12 @@ fun CustomTextFieldNumber(placeholder: String) {
                 fontFamily = FontFamily(fontPoppinsRegular),
             )
         },
+        isError = errorText.isNotEmpty(),
+        singleLine = true,
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = Color.White
+            containerColor = Color.White,
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         ),
         textStyle = TextStyle(
             fontSize = 16.sp,
@@ -56,16 +73,35 @@ fun CustomTextFieldNumber(placeholder: String) {
         ),
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
     )
+    if (errorText.isNotEmpty()) {
+        Text(
+            text = errorText,
+            color = Color.Red,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(12.dp),
+            textAlign = TextAlign.Start,
+            fontFamily = FontFamily(fontPoppinsRegular)
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CustomTextField(placeholder: String, isPassword: Boolean) {
+fun CustomTextField(
+    placeholder: String,
+    isPassword: Boolean,
+    onValueChanged: (String) -> Unit,
+    errorText: String = ""
+) {
     var text by rememberSaveable { mutableStateOf("") }
+    var passwordVisibility by remember { mutableStateOf(isPassword) }
+
     TextField(
         modifier = Modifier.fillMaxWidth(),
         value = text,
-        onValueChange = { text = it
+        onValueChange = {
+            text = it
+            onValueChanged(it)
         },
         placeholder = {
             Text(
@@ -74,6 +110,8 @@ fun CustomTextField(placeholder: String, isPassword: Boolean) {
                 fontFamily = FontFamily(fontPoppinsRegular),
             )
         },
+        isError = errorText.isNotEmpty(),
+        singleLine = true,
         colors = TextFieldDefaults.textFieldColors(
             containerColor = Color.White
         ),
@@ -81,6 +119,28 @@ fun CustomTextField(placeholder: String, isPassword: Boolean) {
             fontSize = 16.sp,
             fontFamily = FontFamily(fontPoppinsRegular)
         ),
-        visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None
+        visualTransformation = if (passwordVisibility) PasswordVisualTransformation() else VisualTransformation.None,
+        trailingIcon = {
+            IconButton(
+                onClick = { passwordVisibility = !passwordVisibility }
+            ) {
+                Icon(
+                    imageVector = if (passwordVisibility) Icons.Filled.Check else Icons.Filled.Close,
+                    contentDescription = "Toggle password visibility",
+                    tint = if (passwordVisibility) Color.Gray else Color.Black
+                )
+            }
+        }
     )
+
+    if (errorText.isNotEmpty()) {
+        Text(
+            text = errorText,
+            color = Color.Red,
+            fontSize = 12.sp,
+            modifier = Modifier.padding(12.dp),
+            textAlign = TextAlign.Start,
+            fontFamily = FontFamily(fontPoppinsRegular)
+        )
+    }
 }

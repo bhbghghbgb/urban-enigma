@@ -217,124 +217,125 @@ fun RenderProductList(navController: NavController) {
         contentPadding = PaddingValues(bottom = 16.dp)
     ) {
         item {
-            val product = Product(
-                1,
-                R.drawable.affogato,
-                "Affogato",
-                "with coffee and milk sugar",
-                "1.99$",
-                4.5
-            )
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(3, R.drawable.latte, "Latte", "with coffee", "1.25$", 5.0)
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(
-                1,
-                R.drawable.affogato,
-                "Affogato",
-                "with coffee and milk sugar",
-                "1.99$",
-                4.5
-            )
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(3, R.drawable.latte, "Latte", "with coffee", "1.25$", 5.0)
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(
-                1,
-                R.drawable.affogato,
-                "Affogato",
-                "with coffee and milk sugar",
-                "1.99$",
-                4.5
-            )
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-        item {
-            val product = Product(3, R.drawable.latte, "Latte", "with coffee", "1.25$", 5.0)
-            ItemViewRow(
-                title = product.title,
-                image = product.image,
-                des = product.des,
-                price = product.price,
-                star = product.star,
-                navController = navController
-            )
-        }
-    }
+//            val product = Product(
+//                1,
+//                R.drawable.affogato,
+//                "Affogato",
+//                "with coffee and milk sugar",
+//                "1.99$",
+//                4.5
+//            )
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(3, R.drawable.latte, "Latte", "with coffee", "1.25$", 5.0)
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(
+//                1,
+//                R.drawable.affogato,
+//                "Affogato",
+//                "with coffee and milk sugar",
+//                "1.99$",
+//                4.5
+//            )
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(3, R.drawable.latte, "Latte", "with coffee", "1.25$", 5.0)
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(
+//                1,
+//                R.drawable.affogato,
+//                "Affogato",
+//                "with coffee and milk sugar",
+//                "1.99$",
+//                4.5
+//            )
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//        item {
+//            val product = Product(3, R.drawable.latte, "Latte", "with coffee", "1.25$", 5.0)
+//            ItemViewRow(
+//                title = product.title,
+//                image = product.image,
+//                des = product.des,
+//                price = product.price,
+//                star = product.star,
+//                navController = navController
+//            )
+//        }
+//    }
+        }}
 }

@@ -1599,13 +1599,13 @@
                     `
                     <tr>
                         <td class='td_center td_5'>${++index}</td>
-                        <td class='td_20'>${item.name}</td>
-                        <td class='td_15 td_center'>${item.gender}</td>
-                        <td class='td_center td_15'>${item.dateOfBirth}</td>
-                        <td class='td_center td_15'>${item.phone}</td>
+                        <td class='td_20'>${item.commonuser.name}</td>
+                        <td class='td_15 td_center'>${item.commonuser.gender}</td>
+                        <td class='td_center td_15'>${item.commonuser.dateOfBirth}</td>
+                        <td class='td_center td_15'>${item.commonuser.phone}</td>
                         <td class='product-description'>${item.address}</td>
                         <td class='td_center td_15'>${item.position}</td>
-                        <td class='td_10'>${item.username}</td>
+                        <td class='td_10'>${item.commonuser.account.username}</td>
                         <td class='td_center td_20'><Button onclick="updateStaff('${item._id}')">Update</Button><Button onclick="deleteStaff('${item._id}')">Delete</Button></td>
                     </tr>
                 `
