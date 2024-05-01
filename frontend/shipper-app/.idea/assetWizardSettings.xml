@@ -3,6 +3,11 @@
   <component name="WizardSettings">
     <option name="children">
       <map>
+        <entry key="imageWizard">
+          <value>
+            <PersistentState />
+          </value>
+        </entry>
         <entry key="vectorWizard">
           <value>
             <PersistentState>
@@ -18,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/work_history/baseline_work_history_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/history/baseline_history_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -28,8 +33,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_baseline_work_history_24" />
-                            <entry key="sourceFile" value="C:\Users\ACER\Desktop\Delivery" />
+                            <entry key="outputName" value="ic_baseline_qrcode_24" />
+                            <entry key="sourceFile" value="C:\Users\ACER\Desktop\Android\urban-enigma\frontend\shipper-app" />
                           </map>
                         </option>
                       </PersistentState>

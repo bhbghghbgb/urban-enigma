@@ -4,7 +4,7 @@
     "type": "PROCESSED_RES",
     "kind": "Directory"
   },
-  "applicationId": "com.example.delivery",
+  "applicationId": "com.example.delivery_app",
   "variantName": "debug",
   "elements": [
     {

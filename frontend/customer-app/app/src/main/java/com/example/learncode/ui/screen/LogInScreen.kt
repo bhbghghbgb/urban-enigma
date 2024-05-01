@@ -178,7 +178,7 @@ fun CustomAlert(viewModel: AuthViewModel) {
         color = Color.Black.copy(alpha = 0.5f),
         modifier = Modifier.fillMaxSize(),
         contentColor = Color.Transparent,
-        ){
+    ){
         Box(modifier = Modifier.fillMaxSize()) {
             AlertDialog(
                 onDismissRequest = { viewModel.dismissInvalidDataDialog() },
