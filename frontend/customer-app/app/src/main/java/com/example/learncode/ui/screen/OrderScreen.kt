@@ -1,8 +1,10 @@
 package com.example.learncode.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,57 +19,83 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHost
 import androidx.navigation.NavHostController
 import com.example.learncode.R
+import com.example.learncode.model.AddToCartRequest
+import com.example.learncode.model.Cart
+import com.example.learncode.model.NavigationItem
+import com.example.learncode.model.PreferenceManager
 import com.example.learncode.model.Product
+import com.example.learncode.model.ProductOfCart
+import com.example.learncode.model.Products
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
+import com.example.learncode.viewmodel.CartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderScreen(navController: NavHostController, bottom: @Composable () -> Unit) {
+fun OrderScreen(navController: NavController, bottom: @Composable () -> Unit) {
+    val viewModel = remember { CartViewModel() }
     Box {
         Scaffold(
-            topBar = { TopBarCenter(navController) }, containerColor = Color.Transparent, bottomBar = bottom
+            topBar = { TopBarCenter(navController) },
+            containerColor = Color.Transparent,
+            bottomBar = bottom
         ) { paddingValues ->
-            ContentOrder(paddingValues = paddingValues)
+            ContentOrder(paddingValues = paddingValues, viewModel, navController)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarCenter(navController: NavHostController) {
+fun TopBarCenter(navController: NavController) {
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color.White
@@ -81,30 +109,37 @@ fun TopBarCenter(navController: NavHostController) {
                 fontFamily = FontFamily(fontPoppinsSemi)
             )
         },
-        navigationIcon = {
-            IconButton(onClick = {
-                navController.popBackStack()
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Localized description"
-                )
-            }
-        },
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ContentOrder(paddingValues: PaddingValues) {
-    val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
-    Box(modifier = Modifier
-        .fillMaxSize()){
-        LazyColumn (contentPadding = paddingValues){
+fun ContentOrder(
+    paddingValues: PaddingValues,
+    viewModel: CartViewModel,
+    navController: NavController
+) {
+    val token = PreferenceManager.getToken(LocalContext.current)
+    val cart by viewModel.cart.observeAsState()
+    if (token != null) {
+        viewModel.getCardOfUser(token)
+    }
+    var isEditAddressDialogVisible by remember { mutableStateOf(false) }
+    var noteText by remember { mutableStateOf("") }
+    var deliveryAddress by remember { mutableStateOf("") }
+    var selectedPaymentMethod by remember { mutableStateOf("") }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        LazyColumn(contentPadding = paddingValues) {
             item {
-                Column (modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(10.dp)) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
                     Text(
                         text = "Delivery Address",
                         fontSize = 20.sp,
@@ -117,232 +152,490 @@ fun ContentOrder(paddingValues: PaddingValues) {
                         fontFamily = FontFamily(fontPoppinsSemi)
                     )
                     Text(
-                        text = "ABC number, ABC street, ABC ward, ABC district, ABC city",
+                        text = deliveryAddress,
                         fontSize = 14.sp,
                         fontFamily = FontFamily(fontPoppinsRegular),
                         color = Color.Gray
                     )
                     Row {
-                        Button(onClick = {}, modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp)), colors = ButtonDefaults.buttonColors(containerColor = Color.White), border = BorderStroke(1.dp, Color.Gray)
+                        Button(
+                            onClick = { isEditAddressDialogVisible = true },
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, Color.Gray)
                         )
                         {
-                            Icon(imageVector = Icons.Default.Edit, contentDescription = "EditIcon", tint = Color.Black)
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "EditIcon",
+                                tint = Color.Black
+                            )
                             Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "Edit Address", fontSize = 14.sp, color = Color.Black, fontFamily = FontFamily(fontPoppinsRegular))
-                        }
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Button(onClick = {}, modifier = Modifier
-                            .clip(RoundedCornerShape(20.dp)), colors = ButtonDefaults.buttonColors(containerColor = Color.White), border = BorderStroke(1.dp, Color.Gray)
-                        )
-                        {
-                            Icon(imageVector = Icons.Default.Edit, contentDescription = "AddNoteIcon", tint = Color.Black)
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(text = "Add Note", fontSize = 14.sp, color = Color.Black, fontFamily = FontFamily(fontPoppinsRegular))
+                            Text(
+                                text = "Edit Address",
+                                fontSize = 14.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(fontPoppinsRegular)
+                            )
                         }
                     }
-                    ItemOrder(product = product)
-                    ItemOrder(product = product)
+                    Spacer(modifier = Modifier.height(10.dp))
+                    ElevatedCard(
+                        modifier = Modifier
+                            .wrapContentSize(),
+                        shape = RoundedCornerShape(10.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ), elevation = CardDefaults.cardElevation(
+                            defaultElevation = 5.dp
+                        )
+                    ) {
+                        TextField(
+                            value = noteText,
+                            onValueChange = { noteText = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp),
+                            textStyle = TextStyle(fontSize = 16.sp),
+                            maxLines = 5,
+                            placeholder = {
+                                Text(
+                                    "Write a note here...",
+                                    color = Color.LightGray,
+                                    fontFamily = FontFamily(
+                                        fontPoppinsRegular
+                                    ),
+                                    fontSize = 14.sp
+                                )
+                            },
+                            colors = TextFieldDefaults.textFieldColors(
+                                containerColor = Color.White,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent
+                            )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
+                    if (cart == null) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.width(35.dp),
+                                color = MaterialTheme.colorScheme.secondary, // Sử dụng MaterialTheme.colors.secondary thay vì MaterialTheme.colorScheme.secondary
+                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                            )
+                        }
+                    } else {
+                        for (item in cart!!.products) {
+                            ItemOrder(product = item,
+                                onDeleteClicked = {
+                                    val addToCart = AddToCartRequest(item.product._id)
+                                    token?.let { token ->
+                                        viewModel.deleteProduct(
+                                            token,
+                                            addToCart
+                                        )
+                                    }
+                                },
+                                onIncreaseClicked = {
+                                    viewModel.increaseProductQuantity(item.product._id)
+                                },
+                                onDecreaseClicked = {
+                                    viewModel.decreaseProductQuantity(item.product._id)
+                                },
+                                onItemClick = {
+                                    navController.navigate("detail/${item.product._id}")
+                                })
+                        }
+                    }
+                }
+            }
+            item { Spacer(modifier = Modifier.height(5.dp)) }
+            item {
+                if (cart == null) {
+//                    Row(
+//                        horizontalArrangement = Arrangement.Center,
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        modifier = Modifier.fillMaxSize()
+//                    ) {
+//                        CircularProgressIndicator(
+//                            modifier = Modifier.width(35.dp),
+//                            color = MaterialTheme.colorScheme.secondary, // Sử dụng MaterialTheme.colors.secondary thay vì MaterialTheme.colorScheme.secondary
+//                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+//                        )
+//                    }
+                } else {
+                    Column(
+                        modifier = Modifier
+                            .background(Color.White)
+                            .fillMaxWidth()
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = "Payment Summary",
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily(fontPoppinsSemi)
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Subtotal",
+                                fontSize = 16.sp,
+                                color = Color.Gray,
+                                fontFamily = FontFamily(fontPoppinsRegular)
+                            )
+                            Text(
+                                text = "${cart!!.total}$",
+                                fontSize = 18.sp,
+                                fontFamily = FontFamily(fontPoppinsSemi)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Delivery Fee",
+                                fontSize = 16.sp,
+                                color = Color.Gray,
+                                fontFamily = FontFamily(fontPoppinsRegular)
+                            )
+                            Text(
+                                text = "FREE",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(fontPoppinsSemi)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Discount",
+                                fontSize = 16.sp,
+                                color = Color.Gray,
+                                fontFamily = FontFamily(fontPoppinsRegular)
+                            )
+                            Text(
+                                text = "0$",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(fontPoppinsSemi)
+                            )
+                        }
+                    }
                 }
             }
             item { Spacer(modifier = Modifier.height(10.dp)) }
             item {
-                Column (modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(10.dp)){
-                    Text(
-                        text = "Payment Summary",
-                        fontSize = 20.sp,
-                        fontFamily = FontFamily(fontPoppinsSemi)
-                    )
-                    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Subtotal",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontFamily = FontFamily(fontPoppinsRegular)
-                        )
-                        Text(
-                            text = "2.80$",
-                            fontSize = 18.sp,
-                            fontFamily = FontFamily(fontPoppinsSemi)
-                        )
-                    }
-                    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Delivery Fee",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontFamily = FontFamily(fontPoppinsRegular)
-                        )
-                        Text(
-                            text = "FREE",
-                            fontSize = 16.sp,
-                            fontFamily = FontFamily(fontPoppinsSemi)
-                        )
-                    }
-                    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Discount",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontFamily = FontFamily(fontPoppinsRegular)
-                        )
-                        Text(
-                            text = "0$",
-                            fontSize = 16.sp,
-                            fontFamily = FontFamily(fontPoppinsSemi)
-                        )
-                    }
-                }
-            }
-            item { Spacer(modifier = Modifier.height(10.dp)) }
-            item {
-                Column (modifier = Modifier
-                    .background(Color.White)
-                    .fillMaxWidth()
-                    .padding(10.dp)){
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .fillMaxWidth()
+                        .padding(10.dp)
+                ) {
                     Text(
                         text = "Payment Method",
                         fontSize = 20.sp,
                         fontFamily = FontFamily(fontPoppinsSemi)
                     )
-                    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Cash",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontFamily = FontFamily(fontPoppinsRegular)
-                        )
-                        RadioButton(selected = true, onClick = {  })
-                    }
-                    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Momo",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontFamily = FontFamily(fontPoppinsRegular)
-                        )
-                        RadioButton(selected = false, onClick = {  })
-                    }
-                    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "Banking",
-                            fontSize = 16.sp,
-                            color = Color.Gray,
-                            fontFamily = FontFamily(fontPoppinsRegular)
-                        )
-                        RadioButton(selected = false, onClick = {  })
-                    }
+                    PaymentMethodItem(
+                        text = "Cash",
+                        isSelected = selectedPaymentMethod == "Cash",
+                        onClick = { selectedPaymentMethod = "Cash" }
+                    )
+                    PaymentMethodItem(
+                        text = "Momo",
+                        isSelected = selectedPaymentMethod == "Momo",
+                        onClick = { selectedPaymentMethod = "Momo" }
+                    )
+                    PaymentMethodItem(
+                        text = "Banking",
+                        isSelected = selectedPaymentMethod == "Banking",
+                        onClick = { selectedPaymentMethod = "Banking" }
+                    )
                 }
             }
             item { Spacer(modifier = Modifier.height(10.dp)) }
             item {
-                BottomCheckOut()
+                cart?.let { cart -> BottomCheckOut(cart = cart) }
+            }
+        }
+    }
+    if (isEditAddressDialogVisible) {
+        EditAddressDialog(
+            onDismiss = { isEditAddressDialogVisible = false },
+            onSave = { newAddress ->
+                deliveryAddress = newAddress
+                isEditAddressDialogVisible = false
+            }
+        )
+    }
+}
+
+
+@Composable
+fun PaymentMethodItem(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            fontSize = 16.sp,
+            color = Color.Gray,
+            fontFamily = FontFamily(fontPoppinsRegular)
+        )
+        RadioButton(
+            selected = isSelected,
+            onClick = onClick
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditAddressDialog(
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var address by remember { mutableStateOf("") }
+    Surface(
+        color = Color.Black.copy(alpha = 0.5f),
+        modifier = Modifier.fillMaxSize(),
+        contentColor = Color.Transparent,
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                AlertDialog(
+                    onDismissRequest = onDismiss,
+                    title = {
+                        Text(
+                            text = "Edit Address",
+                            fontSize = 20.sp,
+                            fontFamily = FontFamily(fontPoppinsSemi)
+                        )
+                    },
+                    text = {
+                        Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                            TextField(
+                                value = address,
+                                onValueChange = { address = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp)
+                                    .background(Color.Transparent),
+                                maxLines = 5,
+                                textStyle = TextStyle(fontSize = 16.sp),
+                                label = {
+                                    Text(
+                                        "Enter your address",
+                                        fontSize = 16.sp,
+                                        fontFamily = FontFamily(fontPoppinsRegular)
+                                    )
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                colors = TextFieldDefaults.textFieldColors(
+                                    containerColor = Color.LightGray.copy(alpha = 0.1f),
+                                    focusedIndicatorColor = Color(0xFFFFFF),
+                                    unfocusedIndicatorColor = Color(0xFFFFFF)
+                                )
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                onSave(address)
+                                onDismiss()
+                            },
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .padding(end = 8.dp)
+                                .height(48.dp)
+                                .clip(RoundedCornerShape(24.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
+                        ) {
+                            Text(
+                                "Save",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(fontPoppinsSemi),
+                                color = Color.White
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .padding(start = 8.dp)
+                                .height(48.dp)
+                                .clip(RoundedCornerShape(24.dp)),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.LightGray.copy(
+                                    alpha = 0.1f
+                                )
+                            ),
+                        ) {
+                            Text(
+                                "Cancel",
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(fontPoppinsSemi),
+                                color = Color.Gray
+                            )
+                        }
+                    },
+                    containerColor = Color.White,
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+fun BottomCheckOut(cart: Cart) {
+    if (cart.products.isNotEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .padding(10.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Total",
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(fontPoppinsSemi)
+                    )
+                    Text(
+                        text = "${cart.total}$",
+                        fontSize = 20.sp,
+                        fontFamily = FontFamily(fontPoppinsSemi)
+                    )
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                Button(
+                    onClick = {},
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C7055))
+                ) {
+                    Text(
+                        text = "Check Out",
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(fontPoppinsSemi)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun BottomCheckOut() {
-    Box (modifier = Modifier
-        .fillMaxWidth()
-        .background(Color.White)
-        .padding(10.dp)){
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.White), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-            Column {
-                Text(
-                    text = "Total",
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(fontPoppinsSemi)
-                )
-                Text(
-                    text = "2.80$",
-                    fontSize = 20.sp,
-                    fontFamily = FontFamily(fontPoppinsSemi)
-                )
-            }
-            Spacer(modifier = Modifier.width(10.dp))
-            Button(onClick = {}, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C7055))) {
-                Text(text = "Check Out", fontSize = 18.sp, fontFamily = FontFamily(fontPoppinsSemi))
-            }
-        }
-    }
-}
-
-@Composable
-fun ItemOrder(product: Product) {
+fun ItemOrder(
+    product: ProductOfCart,
+    onDeleteClicked: () -> Unit,
+    onIncreaseClicked: () -> Unit,
+    onDecreaseClicked: () -> Unit,
+    onItemClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(10.dp))
-            .padding(top = 10.dp),
+            .padding(top = 10.dp)
+            .clickable(onClick = onItemClick),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Image(
             modifier = Modifier
                 .size(80.dp)
                 .clip(RoundedCornerShape(10.dp)),
-            painter = painterResource(id = product.image),
+            painter = painterResource(id = R.drawable.mocha),
             contentDescription = null,
             contentScale = ContentScale.FillBounds
         )
         Spacer(modifier = Modifier.width(10.dp))
-        Row(modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
-            Column(
-                horizontalAlignment = Alignment.Start) {
-                Text(
-                    text = product.title,
-                    maxLines = 1,
-                    fontSize = 17.sp,
-                    fontFamily = FontFamily(fontPoppinsSemi),
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = product.des,
-                    fontFamily = FontFamily(fontPoppinsRegular),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                )
-                Row (verticalAlignment = Alignment.CenterVertically){
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "IconDown")
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = product.product.name,
+                maxLines = 1,
+                fontSize = 17.sp,
+                fontFamily = FontFamily(fontPoppinsSemi),
+                overflow = TextOverflow.Ellipsis,
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier.weight(2f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = onDecreaseClicked) {
+                        Icon(
+                            painterResource(R.drawable.iconminus),
+                            contentDescription = "Decrease",
+                            modifier = Modifier.size(15.dp)
+                        )
                     }
-                    Text(modifier = Modifier.offset(y = 2.dp), text = "1", fontSize = 18.sp, fontFamily = FontFamily(fontPoppinsRegular))
-                    IconButton(onClick = {}) {
-                        Icon(imageVector = Icons.Filled.Add, contentDescription = "IconTop")
+                    Text(
+                        text = product.amount.toString(),
+                        fontSize = 18.sp,
+                        fontFamily = FontFamily(fontPoppinsRegular),
+                        modifier = Modifier.padding(horizontal = 4.dp) // Thêm padding ngang để tách các thành phần
+                    )
+                    IconButton(onClick = onIncreaseClicked) {
+                        Icon(
+                            painterResource(id = R.drawable.iconplus),
+                            contentDescription = "Increase",
+                            modifier = Modifier.size(15.dp)
+                        )
                     }
                 }
-            }
-            Column(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .fillMaxHeight(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
                 Text(
-                    text = product.price,
+                    text = "${product.price}$",
                     fontFamily = FontFamily(fontPoppinsSemi),
                     fontSize = 19.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    color = Color(0xFF331900)
+                    color = Color(0xFF331900),
+                    modifier = Modifier.weight(1f)
                 )
             }
+        }
+        IconButton(
+            onClick = onDeleteClicked,
+            modifier = Modifier.padding(start = 8.dp) // Thêm padding bên trái cho nút xóa
+        ) {
+            Icon(imageVector = Icons.Filled.Delete, contentDescription = "Delete")
         }
     }
 }

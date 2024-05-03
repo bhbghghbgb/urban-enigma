@@ -1,5 +1,6 @@
 package com.example.learncode.ui.screen
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -36,18 +37,28 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
@@ -72,32 +83,97 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.times
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.learncode.R
+import com.example.learncode.model.AddToCartRequest
+import com.example.learncode.model.Cart
 import com.example.learncode.model.NavigationItem
+import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.Products
+import com.example.learncode.ui.components.CustomToast
 import com.example.learncode.ui.components.IconButtonCustom
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
+import com.example.learncode.viewmodel.CartViewModel
+import com.example.learncode.viewmodel.DetailViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavController) {
+fun DetailScreen(navController: NavController, _id: String) {
+    val viewModel = DetailViewModel()
+    val carViewModel = CartViewModel()
+    val product by viewModel.product.observeAsState()
+    var showToast by remember { mutableStateOf(false) }
+
+    viewModel.viewModelScope.launch {
+        viewModel.fetchData(_id)
+    }
     val scollState = rememberLazyListState()
-    Box(modifier = Modifier
-        .fillMaxSize())
-//        .wrapContentHeight()) {
-        {
-        Content(scollState)
-        TopBarDetail(scollState, navController)
+    val token: String = PreferenceManager.getToken(LocalContext.current).toString()
+    Box(
+        modifier = Modifier.fillMaxSize()
+    )
+    {
+        if (product == null) {
+            LazyColumn(
+                contentPadding = PaddingValues(top = 420.dp),
+                modifier = Modifier.background(White),
+            ) {
+                item {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.width(35.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
+                }
+            }
+        } else {
+            Scaffold(bottomBar = {
+                AddtoCart(
+                    onClick = {
+                        token?.let { token ->
+                            carViewModel.addToCart(token, AddToCartRequest(_id))
+                            showToast = true
+                        }
+                    }
+                )
+            }) {
+                Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {
+                    Content(scollState, product!!.description, product!!.avgRating, product!!.price)
+                    TopBarDetail(scollState, navController, product!!.name)
+
+                    if (showToast) {
+                        LaunchedEffect(showToast) {
+                            delay(2000)
+                            showToast = false
+                        }
+                        CustomToast(message = "Add to cart succesfully!!!")
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun TopBarDetail(scrollState: LazyListState, navController: NavController) {
+fun TopBarDetail(scrollState: LazyListState, navController: NavController, name: String) {
     val imageHeight = 350.dp
-    val screenHeight = LocalConfiguration.current.screenHeightDp
+//    val screenHeight = LocalConfiguration.current.screenHeightDp
 
     val maxOffset = with(LocalDensity.current) { imageHeight.roundToPx() }
     val offset = min(scrollState.firstVisibleItemScrollOffset, maxOffset)
@@ -119,8 +195,7 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController) {
                     .background(Color.White)
                     .graphicsLayer {
                         alpha = 1f - offsetProgress
-                    }
-            ) {
+                    }) {
                 Image(
                     painter = painterResource(id = R.drawable.mocha),
                     contentDescription = null,
@@ -133,8 +208,7 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController) {
                         .background(
                             Brush.verticalGradient(
                                 colorStops = arrayOf(
-                                    Pair(0.4f, Transparent),
-                                    Pair(1f, White)
+                                    Pair(0.4f, Transparent), Pair(1f, White)
                                 )
                             )
                         )
@@ -148,7 +222,7 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Affogato",
+                    text = name,
                     fontSize = 25.sp,
                     fontFamily = FontFamily(fontPoppinsSemi),
                     modifier = Modifier
@@ -159,10 +233,7 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController) {
                 )
             }
         }
-
-
     }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -173,18 +244,15 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController) {
             .padding(16.dp)
     ) {
         CircularButton(R.drawable.iconback) {
-            navController.navigate(NavigationItem.Home.route)
+            navController.popBackStack()
         }
-
-        CircularButton(R.drawable.iconheart)
+//        CircularButton(R.drawable.iconheart)
     }
 }
 
 @Composable
 fun CircularButton(
-    @DrawableRes iconResouce: Int,
-    color: Color = Color.LightGray,
-    onClick: () -> Unit = {}
+    @DrawableRes iconResouce: Int, color: Color = Color.LightGray, onClick: () -> Unit = {}
 ) {
     Button(
         onClick = onClick,
@@ -198,33 +266,34 @@ fun CircularButton(
         Icon(
             modifier = Modifier.size(width = 30.dp, height = 30.dp),
             painter = painterResource(id = iconResouce),
-            contentDescription = null)
+            contentDescription = null
+        )
     }
 }
 
 @Composable
-fun Content(scrollState: LazyListState) {
+fun Content(scrollState: LazyListState, description: String, star: Double, price: Double) {
     LazyColumn(
-
         contentPadding = PaddingValues(top = 420.dp),
         modifier = Modifier.background(White),
         state = scrollState
     ) {
         item {
-            StarReport()
-            DescriptionProduct(des = "Affogato is a beverage made from coffee. It is usually prepared with a scoop of vanilla gelato or ice cream on top of a cup of hot espresso. Some other ways to prepare include using a cup of Amaretto or other flavored wine")
-            TextTitle()
-            SizeChoose()
-            TextTitle()
-            PriceQuantity()
-            TextTitle()
-            SizeChoose()
-            TextTitle()
-            PriceQuantity()
-            TextTitle()
-            SizeChoose()
-            TextTitle()
-            PriceQuantity()
+            StarReport(star, price)
+            DescriptionProduct(des = description)
+//            TextTitle()
+//            SizeChoose()
+//            TextTitle()
+//            PriceQuantity()
+//            TextTitle()
+//            SizeChoose()
+//            TextTitle()
+//            PriceQuantity()
+//            TextTitle()
+//            SizeChoose()
+//            TextTitle()
+//            PriceQuantity()
+//            AddtoCard()
         }
     }
 }
@@ -247,7 +316,12 @@ fun PriceQuantity() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             CircularButton(iconResouce = R.drawable.iconminus, color = Color.LightGray) { value-- }
-            Text(text = "$value", Modifier.padding(16.dp), fontSize = 18.sp, fontFamily = FontFamily(fontPoppinsSemi))
+            Text(
+                text = "$value",
+                Modifier.padding(16.dp),
+                fontSize = 18.sp,
+                fontFamily = FontFamily(fontPoppinsSemi)
+            )
             CircularButton(iconResouce = R.drawable.iconplus, color = Color.LightGray) { value++ }
         }
         Text(
@@ -260,12 +334,12 @@ fun PriceQuantity() {
 }
 
 @Composable
-fun AddtoCard() {
+fun AddtoCart(onClick: () -> Unit) {
     Row(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     ) {
         IconButtonCustom(
-            onClick = {},
+            onClick = onClick,
             text = "Add to Card",
             backgroundColor = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFF9C7055)
@@ -275,11 +349,10 @@ fun AddtoCard() {
             fontcolor = Color.White
         )
     }
-
 }
 
 @Composable
-fun StarReport() {
+fun StarReport(star: Double, price: Double) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -289,7 +362,7 @@ fun StarReport() {
     ) {
         Row {
             Text(
-                text = "5.0",
+                text = star.toString(),
                 fontSize = 20.sp,
                 fontFamily = FontFamily(fontPoppinsRegular)
             )
@@ -340,7 +413,7 @@ fun StarReport() {
             }
         }
         Text(
-            text = "2.00$",
+            text = "$" + price,
             fontSize = 28.sp,
             color = Color(0xFF3B210A),
             fontFamily = FontFamily(fontPoppinsRegular),
@@ -378,8 +451,7 @@ fun SizeChoose() {
             .clip(RoundedCornerShape(16.dp))
             .background(Color(0xFFEDE0CF))
             .fillMaxWidth()
-            .height(40.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .height(40.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         TabButton("Small", true, Modifier.weight(1f))
         TabButton("Medium", false, Modifier.weight(1f))
@@ -392,17 +464,41 @@ fun TabButton(text: String, active: Boolean, modifier: Modifier) {
     Button(
         onClick = { /*TODO*/ },
         shape = RoundedCornerShape(10.dp),
-        modifier = modifier
-            .fillMaxHeight(),
+        modifier = modifier.fillMaxHeight(),
         elevation = null,
         colors = if (active) ButtonDefaults.buttonColors(
-            containerColor = Color(0xFF9C7055),
-            contentColor = Color.White
+            containerColor = Color(0xFF9C7055), contentColor = Color.White
         ) else ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFEDE0CF),
-            contentColor = Color.Black
+            containerColor = Color(0xFFEDE0CF), contentColor = Color.Black
         )
     ) {
         Text(text)
+    }
+}
+
+@Composable
+fun RatingBar(
+    rating: Int,
+    onRatingChanged: (Int) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
+        (1..5).forEach { star ->
+            IconButton(
+                onClick = { onRatingChanged(star) },
+                modifier = Modifier.size(48.dp)
+            ) {
+                Icon(
+                    imageVector = if (star <= rating) {
+                        Icons.Outlined.Star
+                    } else {
+                        Icons.Filled.Star
+                    },
+                    contentDescription = null
+                )
+            }
+        }
     }
 }

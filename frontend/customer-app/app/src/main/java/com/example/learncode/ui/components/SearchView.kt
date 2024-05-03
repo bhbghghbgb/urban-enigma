@@ -13,6 +13,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -38,7 +39,7 @@ import com.example.learncode.ui.theme.fontPoppinsSemi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchView(navController: NavController, modifier: Modifier, isNavigated: Boolean) {
+fun SearchView(navController: NavController, modifier: Modifier, isNavigated: Boolean, onclickSearch: () -> Unit, onclick: () -> Unit, onSearch: (String) -> Unit) {
     var text by rememberSaveable { mutableStateOf("") }
     Box(
         modifier = modifier
@@ -53,14 +54,24 @@ fun SearchView(navController: NavController, modifier: Modifier, isNavigated: Bo
         ) {
             TextField(
                 value = text,
-                modifier = modifier.fillMaxWidth().focusable().onFocusChanged { focusState ->
-                    if (focusState.isFocused && !isNavigated) {
-                        navController.navigate("menuproduct") {
-                            launchSingleTop = true
+                modifier = modifier
+                    .fillMaxWidth()
+                    .focusable()
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused && !isNavigated) {
+                            onclickSearch() // Gọi hàm callback khi TextField được tập trung vào
                         }
-                    }
+                    },
+//                            focusState ->
+//                        if (focusState.isFocused && !isNavigated) {
+//                            navController.navigate("menuproduct") {
+//                                launchSingleTop = true
+//                            }
+//                        }
+                onValueChange = {
+                    text = it
+                    onSearch(it)
                 },
-                onValueChange = { text = it },
                 placeholder = {
                     Text(
                         text = "Search Products...",
@@ -75,7 +86,12 @@ fun SearchView(navController: NavController, modifier: Modifier, isNavigated: Bo
                 ),
                 singleLine = true,
                 leadingIcon = {
-                    Icon(imageVector = Icons.Rounded.Search, contentDescription = "SearchIcon")
+                    FloatingActionButton(onClick = onclick,
+                        containerColor = Color.White) {
+
+                        Icon(imageVector = Icons.Rounded.Search, contentDescription = "SearchIcon")
+                    }
+
                 },
                 colors = TextFieldDefaults.textFieldColors(
                     containerColor = Color.White,

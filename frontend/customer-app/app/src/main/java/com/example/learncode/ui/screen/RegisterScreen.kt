@@ -14,6 +14,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,9 +31,15 @@ import com.example.learncode.ui.components.CustomTextField
 import com.example.learncode.ui.components.CustomTextFieldNumber
 import com.example.learncode.ui.components.FilledButtonExample
 import com.example.learncode.ui.theme.fontPoppinsSemi
+import com.example.learncode.viewmodel.AuthViewModel
 
 @Composable
 fun RegisterScreen(navController: NavController) {
+    val viewModel = remember { AuthViewModel() }
+    var phoneNumber by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var phoneNumberErrorText by remember { mutableStateOf("") }
+    var passwordErrorText by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -73,15 +83,14 @@ fun RegisterScreen(navController: NavController) {
             color = Color(0xFF8A8A8A),
             fontSize = 14.sp
         )
-        CustomTextFieldNumber("Enter Phone number")
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = "Phone number",
-            fontFamily = FontFamily(fontPoppinsSemi),
-            color = Color(0xFF8A8A8A),
-            fontSize = 14.sp
+        CustomTextFieldNumber(
+            placeholder = "Enter Phone number",
+            onValueChanged = {
+                phoneNumber = it
+                phoneNumberErrorText = ""
+            },
+            errorText = phoneNumberErrorText
         )
-        CustomTextFieldNumber("Enter Phone number")
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = "Password",
@@ -89,7 +98,15 @@ fun RegisterScreen(navController: NavController) {
             color = Color(0xFF8A8A8A),
             fontSize = 14.sp
         )
-        CustomTextField("Enter Password", true)
+        CustomTextField(
+            placeholder = "Enter Password",
+            isPassword = true,
+            onValueChanged = {
+                password = it
+                passwordErrorText = ""
+            },
+            errorText = passwordErrorText
+        )
         Spacer(modifier = Modifier.height(20.dp))
         FilledButtonExample(
             onClick = { /*TODO*/ }, text = "SIGN UP", backgroundColor = ButtonDefaults.buttonColors(

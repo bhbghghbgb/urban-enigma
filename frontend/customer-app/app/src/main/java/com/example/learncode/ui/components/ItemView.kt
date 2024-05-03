@@ -1,5 +1,6 @@
 package com.example.learncode.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,32 +21,52 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.learncode.model.AddToCartRequest
+import com.example.learncode.model.PreferenceManager
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
+import com.example.learncode.viewmodel.CartViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun ItemView(title: String, image: Int, des: String, price: String, star: Double, navController: NavController) {
+fun ItemView(
+    title: String,
+    image: Int,
+    des: String,
+    price: String,
+    star: Double,
+    navController: NavController
+) {
     ElevatedCard(
         modifier = Modifier
             .width(180.dp)
-            .wrapContentHeight().clickable {
+            .wrapContentHeight()
+            .clickable {
                 navController.navigate("detail")
             },
         shape = RoundedCornerShape(16.dp),
@@ -141,12 +162,40 @@ fun ItemView(title: String, image: Int, des: String, price: String, star: Double
 }
 
 @Composable
-fun ItemViewRow(title: String, image: Int, des: String, price: String, star: Double, navController: NavController) {
+fun ItemViewRow(
+    _id: String,
+    title: String,
+    image: Int,
+    des: String,
+    price: Double,
+    star: Double,
+    navController: NavController
+) {
+    val viewModel = remember { CartViewModel() }
+    val token: String = PreferenceManager.getToken(LocalContext.current).toString()
+    val addToCart = AddToCartRequest(_id)
+    val isValidAddToCart by viewModel.isValidAddToCart.observeAsState()
+    var showToast by remember { mutableStateOf(false) }
+
+    if (isValidAddToCart == true) {
+        LaunchedEffect(isValidAddToCart) {
+            showToast = true
+        }
+    }
+
+    if (showToast) {
+        LaunchedEffect(showToast) {
+            delay(2000)
+            showToast = false
+        }
+        CustomToast(message = "Add to cart succesfully!!!")
+    }
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight().clickable {
-                navController.navigate("detail")
+            .fillMaxHeight()
+            .clickable {
+                navController.navigate("detail/$_id")
             },
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
@@ -179,7 +228,8 @@ fun ItemViewRow(title: String, image: Int, des: String, price: String, star: Dou
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    horizontalAlignment = Alignment.Start
+                    horizontalAlignment = Alignment.Start,
+                    modifier = Modifier.weight(3f)
                 ) {
                     Text(
                         text = title,
@@ -197,7 +247,7 @@ fun ItemViewRow(title: String, image: Int, des: String, price: String, star: Dou
                         color = Color.Gray,
                     )
                     Text(
-                        text = price,
+                        text = price.toString(),
                         fontFamily = FontFamily(fontPoppinsSemi),
                         fontSize = 19.sp,
                         maxLines = 1,
@@ -208,6 +258,7 @@ fun ItemViewRow(title: String, image: Int, des: String, price: String, star: Dou
                 Column(
                     modifier = Modifier
                         .wrapContentWidth()
+                        .weight(1f)
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -225,7 +276,10 @@ fun ItemViewRow(title: String, image: Int, des: String, price: String, star: Dou
                         Text(text = star.toString(), fontSize = 16.sp, color = Color.Black)
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    IconButton(onClick = {}, modifier = Modifier.size(40.dp)) {
+                    IconButton(onClick = {
+                        viewModel.addToCart(token, addToCart)
+                        showToast = true
+                    }, modifier = Modifier.size(40.dp)) {
                         Icon(
                             modifier = Modifier
                                 .fillMaxHeight()
@@ -237,6 +291,35 @@ fun ItemViewRow(title: String, image: Int, des: String, price: String, star: Dou
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun CustomToast(message: String, durationMillis: Long = 2000) {
+    var showToast by remember { mutableStateOf(true) }
+
+    LaunchedEffect(showToast) {
+        delay(durationMillis)
+        showToast = false
+    }
+
+    if (showToast) {
+        ElevatedCard(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFF6A4731)
+            )
+        ) {
+            Text(
+                text = message,
+                modifier = Modifier.padding(16.dp),
+                fontFamily = FontFamily(fontPoppinsRegular),
+                color = Color.White
+            )
         }
     }
 }
