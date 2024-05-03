@@ -7,7 +7,7 @@ const authenticate = require('../middleware/authenticate');
 // -> lấy danh sách orders
 router.get('/', orderController.getAllOrders);
 // -> lấy order của khách hàng chưa được giao
-router.get('/not-yet-delivered', authenticate, orderController.getAllOrderByUserNotYetDelivered);
+router.get('/not-yet-delivered', authenticate.authenticate, orderController.getAllOrderByUserNotYetDelivered);
 // -> lấy 1 order bằng id
 router.get('/:id', orderController.findOrderById);
 // -> lấy những order đã [now, delivering, delivered]

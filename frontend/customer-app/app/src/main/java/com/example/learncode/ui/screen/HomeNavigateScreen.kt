@@ -31,6 +31,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.learncode.model.NavigationItem
 import com.example.learncode.viewmodel.OrderViewModel
+import com.example.learncode.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -84,6 +85,7 @@ fun BottomBar(navController: NavHostController) {
 
 @Composable
 fun BottomNavGraph(navController: NavHostController, bottom: @Composable () -> Unit) {
+    val profileViewModel = remember { ProfileViewModel() }
     NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
         composable(route = NavigationItem.Home.route) {
             HomeScreen(navController = navController, bottom)
@@ -95,7 +97,7 @@ fun BottomNavGraph(navController: NavHostController, bottom: @Composable () -> U
             TransactionScreen(navController = navController)
         }
         composable(route = NavigationItem.Profile.route) {
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController, viewModel = profileViewModel)
         }
         composable("menuproduct") {
             MenuProducts(navController)

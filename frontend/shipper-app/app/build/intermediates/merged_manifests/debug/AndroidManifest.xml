@@ -8,11 +8,35 @@
         android:minSdkVersion="24"
         android:targetSdkVersion="33" />
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <permission
         android:name="com.example.delivery_app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
 
     <uses-permission android:name="com.example.delivery_app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="false" /> <!-- TODO replace above two with next line after Android 4.2 -->
+    <!-- <uses-feature android:name="android.hardware.camera.any"/> -->
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.flash"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.screen.landscape"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.wifi"
+        android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +50,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:testOnly="true"
-        android:theme="@style/Theme.Deliveryapp" >
+        android:theme="@style/Theme.Deliveryapp"
+        android:usesCleartextTraffic="true" >
         <activity
             android:name="com.example.delivery_app.MainActivity"
             android:exported="true"
@@ -38,6 +63,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.example.delivery_app.QRScanActivity" />
         <activity
             android:name="androidx.activity.ComponentActivity"
             android:exported="true" />
@@ -60,6 +86,13 @@
         <activity
             android:name="androidx.compose.ui.tooling.PreviewActivity"
             android:exported="true" />
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:clearTaskOnLaunch="true"
+            android:screenOrientation="sensorLandscape"
+            android:stateNotNeeded="true"
+            android:theme="@style/zxing_CaptureTheme"
+            android:windowSoftInputMode="stateAlwaysHidden" />
 
         <receiver
             android:name="androidx.profileinstaller.ProfileInstallReceiver"

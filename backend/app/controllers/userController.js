@@ -11,6 +11,36 @@ exports.getStaffs = async (req, res) => {
     }
 }
 
+exports.getInfo = async (req, res) => {
+    try {
+        const user = await Staff.findOne({ _id: req.user }).populate('commonuser.account');
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        res.status(200).json(user);
+        return;
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+        return;
+    }
+}
+
+exports.getCustomerInfo = async (req, res) => {
+    try {
+        const user = await Customer.findOne({ _id: req.user }).populate('commonuser.account');
+        if (!user) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        res.status(200).json(user);
+        return;
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+        return;
+    }
+}
+
 exports.getCustomers = async (req, res) => {
     try {
         const customers = await Customer.find().populate('commonuser.account');

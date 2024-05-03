@@ -54,6 +54,7 @@ import com.example.delivery_app.data.viewmodel.ProfileViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeView(navController: NavController) {
+    val profileViewModel = remember { ProfileViewModel() }
     var currentScreen by rememberSaveable {
         mutableStateOf("home")
     }
@@ -156,7 +157,7 @@ fun HomeView(navController: NavController) {
 
                 "profile" -> {
                     title = "Your profile"
-                    ProfileScreen(viewModel = ProfileViewModel())
+                    ProfileScreen(profileViewModel)
                 }
             }
         }

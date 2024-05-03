@@ -6,11 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.delivery_app.navigation.MainNavHost
+import com.example.delivery_app.ui.screen.QRCodeScreen
 import com.example.delivery_app.ui.theme.DeliveryappTheme
 
 class MainActivity : ComponentActivity() {
@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MainNavHost()
+//                    QRCodeScreen()
                 }
             }
         }
@@ -33,6 +34,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GreetingPreview() {
     DeliveryappTheme {
-        MainNavHost()
+        QRCodeScreen()
     }
 }

@@ -68,7 +68,7 @@ exports.findProductById = async (req, res) => {
 exports.findProductByName = async (req, res) => {
     try {
         const name = req.params.name;
-        const products = await Product.find({ name: { $regex: name, $options: 'i' } });
+        const products = await Product.find({ name: { $regex: name, $options: 'i' } }).populate('category');
         res.status(200).json(products);
         return;
     } catch (err) {

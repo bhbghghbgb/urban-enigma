@@ -101,8 +101,10 @@ fun TransactionScreen(navController: NavController) {
     })
     val scope = rememberCoroutineScope()
     val token: String = PreferenceManager.getToken(LocalContext.current).toString()
-    if (token != null) {
-        viewModel.getOrdersNotYetDelivered(token = token)
+    LaunchedEffect(key1 = true) {
+        if (token != null) {
+            viewModel.getOrdersNotYetDelivered(token = token)
+        }
     }
 //    InformationOrder()
     Column(modifier = Modifier.fillMaxSize()) {
@@ -120,7 +122,6 @@ fun TransactionScreen(navController: NavController) {
                         selectedTabIndex = index
                         scope.launch { pagerState.scrollToPage(index) }
                     },
-
                     text = {
                         Text(
                             text = item.title, fontSize = 20.sp, fontFamily = FontFamily(
@@ -140,7 +141,6 @@ fun TransactionScreen(navController: NavController) {
                         HistoryScreen(navController, viewModel = viewModel, token = token)
                     }
                 }
-
                 1 -> {
                     Text(text = "History")
                 }

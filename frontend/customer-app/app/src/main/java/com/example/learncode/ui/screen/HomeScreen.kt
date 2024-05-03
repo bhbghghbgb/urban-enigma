@@ -169,7 +169,12 @@ fun ContentHome(
                     }
                     Row(
                     ) {
-                        SearchView(navController, Modifier, false)
+                        val onclick: () -> Unit = {}
+                        SearchView(navController, Modifier, false, onclick, {
+                            navController.navigate("menuproduct") {
+                                launchSingleTop = true
+                            }
+                        }, {})
                     }
                 }
             }

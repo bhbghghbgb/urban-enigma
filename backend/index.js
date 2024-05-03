@@ -26,7 +26,7 @@ app.use('/products', productRoutes);
 app.use('/category', categoryRoutes);
 app.use('/account', accountRoutes);
 app.use('/orders', orderRoutes);
-app.use('/cart', authenticate, cartRoutes);
+app.use('/cart', authenticate.authenticate, cartRoutes);
 app.use('/rating', ratingRoutes);
 app.use('/user', userRoutes);
 app.use('', authRoutes);

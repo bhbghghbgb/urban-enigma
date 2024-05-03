@@ -14,6 +14,9 @@ interface ApiService {
     @GET("/products/lists/popular")
     suspend fun getProductList(): Response<List<Products>>
 
+    @GET("/products/search/{name}")
+    suspend fun searchProductByName(@Path("name") name: String) : Response<List<Products>>
+
     @GET("/products/{id}")
     suspend fun getProduct(@Path("id") id: String): Response<Products>
 
@@ -37,4 +40,8 @@ interface ApiService {
 
     @GET("/orders/not-yet-delivered")
     suspend fun getOrdersNotYetDelivered(@Header("Authorization") token: String) : Response<List<Order>>
+
+    @GET("/user/infocustomer")
+    suspend fun getInfoOfCustomer(@Header("Authorization") token: String) : Response<UserClass.Customer>
+
 }
