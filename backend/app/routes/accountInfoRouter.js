@@ -10,13 +10,13 @@ const {
 
 // CHUA TEST
 // yeu cau doi email cho tai khoan
-router.post("/email/:username", requestChangeAccountEmail);
+router.post("/email", requestChangeAccountEmail);
 // yeu cau doi sdt cho tai khoan
-router.post("/phone/:username", requestChangeAccountPhone);
+router.post("/phone", requestChangeAccountPhone);
 // tien hanh doi email su dung verify code
-router.patch("/email/:username", attemptChangeAccountEmail);
+router.patch("/email", attemptChangeAccountEmail);
 // tien hanh doi sdt su dung verify code
-router.patch("/phone/:username", attemptChangeAccountPhone);
+router.patch("/phone", attemptChangeAccountPhone);
 
 // DEBUG
 // hien het cac yeu cau doi thong tin tai khoan (de xem verify code)

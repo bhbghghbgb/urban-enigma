@@ -7,7 +7,6 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -37,14 +36,12 @@ interface ApiService {
 
     @POST("/cart/add-to-cart")
     suspend fun addToCart(
-        @Header("Authorization") token: String,
-        @Body request: AddToCartRequest
+        @Header("Authorization") token: String, @Body request: AddToCartRequest
     ): Response<ResponseFromServer>
 
     @PATCH("/cart/delete")
     suspend fun deleteProductOfCart(
-        @Header("Authorization") token: String,
-        @Body request: AddToCartRequest
+        @Header("Authorization") token: String, @Body request: AddToCartRequest
     ): Response<ResponseFromServer>
 
     @GET("/orders/not-yet-delivered")
@@ -58,8 +55,27 @@ interface ApiService {
 
     @GET("/orders/{id}")
     suspend fun getOrderById(
-        @Header("Authorization") token: String,
-        @Path("id") id: String
+        @Header("Authorization") token: String, @Path("id") id: String
     ): Response<Order>
 
+    // API thay doi thong tin tai khoan
+    @POST("/accountinfo/email")
+    suspend fun requestChangeAccountEmail(
+        @Body request: AccountInfoChangeEmailRequest
+    ): Response<ResponseBody>
+
+    @POST("/accountinfo/phone")
+    suspend fun requestChangeAccountPhone(
+        @Body request: AccountInfoChangePhoneRequest
+    ): Response<ResponseBody>
+
+    @PATCH("/accountinfo/email")
+    suspend fun attemptChangeAccountEmail(
+        @Body request: AccountInfoChangeEmailAttempt
+    ): Response<ResponseBody>
+
+    @PATCH("/accountinfo/email")
+    suspend fun attemptChangeAccountPhone(
+        @Body request: AccountInfoChangePhoneAttempt
+    ): Response<ResponseBody>
 }

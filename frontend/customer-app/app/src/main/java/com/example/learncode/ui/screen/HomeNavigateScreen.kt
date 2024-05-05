@@ -12,14 +12,12 @@ import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
@@ -31,11 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.learncode.model.NavigationItem
-import com.example.learncode.model.PreferenceManager
-import com.example.learncode.ui.viewmodels.HomeScreen2ViewModel
 import com.example.learncode.viewmodel.CartViewModel
-import com.example.learncode.viewmodel.HomeViewModel
-import com.example.learncode.viewmodel.OrderViewModel
 import com.example.learncode.viewmodel.ProfileViewModel
 import com.example.learncode.viewmodel.SearchViewModel
 

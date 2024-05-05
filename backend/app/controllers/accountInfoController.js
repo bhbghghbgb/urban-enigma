@@ -10,12 +10,14 @@ exports.getAllRequests = async (req, res) => {
 }
 exports.requestChangeAccountEmail = async (req, res) => {
     try {
-        const username = req.params.username;
+        const username = req.body.username;
+        const email = req.body.email;
         if (!(await checkUserNameExist(username))) {
             return res.status(404).json({ message: "Username is not exist" });
         }
         await new AccountInfoVerify({
             username,
+            info: email,
             infoType: "email",
             verifyCode: verifyCodeGen(),
         }).save();
@@ -28,12 +30,14 @@ exports.requestChangeAccountEmail = async (req, res) => {
 };
 exports.requestChangeAccountPhone = async (req, res) => {
     try {
-        const username = req.params.username;
+        const username = req.body.username;
+        const phone = req.body.phone
         if (!(await checkUserNameExist(username))) {
             return res.status(404).json({ message: "Username is not exist" });
         }
         await new AccountInfoVerify({
             username,
+            info: phone,
             infoType: "phone",
             verifyCode: verifyCodeGen(),
         }).save();
@@ -46,7 +50,7 @@ exports.requestChangeAccountPhone = async (req, res) => {
 };
 exports.attemptChangeAccountEmail = async (req, res) => {
     try {
-        const username = req.params.username;
+        const username = req.body.username;
         const verifyCode = req.body.verifyCode;
         if (!(await checkUserNameExist(username))) {
             return res.status(404).json({ message: "Username is not exist" });
@@ -66,7 +70,7 @@ exports.attemptChangeAccountEmail = async (req, res) => {
                 message: "Verification code mismatch",
             });
         }
-        await changeEmail(username, verifyCode);
+        await changeEmail(username, verifyRequest.info);
         await verifyRequest.remove();
         return res.status(200).json({ message: "Account email changed" });
     } catch (err) {
@@ -75,7 +79,7 @@ exports.attemptChangeAccountEmail = async (req, res) => {
 };
 exports.attemptChangeAccountPhone = async (req, res) => {
     try {
-        const username = req.params.username;
+        const username = req.body.username;
         const verifyCode = req.body.verifyCode;
         if (!(await checkUserNameExist(username))) {
             return res.status(404).json({ message: "Username is not exist" });
