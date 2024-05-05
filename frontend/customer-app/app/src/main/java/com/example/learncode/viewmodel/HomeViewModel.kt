@@ -19,7 +19,8 @@ class HomeViewModel : ViewModel() {
     private val apiService = RetrofitInstance.apiService
     private var _productListLiveData = MutableLiveData<List<Products>>()
     val productList: LiveData<List<Products>> get() = _productListLiveData
-
+    private val _stateCallFullPopular = MutableLiveData<Boolean>(false)
+    val stateCallFullPopular: LiveData<Boolean> get() = _stateCallFullPopular
     init {
         fetchData()
     }
@@ -27,10 +28,27 @@ class HomeViewModel : ViewModel() {
     fun fetchData() {
         viewModelScope.launch {
             try {
+                val response = apiService.getProductListLimit()
+                if (response.isSuccessful) {
+                    val data = response.body()
+                    _productListLiveData.postValue(data!!)
+                } else {
+                    Log.d("Failed", "Response not successful: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Log.e("Error", "Error fetching data", e)
+            }
+        }
+    }
+
+    fun fetchFullData() {
+        viewModelScope.launch {
+            try {
                 val response = apiService.getProductList()
                 if (response.isSuccessful) {
                     val data = response.body()
-                    _productListLiveData.postValue(data)
+                    _productListLiveData.postValue(data!!)
+                    _stateCallFullPopular.postValue(true)
                 } else {
                     Log.d("Failed", "Response not successful: ${response.code()}")
                 }

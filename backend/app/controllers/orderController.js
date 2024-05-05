@@ -35,9 +35,46 @@ exports.getAllOrderByUserNotYetDelivered = async (req, res) => {
     }
 }
 
+exports.getAllOrderByUserDelivered = async (req, res) => {
+    try {
+        const customer = await Customer.findOne({ _id: req.user });
+        if (!customer) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        const orders = await Order.find({ status: 'delivered', user: req.user }).populate({
+            path: 'user',
+            model: 'Customer'
+        })
+            .populate({
+                path: 'detailOrders.product',
+                populate: {
+                    path: 'category'
+                }
+            });
+        res.status(200).json(orders);
+    } catch (err) {
+        res.status(500).json({ message: err.message })
+    }
+}
+
 exports.findOrderById = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id).populate('detailOrders.product');
+        const customer = await Customer.findOne({ _id: req.user });
+        if (!customer) {
+            res.status(404).json({ message: 'User not found' });
+            return;
+        }
+        const order = await Order.findOne({ _id: req.params.id, user: req.user }).populate({
+            path: 'user',
+            model: 'Customer'
+        })
+            .populate({
+                path: 'detailOrders.product',
+                populate: {
+                    path: 'category'
+                }
+            });
         if (order) {
             res.status(200).json(order);
         } else {

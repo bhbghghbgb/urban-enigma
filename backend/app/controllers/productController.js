@@ -15,6 +15,32 @@ exports.getAllProducts = async (req, res) => {
 
 exports.getAllProductsPopular = async (req, res) => {
     try {
+        const products = await Product.find({ popular: true }).populate('category');
+        const productRatings = await Rating.aggregate([
+            {
+                $group: {
+                    _id: "$product",
+                    avgRating: { $avg: "$rating" },
+                },
+            },
+        ]);
+
+        const productsWithRatings = products.map((product) => {
+            const avgRatingObj = productRatings.find(
+                (rating) => rating._id.toString() === product._id.toString()
+            );
+            const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
+            return { ...product.toObject(), avgRating };
+        });
+        res.status(200).json(productsWithRatings);
+        return;
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
+exports.getAllProductsPopularLimit = async (req, res) => {
+    try {
         const products = await Product.find({ popular: true }).populate('category').limit(5);
         const productRatings = await Rating.aggregate([
             {
@@ -34,8 +60,6 @@ exports.getAllProductsPopular = async (req, res) => {
         });
         res.status(200).json(productsWithRatings);
         return;
-        // const products = await Product.find({ popular: true }).populate('category');
-        // res.status(200).json(products);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -69,7 +93,23 @@ exports.findProductByName = async (req, res) => {
     try {
         const name = req.params.name;
         const products = await Product.find({ name: { $regex: name, $options: 'i' } }).populate('category');
-        res.status(200).json(products);
+        const productRatings = await Rating.aggregate([
+            {
+                $group: {
+                    _id: "$product",
+                    avgRating: { $avg: "$rating" },
+                },
+            },
+        ]);
+
+        const productsWithRatings = products.map((product) => {
+            const avgRatingObj = productRatings.find(
+                (rating) => rating._id.toString() === product._id.toString()
+            );
+            const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
+            return { ...product.toObject(), avgRating };
+        });
+        res.status(200).json(productsWithRatings);
         return;
     } catch (err) {
         res.status(500).json({ message: err.message });

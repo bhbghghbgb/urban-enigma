@@ -1,5 +1,7 @@
 package com.example.learncode.ui.screen
 
+import android.provider.MediaStore.Video
+import android.widget.VideoView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -86,6 +88,8 @@ import com.example.learncode.viewmodel.HomeViewModel
 import com.example.learncode.viewmodel.OrderViewModel
 import com.example.learncode.viewmodel.State
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -104,6 +108,7 @@ fun TransactionScreen(navController: NavController) {
     LaunchedEffect(key1 = true) {
         if (token != null) {
             viewModel.getOrdersNotYetDelivered(token = token)
+            viewModel.getOrdersDelivered(token = token)
         }
     }
 //    InformationOrder()
@@ -141,8 +146,15 @@ fun TransactionScreen(navController: NavController) {
                         HistoryScreen(navController, viewModel = viewModel, token = token)
                     }
                 }
+
                 1 -> {
-                    Text(text = "History")
+                    if (token != null) {
+                        DeliveredScreen(
+                            navController = navController,
+                            viewModel = viewModel,
+                            token = token
+                        )
+                    }
                 }
             }
         }
@@ -157,9 +169,9 @@ data class TabItem(
 
 @Composable
 fun HistoryScreen(navController: NavController, viewModel: OrderViewModel, token: String) {
-    val orders by viewModel.order.observeAsState()
+    val orders by viewModel.orders.observeAsState()
     val state by viewModel.state.observeAsState()
-    LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxWidth()) {
+    LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxSize()) {
         when (state) {
             State.LOADING -> {
                 item { LoadingScreen() }
@@ -168,7 +180,58 @@ fun HistoryScreen(navController: NavController, viewModel: OrderViewModel, token
             State.SUCCESS -> {
                 orders?.let { order ->
                     for (it in order) {
-                        item { OrderItem(navController = navController, order = it, viewModel) }
+                        item {
+                            OrderItem(
+                                navController = navController,
+                                order = it,
+                                viewModel,
+                                false
+                            )
+                        }
+                        item { Spacer(modifier = Modifier.height(8.dp)) }
+                    }
+                }
+            }
+
+            State.ERROR -> {
+                item {
+                    ErrorScreen(
+                        errorMessage = "Failed to load orders.",
+                        onRetry = {
+                            token?.let {
+                                viewModel.getOrdersNotYetDelivered(it)
+                            }
+                        }
+                    )
+                }
+            }
+
+            else -> {}
+        }
+    }
+}
+
+@Composable
+fun DeliveredScreen(navController: NavController, viewModel: OrderViewModel, token: String) {
+    val orders by viewModel.orderDelivered.observeAsState()
+    val state by viewModel.state.observeAsState()
+    LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxSize()) {
+        when (state) {
+            State.LOADING -> {
+                item { LoadingScreen() }
+            }
+
+            State.SUCCESS -> {
+                orders?.let { order ->
+                    for (it in order) {
+                        item {
+                            OrderItem(
+                                navController = navController,
+                                order = it,
+                                viewModel,
+                                true
+                            )
+                        }
                         item { Spacer(modifier = Modifier.height(8.dp)) }
                     }
                 }
@@ -232,13 +295,27 @@ fun ErrorScreen(errorMessage: String, onRetry: () -> Unit) {
 }
 
 @Composable
-fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewModel) {
+fun OrderItem(
+    navController: NavController,
+    order: Order,
+    viewModel: OrderViewModel,
+    status: Boolean
+) {
+    val timestamp = order.orderDateTime
+    val date = Date(timestamp.time)
+    val formattedDateOfBirth = SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(date)
+    var amount = 0
+    var total = 0.0
+    for (item in order.detailOrders) {
+        amount += item.amount
+        total += item.product.price * item.amount
+    }
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable {
-                navController.navigate("information")
+                navController.navigate("information/${order.id}")
             },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
@@ -264,7 +341,7 @@ fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewMo
                     shape = RoundedCornerShape(5.dp)
                 ) {
                     Image(
-                        painterResource(id = R.drawable.affogato),
+                        painterResource(id = R.drawable.ic_shipper),
                         contentDescription = null,
                         modifier = Modifier.size(50.dp),
                         contentScale = ContentScale.FillBounds
@@ -278,7 +355,7 @@ fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewMo
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = viewModel.getListNameProducts(order.id),
+                        text = viewModel.getListNameProducts(order.id, status),
                         maxLines = 2,
                         fontSize = 20.sp,
                         fontFamily = FontFamily(fontPoppinsRegular),
@@ -290,7 +367,7 @@ fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewMo
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Delivered",
+                        text = "Delivering",
                         maxLines = 1,
                         fontSize = 18.sp,
                         fontFamily = FontFamily(fontPoppinsRegular),
@@ -299,7 +376,7 @@ fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewMo
                         color = Color(0xFFCCCC00)
                     )
                     Text(
-                        text = "2.80$",
+                        text = "$total$",
                         maxLines = 1,
                         fontSize = 20.sp,
                         fontFamily = FontFamily(fontPoppinsRegular),
@@ -313,7 +390,7 @@ fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewMo
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "6 Items",
+                        text = "$amount Items",
                         maxLines = 1,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(fontPoppinsSemi),
@@ -321,7 +398,7 @@ fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewMo
                         color = Color.Gray
                     )
                     Text(
-                        text = "12/03/2024 07:07",
+                        text = formattedDateOfBirth,
                         maxLines = 1,
                         fontSize = 16.sp,
                         fontFamily = FontFamily(fontPoppinsSemi),
@@ -336,13 +413,13 @@ fun OrderItem(navController: NavController, order: Order, viewModel: OrderViewMo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InformationOrder(navController: NavController) {
+fun InformationOrder(navController: NavController, id: String) {
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = { TopBarCenterOrderInformation(navController) },
             containerColor = Color.Transparent
         ) { paddingValues ->
-            ContentInformationOrder(paddingValues)
+            ContentInformationOrder(paddingValues, id)
         }
     }
 }
@@ -381,8 +458,18 @@ fun TopBarCenterOrderInformation(navController: NavController) {
 }
 
 @Composable
-fun ContentInformationOrder(paddingValues: PaddingValues) {
-    val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
+fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
+    val token = PreferenceManager.getToken(LocalContext.current).toString();
+    val viewModel = remember {
+        OrderViewModel()
+    }
+    val order = viewModel.order.observeAsState()
+    val state = viewModel.state.observeAsState()
+    LaunchedEffect(Unit) {
+        if (token != null) {
+            viewModel.getOrderById(token, id)
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -392,161 +479,185 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
             contentPadding = PaddingValues(vertical = 16.dp),
             modifier = Modifier.background(Color.Transparent)
         ) {
-            item {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(text = "ID: ", color = Color.Gray, fontSize = 16.sp)
-                    Text(text = "12030001", fontSize = 16.sp)
+            when (state) {
+                State.LOADING -> {
+                    item { LoadingScreen() }
                 }
-            }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-            item {
-                Box(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
-                            .wrapContentHeight()
-                            .padding(8.dp)
-                            .background(Color.White)
-                    ) {
-                        Column {
-                            Row {
-                                Icon(
-                                    imageVector = Icons.Default.LocationOn,
-                                    contentDescription = "LocationIcon",
-                                    tint = Color.Gray
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "ABC number, ABC street, ABC ward, ABC district, ABC city",
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.wrapContentHeight()
-                                )
+
+                State.SUCCESS -> {
+                    item {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(text = "ID: ", color = Color.Gray, fontSize = 16.sp)
+                            Text(text = id, fontSize = 16.sp)
+                        }
+                    }
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .background(Color.White)
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .border(2.dp, Color.Gray, RoundedCornerShape(8.dp))
+                                    .wrapContentHeight()
+                                    .padding(8.dp)
+                                    .background(Color.White)
+                            ) {
+                                Column {
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.Default.LocationOn,
+                                            contentDescription = "LocationIcon",
+                                            tint = Color.Gray
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "ABC number, ABC street, ABC ward, ABC district, ABC city",
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.wrapContentHeight()
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(5.dp))
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.Default.Person,
+                                            contentDescription = "LocationIcon",
+                                            tint = Color.Gray
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Tran Van Banh",
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.wrapContentHeight()
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(5.dp))
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.Default.Call,
+                                            contentDescription = "LocationIcon",
+                                            tint = Color.Gray
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "0987654321",
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.wrapContentHeight()
+                                        )
+                                    }
+                                }
                             }
-                            Spacer(modifier = Modifier.height(5.dp))
-                            Row {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "LocationIcon",
-                                    tint = Color.Gray
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "Tran Van Banh",
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.wrapContentHeight()
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(5.dp))
-                            Row {
-                                Icon(
-                                    imageVector = Icons.Default.Call,
-                                    contentDescription = "LocationIcon",
-                                    tint = Color.Gray
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "0987654321",
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.wrapContentHeight()
-                                )
+                        }
+                    }
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .background(Color.White)
+                                .padding(horizontal = 16.dp)
+                        ) {
+                            Column {
+                                ItemProduct(product = product)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                ItemProduct(product = product)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Subtotal",
+                                        fontSize = 16.sp,
+                                        color = Color.Gray,
+                                        fontFamily = FontFamily(fontPoppinsRegular)
+                                    )
+                                    Text(
+                                        text = "2.80$",
+                                        fontSize = 18.sp,
+                                        fontFamily = FontFamily(fontPoppinsSemi)
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Delivery Fee",
+                                        fontSize = 16.sp,
+                                        color = Color.Gray,
+                                        fontFamily = FontFamily(fontPoppinsRegular)
+                                    )
+                                    Text(
+                                        text = "FREE",
+                                        fontSize = 16.sp,
+                                        fontFamily = FontFamily(fontPoppinsSemi)
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Discount",
+                                        fontSize = 16.sp,
+                                        color = Color.Gray,
+                                        fontFamily = FontFamily(fontPoppinsRegular)
+                                    )
+                                    Text(
+                                        text = "0$",
+                                        fontSize = 16.sp,
+                                        fontFamily = FontFamily(fontPoppinsSemi)
+                                    )
+                                }
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "Total",
+                                        fontSize = 20.sp,
+                                        fontFamily = FontFamily(fontPoppinsSemi)
+                                    )
+                                    Text(
+                                        text = "2.80$",
+                                        fontSize = 20.sp,
+                                        fontFamily = FontFamily(fontPoppinsSemi),
+                                        color = Color(0xFFCC6600)
+                                    )
+                                }
                             }
                         }
                     }
                 }
-            }
-            item { Spacer(modifier = Modifier.height(16.dp)) }
-            item {
-                Box(
-                    modifier = Modifier
-                        .background(Color.White)
-                        .padding(horizontal = 16.dp)
-                ) {
-                    Column {
-                        ItemProduct(product = product)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ItemProduct(product = product)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Subtotal",
-                                fontSize = 16.sp,
-                                color = Color.Gray,
-                                fontFamily = FontFamily(fontPoppinsRegular)
-                            )
-                            Text(
-                                text = "2.80$",
-                                fontSize = 18.sp,
-                                fontFamily = FontFamily(fontPoppinsSemi)
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Delivery Fee",
-                                fontSize = 16.sp,
-                                color = Color.Gray,
-                                fontFamily = FontFamily(fontPoppinsRegular)
-                            )
-                            Text(
-                                text = "FREE",
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily(fontPoppinsSemi)
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Discount",
-                                fontSize = 16.sp,
-                                color = Color.Gray,
-                                fontFamily = FontFamily(fontPoppinsRegular)
-                            )
-                            Text(
-                                text = "0$",
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily(fontPoppinsSemi)
-                            )
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Total",
-                                fontSize = 20.sp,
-                                fontFamily = FontFamily(fontPoppinsSemi)
-                            )
-                            Text(
-                                text = "2.80$",
-                                fontSize = 20.sp,
-                                fontFamily = FontFamily(fontPoppinsSemi),
-                                color = Color(0xFFCC6600)
-                            )
-                        }
+
+                State.ERROR -> {
+                    item {
+                        ErrorScreen(
+                            errorMessage = "Failed to load orders.",
+                            onRetry = {
+                                token?.let {
+                                    viewModel.getOrdersNotYetDelivered(it)
+                                }
+                            }
+                        )
                     }
                 }
+
+                else -> {}
             }
         }
+        val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
     }
 }
 
@@ -563,7 +674,7 @@ fun ItemProduct(product: Product) {
             modifier = Modifier
                 .size(80.dp)
                 .clip(RoundedCornerShape(10.dp)),
-            painter = painterResource(id = product.image),
+            painter = painterResource(id = R.drawable.mocha),
             contentDescription = null,
             contentScale = ContentScale.FillBounds
         )

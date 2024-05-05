@@ -20,13 +20,17 @@ class SearchViewModel : ViewModel() {
         fetchData(name)
     }
 
+    fun resetProducts() {
+        _productListLiveData.postValue(emptyList())
+    }
+
     fun fetchData(name: String) {
         viewModelScope.launch {
             try {
                 val response = apiService.searchProductByName(name)
                 if (response.isSuccessful) {
                     val data = response.body()
-                    _productListLiveData.postValue(data)
+                    _productListLiveData.postValue(data!!)
                 } else {
                     Log.d("Failed", "Response not successful: ${response.code()}")
                 }

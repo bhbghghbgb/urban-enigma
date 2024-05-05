@@ -1,5 +1,8 @@
 package com.example.learncode.viewmodel
 
+import android.content.Context
+import android.location.Address
+import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,6 +14,9 @@ import com.example.learncode.model.Product
 import com.example.learncode.repository.CartRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.util.Locale
 
 class CartViewModel : ViewModel() {
     private val repository = CartRepository()
@@ -23,6 +29,33 @@ class CartViewModel : ViewModel() {
 
     private val _isValidDeleteProduct = MutableLiveData<Boolean>()
     val isValidDeleteProduct: LiveData<Boolean> = _isValidDeleteProduct
+
+    private val _address = MutableLiveData<String>()
+    val address: LiveData<String> = _address
+    fun reverseGeocode(context: Context, latitude: Double, longitude: Double) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val geocoder = Geocoder(context, Locale.getDefault())
+            try {
+                val addresses: List<Address> = geocoder.getFromLocation(latitude, longitude, 1)!!
+                if (addresses.isNotEmpty()) {
+                    val address = addresses[0]
+                    val addressStringBuilder = StringBuilder()
+                    for (i in 0..address.maxAddressLineIndex) {
+                        addressStringBuilder.append(address.getAddressLine(i)).append(", ")
+                    }
+                    _address.postValue(addressStringBuilder.toString().removeSuffix(", "))
+                } else {
+                    _address.postValue("")
+                }
+            } catch (e: java.io.IOException) {
+                _address.postValue("")
+                e.printStackTrace()
+            }
+        }
+    }
+    fun setAddress(address: String) {
+        _address.postValue(address)
+    }
 
     fun getCardOfUser(token: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -88,7 +121,7 @@ class CartViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = repository.deleteProductOfCart(token, addToCartRequest)
-                if(response.isSuccessful) {
+                if (response.isSuccessful) {
                     if (response.body()?.message != null) {
                         val message = response.body()?.message
                         if (message == "Product has been removed from the cart") {
@@ -107,17 +140,23 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun decreaseProductQuantity(productId: String) {
+    fun decreaseProductQuantity(
+        productId: String,
+        token: String,
+        addToCartRequest: AddToCartRequest
+    ) {
         _cart.value?.let { cart ->
             val mutableProducts = cart.products.toMutableList()
             val productToUpdate = mutableProducts.find { it.product._id == productId }
-
             productToUpdate?.let { product ->
                 val updatedQuantity = product.amount - 1
                 val updatedPrice = product.product.price * updatedQuantity
                 val updatedTotal = cart.total - product.product.price
                 if (updatedQuantity == 0) {
-                    mutableProducts.remove(product)
+                    deleteProduct(token, addToCartRequest);
+                    if (isValidDeleteProduct.value == true) {
+                        mutableProducts.remove(product)
+                    }
                 } else {
                     val updatedProductIndex = mutableProducts.indexOf(product)
                     if (updatedProductIndex != -1) {
@@ -134,25 +173,4 @@ class CartViewModel : ViewModel() {
             }
         }
     }
-
-    // Hàm để gửi các thay đổi đến máy chủ
-//    fun submitChangesToServer(token: String) {
-//        viewModelScope.launch(Dispatchers.Main) {
-//            try {
-//                // Gửi các thay đổi đến máy chủ
-//                val response = repository.updateCartItems(token, _tempQuantityChanges)
-//                if (response.isSuccessful) {
-//                    // Nếu thành công, cập nhật LiveData cart với dữ liệu mới
-//                    _cart.postValue(response.body())
-//                    // Xóa các thay đổi tạm thời sau khi đã gửi thành công đến máy chủ
-//                    _tempQuantityChanges.clear()
-//                } else {
-//                    // Xử lý lỗi nếu có
-//                }
-//            } catch(e: Exception) {
-//                Log.d("Data", e.message.toString())
-//            }
-//        }
-//    }
-
 }

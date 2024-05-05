@@ -41,12 +41,12 @@ import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.ui.viewmodels.HomeScreen2ViewModel
 
 @Composable
-fun HomeScreen2(navController: NavHostController, viewModel: HomeScreen2ViewModel) {
+fun HomeScreen2(navController: NavHostController, viewModel: HomeScreen2ViewModel, bottom: @Composable () -> Unit) {
     Scaffold(
         topBar = {
             TopBarHome()
         },
-    ) { paddingValues ->
+        bottomBar = bottom    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -71,7 +71,11 @@ fun HomeScreen2(navController: NavHostController, viewModel: HomeScreen2ViewMode
                             .background(Color(0xFF9C7055))
                     ) {}
                     Row {
-                        SearchView(navController, Modifier, false)
+                        SearchView(navController, false, {
+                            navController.navigate("menuproduct") {
+                                launchSingleTop = true
+                            }
+                        }, {}, null)
                     }
                 }
                 Box(
