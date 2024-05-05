@@ -8,8 +8,10 @@ const authenticate = require('../middleware/authenticate');
 router.get('/', orderController.getAllOrders);
 // -> lấy order của khách hàng chưa được giao
 router.get('/not-yet-delivered', authenticate.authenticate, orderController.getAllOrderByUserNotYetDelivered);
+// -> lấy order của khách hàng đã được giao
+router.get('/delivered', authenticate.authenticate, orderController.getAllOrderByUserDelivered);
 // -> lấy 1 order bằng id
-router.get('/:id', orderController.findOrderById);
+router.get('/:id', authenticate.authenticate, orderController.findOrderById);
 // -> lấy những order đã [now, delivering, delivered]
 router.get('/status/:status', orderController.getOrdersOfStatus);
 // -> thêm 1 order

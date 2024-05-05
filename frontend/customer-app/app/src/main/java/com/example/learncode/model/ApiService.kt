@@ -14,8 +14,11 @@ interface ApiService {
     @GET("/products/lists/popular")
     suspend fun getProductList(): Response<List<Products>>
 
+    @GET("/products/lists/popular/limit")
+    suspend fun getProductListLimit(): Response<List<Products>>
+
     @GET("/products/search/{name}")
-    suspend fun searchProductByName(@Path("name") name: String) : Response<List<Products>>
+    suspend fun searchProductByName(@Path("name") name: String): Response<List<Products>>
 
     @GET("/products/{id}")
     suspend fun getProduct(@Path("id") id: String): Response<Products>
@@ -33,15 +36,30 @@ interface ApiService {
     suspend fun getCartOfUser(@Header("Authorization") token: String): Response<Cart>
 
     @POST("/cart/add-to-cart")
-    suspend fun addToCart(@Header("Authorization") token: String, @Body request: AddToCartRequest) :Response<ResponseFromServer>
+    suspend fun addToCart(
+        @Header("Authorization") token: String,
+        @Body request: AddToCartRequest
+    ): Response<ResponseFromServer>
 
     @PATCH("/cart/delete")
-    suspend fun deleteProductOfCart(@Header("Authorization") token: String, @Body request: AddToCartRequest) :Response<ResponseFromServer>
+    suspend fun deleteProductOfCart(
+        @Header("Authorization") token: String,
+        @Body request: AddToCartRequest
+    ): Response<ResponseFromServer>
 
     @GET("/orders/not-yet-delivered")
-    suspend fun getOrdersNotYetDelivered(@Header("Authorization") token: String) : Response<List<Order>>
+    suspend fun getOrdersNotYetDelivered(@Header("Authorization") token: String): Response<List<Order>>
+
+    @GET("/orders/delivered")
+    suspend fun getOrdersDelivered(@Header("Authorization") token: String): Response<List<Order>>
 
     @GET("/user/infocustomer")
-    suspend fun getInfoOfCustomer(@Header("Authorization") token: String) : Response<UserClass.Customer>
+    suspend fun getInfoOfCustomer(@Header("Authorization") token: String): Response<UserClass.Customer>
+
+    @GET("/orders/{id}")
+    suspend fun getOrderById(
+        @Header("Authorization") token: String,
+        @Path("id") id: String
+    ): Response<Order>
 
 }

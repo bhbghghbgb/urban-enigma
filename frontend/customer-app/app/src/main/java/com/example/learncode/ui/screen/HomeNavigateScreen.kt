@@ -12,11 +12,14 @@ import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavDestination
@@ -28,8 +31,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.learncode.model.NavigationItem
+import com.example.learncode.model.PreferenceManager
+import com.example.learncode.ui.viewmodels.HomeScreen2ViewModel
+import com.example.learncode.viewmodel.CartViewModel
+import com.example.learncode.viewmodel.HomeViewModel
 import com.example.learncode.viewmodel.OrderViewModel
 import com.example.learncode.viewmodel.ProfileViewModel
+import com.example.learncode.viewmodel.SearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -37,7 +45,8 @@ import com.example.learncode.viewmodel.ProfileViewModel
 fun NavigateHomeScreen() {
     val navController = rememberNavController()
     val showBottomBar = remember { mutableStateOf(true) }
-
+    val profileViewModel = remember { ProfileViewModel() }
+    val cartViewModel = remember { CartViewModel() }
     navController.addOnDestinationChangedListener { _, destination, _ ->
         showBottomBar.value = when (destination.route) {
             "menuproduct", "detail/{_id}", "information" -> false
@@ -52,7 +61,12 @@ fun NavigateHomeScreen() {
             }
         }
     ) {
-        BottomNavGraph(navController = navController) { BottomBar(navController = navController) }
+        BottomNavGraph(
+            navController = navController,
+            { BottomBar(navController = navController) },
+            profileViewModel,
+            cartViewModel
+        )
     }
 }
 
@@ -82,14 +96,22 @@ fun BottomBar(navController: NavHostController) {
 }
 
 @Composable
-fun BottomNavGraph(navController: NavHostController, bottom: @Composable () -> Unit) {
-    val profileViewModel = remember { ProfileViewModel() }
+fun BottomNavGraph(
+    navController: NavHostController,
+    bottom: @Composable () -> Unit,
+    profileViewModel: ProfileViewModel,
+    cartViewModel: CartViewModel
+) {
+
+    val viewModel = remember {
+        SearchViewModel()
+    }
     NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
         composable(route = NavigationItem.Home.route) {
             HomeScreen(navController = navController, bottom)
         }
         composable(route = NavigationItem.Order.route) {
-            OrderScreen(navController = navController, bottom)
+            OrderScreen(navController = navController, bottom, cartViewModel)
         }
         composable(route = NavigationItem.Transactions.route) {
             TransactionScreen(navController = navController)
@@ -98,14 +120,17 @@ fun BottomNavGraph(navController: NavHostController, bottom: @Composable () -> U
             ProfileScreen(navController = navController, viewModel = profileViewModel)
         }
         composable("menuproduct") {
-            MenuProducts(navController)
+            val focusRequester = remember {
+                FocusRequester()
+            }
+            MenuProducts(navController, focusRequester, viewModel)
         }
 
         composable("detail/{_id}") {
             DetailScreen(navController, it.arguments?.getString("_id").toString())
         }
-        composable("information") {
-            InformationOrder(navController = navController)
+        composable("information/{_id}") {
+            InformationOrder(navController = navController, it.arguments?.getString("_id").toString())
         }
     }
 }

@@ -1,6 +1,9 @@
 package com.example.learncode.ui.screen
 
-import android.util.Log
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Looper
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -11,16 +14,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
@@ -47,6 +47,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -64,24 +65,49 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import com.example.learncode.R
 import com.example.learncode.model.AddToCartRequest
 import com.example.learncode.model.Cart
-import com.example.learncode.model.NavigationItem
 import com.example.learncode.model.PreferenceManager
-import com.example.learncode.model.Product
 import com.example.learncode.model.ProductOfCart
-import com.example.learncode.model.Products
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.viewmodel.CartViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+
+val TIMEOUT_THRESHOLD = 5000 // 5 giây (đơn vị: millisecond)
+val CHECK_INTERVAL = 5000 // 1 phút (đơn vị: millisecond)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OrderScreen(navController: NavController, bottom: @Composable () -> Unit) {
-    val viewModel = remember { CartViewModel() }
+fun OrderScreen(
+    navController: NavController,
+    bottom: @Composable () -> Unit,
+    viewModel: CartViewModel
+) {
+//    var lastInteractionTime by remember { mutableStateOf(System.currentTimeMillis()) }
+//    LaunchedEffect(Unit) {
+//        while (true) {
+//            val currentTime = System.currentTimeMillis()
+//            val elapsedTime = currentTime - lastInteractionTime
+//            if (elapsedTime > TIMEOUT_THRESHOLD) {
+//                // Thực hiện hành động khi không tương tác
+//                // Ví dụ: hiển thị thông báo
+//                // Thực hiện việc này trên main thread
+//                withContext(Dispatchers.Main) {
+//                    Log.d("WAIT", "THẰNG USER KHÔNG LÀM GÌ NÈ QUÝNH NÓ")
+//                }
+//            }
+//            delay(CHECK_INTERVAL.toLong())
+//        }
+//    }
+//    lastInteractionTime = System.currentTimeMillis()
     Box {
         Scaffold(
             topBar = { TopBarCenter(navController) },
@@ -112,6 +138,12 @@ fun TopBarCenter(navController: NavController) {
     )
 }
 
+fun getCurrentLocation() {
+
+}
+
+val requestCode = 1
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentOrder(
@@ -119,20 +151,21 @@ fun ContentOrder(
     viewModel: CartViewModel,
     navController: NavController
 ) {
-    val token = PreferenceManager.getToken(LocalContext.current)
+    val token = PreferenceManager.getToken(LocalContext.current).toString()
     val cart by viewModel.cart.observeAsState()
-    if (token != null) {
-        viewModel.getCardOfUser(token)
-    }
     var isEditAddressDialogVisible by remember { mutableStateOf(false) }
     var noteText by remember { mutableStateOf("") }
-    var deliveryAddress by remember { mutableStateOf("") }
+    val deliveryAddress by viewModel.address.observeAsState("")
     var selectedPaymentMethod by remember { mutableStateOf("") }
+    val context: Context = LocalContext.current
+    LaunchedEffect(Unit) {
+        token?.let { token -> viewModel.getCardOfUser(token) }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        LazyColumn(contentPadding = paddingValues) {
+        LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize()) {
             item {
                 Column(
                     modifier = Modifier
@@ -147,12 +180,7 @@ fun ContentOrder(
                     )
                     Spacer(modifier = Modifier.height(5.dp))
                     Text(
-                        text = "Tran Van Banh",
-                        fontSize = 18.sp,
-                        fontFamily = FontFamily(fontPoppinsSemi)
-                    )
-                    Text(
-                        text = deliveryAddress,
+                        text = deliveryAddress.toString(),
                         fontSize = 14.sp,
                         fontFamily = FontFamily(fontPoppinsRegular),
                         color = Color.Gray
@@ -174,6 +202,71 @@ fun ContentOrder(
                             Spacer(modifier = Modifier.width(5.dp))
                             Text(
                                 text = "Edit Address",
+                                fontSize = 14.sp,
+                                color = Color.Black,
+                                fontFamily = FontFamily(fontPoppinsRegular)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Button(
+                            onClick = {
+                                val activity = context as? Activity
+                                val fusedLocationClient: FusedLocationProviderClient =
+                                    LocationServices.getFusedLocationProviderClient(activity)
+                                if (activity != null) {
+                                    if (ActivityCompat.checkSelfPermission(
+                                            context,
+                                            android.Manifest.permission.ACCESS_FINE_LOCATION
+                                        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                                            context,
+                                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                                        ) != PackageManager.PERMISSION_GRANTED
+                                    ) {
+                                        ActivityCompat.requestPermissions(
+                                            activity,
+                                            arrayOf(
+                                                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                                            ),
+                                            requestCode
+                                        )
+                                    } else {
+                                        fusedLocationClient.requestLocationUpdates(
+                                            LocationRequest.create(),
+                                            object : LocationCallback() {
+                                                override fun onLocationResult(locationResult: LocationResult?) {
+                                                    locationResult ?: return
+                                                    for (location in locationResult.locations) {
+                                                        val latitude = location.latitude
+                                                        val longitude = location.longitude
+                                                        viewModel.reverseGeocode(
+                                                            context = context,
+                                                            latitude = latitude,
+                                                            longitude = longitude
+                                                        )
+                                                        fusedLocationClient.removeLocationUpdates(this)
+                                                    }
+                                                }
+                                            },
+                                            Looper.getMainLooper()
+                                        )
+                                    }
+                                }
+                            },
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(20.dp)),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                            border = BorderStroke(1.dp, Color.Gray)
+                        )
+                        {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "EditIcon",
+                                tint = Color.Black
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = "Get Location",
                                 fontSize = 14.sp,
                                 color = Color.Black,
                                 fontFamily = FontFamily(fontPoppinsRegular)
@@ -225,7 +318,7 @@ fun ContentOrder(
                         ) {
                             CircularProgressIndicator(
                                 modifier = Modifier.width(35.dp),
-                                color = MaterialTheme.colorScheme.secondary, // Sử dụng MaterialTheme.colors.secondary thay vì MaterialTheme.colorScheme.secondary
+                                color = MaterialTheme.colorScheme.secondary,
                                 backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                             )
                         }
@@ -245,7 +338,14 @@ fun ContentOrder(
                                     viewModel.increaseProductQuantity(item.product._id)
                                 },
                                 onDecreaseClicked = {
-                                    viewModel.decreaseProductQuantity(item.product._id)
+                                    val addToCart = AddToCartRequest(item.product._id)
+                                    token?.let { token ->
+                                        viewModel.decreaseProductQuantity(
+                                            item.product._id,
+                                            token,
+                                            addToCart
+                                        )
+                                    }
                                 },
                                 onItemClick = {
                                     navController.navigate("detail/${item.product._id}")
@@ -374,7 +474,7 @@ fun ContentOrder(
         EditAddressDialog(
             onDismiss = { isEditAddressDialogVisible = false },
             onSave = { newAddress ->
-                deliveryAddress = newAddress
+                viewModel.setAddress(newAddress)
                 isEditAddressDialogVisible = false
             }
         )

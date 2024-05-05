@@ -12,6 +12,8 @@ router.get('/:id', productController.findProductById);
 router.get('/search/:name', productController.findProductByName);
 // ->  lấy danh sách product phổ biến
 router.get('/lists/popular', productController.getAllProductsPopular);
+// ->  lấy danh sách product phổ biến
+router.get('/lists/popular/limit', productController.getAllProductsPopularLimit);
 // -> lấy product của 1 category nào đó
 router.get('/category/:id', productController.getAllProductsOfCategory);
 // -> lấy product mà có trường rating
