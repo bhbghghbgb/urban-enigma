@@ -58,24 +58,27 @@ interface ApiService {
         @Header("Authorization") token: String, @Path("id") id: String
     ): Response<Order>
 
-    // API thay doi thong tin tai khoan
+    // dang ki
+    @POST("/account/add")
+    suspend fun registerAccount(@Body account: Account): Response<ResponseFromServer>
+
     @POST("/accountinfo/email")
     suspend fun requestChangeAccountEmail(
         @Body request: AccountInfoChangeEmailRequest
-    ): Response<ResponseBody>
+    ): Response<ResponseFromServer>
 
     @POST("/accountinfo/phone")
     suspend fun requestChangeAccountPhone(
         @Body request: AccountInfoChangePhoneRequest
-    ): Response<ResponseBody>
+    ): Response<ResponseFromServer>
 
     @PATCH("/accountinfo/email")
     suspend fun attemptChangeAccountEmail(
         @Body request: AccountInfoChangeEmailAttempt
-    ): Response<ResponseBody>
+    ): Response<ResponseFromServer>
 
-    @PATCH("/accountinfo/email")
+    @PATCH("/accountinfo/phone")
     suspend fun attemptChangeAccountPhone(
         @Body request: AccountInfoChangePhoneAttempt
-    ): Response<ResponseBody>
+    ): Response<ResponseFromServer>
 }

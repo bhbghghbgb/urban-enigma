@@ -99,7 +99,7 @@ exports.attemptChangeAccountPhone = async (req, res) => {
                 message: "Verification code mismatch",
             });
         }
-        await changePhone(username, verifyCode);
+        await changePhone(username, verifyRequest.info);
         await verifyRequest.remove();
         return res.status(200).json({ message: "Account phone changed" });
     } catch (err) {
