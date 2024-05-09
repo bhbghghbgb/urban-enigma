@@ -1,1513 +1,1728 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - NewLands Shop</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
-    <style>
-        * {
-            list-style: none;
-            text-decoration: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: #f5f6fa;
-            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-            overflow: hidden;
-        }
-
-        #wrapper {
-            height: 100%;
-        }
-
-        .sidebar {
-            background: rgb(5, 68, 104);
-            width: 225px;
-            padding: 20px 0;
-            transition: all .5s ease;
-            height: 100vh;
-        }
-
-        .sidebar .profile {
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .sidebar .profile img {
-            display: block;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto;
-        }
-
-        .sidebar .profile h3 {
-            color: #ffffff;
-            margin: 10px 0 5px;
-            white-space: nowrap;
-        }
-
-        .sidebar .profile p {
-            color: rgb(206, 204, 253);
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
-        .sidebar ul li a {
-            display: block;
-            padding: 13px 30px;
-            border-bottom: 1px solid #10558d;
-            color: rgb(241, 237, 237);
-            font-size: 16px;
-            position: relative;
-            white-space: nowrap;
-        }
-
-        .sidebar ul li a .icon {
-            color: #dee4ec;
-            width: 30px;
-            display: inline-block;
-        }
-
-        .sidebar ul li a:hover,
-        .sidebar ul li a.active {
-            color: #0c7db1;
-            background: white;
-            border-right: 2px solid rgb(5, 68, 104);
-        }
-
-        .sidebar ul li a:hover .icon,
-        .sidebar ul li a.active .icon {
-            color: #0c7db1;
-        }
-
-        .sidebar ul li a:hover::before,
-        .sidebar ul li a.active::before {
-            display: block;
-        }
-
-        .section {
-            overflow-y: scroll;
-            height: 100%;
-        }
-
-        .section::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        .section::-webkit-scrollbar-thumb {
-            background: rgb(7, 105, 185);
-        }
-
-        .section::-webkit-scrollbar-track {
-            background-color: #eee;
-        }
-
-        .section .top_navbar {
-            background: rgb(7, 105, 185);
-            height: 50px;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        }
-
-        .section .top_navbar .navbar_title {
-            font-size: 22px;
-            color: white;
-            font-weight: 500;
-            margin-left: 20px;
-        }
-
-        .section .top_navbar .hamburger a {
-            font-size: 28px;
-            color: #f4fbff;
-            display: flex;
-            align-items: center;
-        }
-
-        .section .top_navbar .hamburger a:hover {
-            color: #a3ecff;
-        }
-
-        body.active .sidebar {
-            width: 0px;
-            visibility: hidden;
-        }
-
-        body.active .content {
-            width: 100%;
-        }
-
-        /* edit modal */
-        .modal_wrapper {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-around;
-            align-items: center;
-            height: 100vh;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            display: none;
-            background-color: rgba(0, 0, 0, 0.4);
-            /* Màu nền với độ mờ */
-        }
-
-        /* container */
-        .container {
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .content {
-            overflow: hidden;
-            width: calc(100% - 225px);
-            transition: all .5s ease;
-            max-height: 100vh;
-        }
-
-        .container .container_title {
-            font-size: 18px;
-            color: rgb(7, 105, 185);
-            background-color: white;
-            padding: 10px;
-            font-weight: 600;
-            border-radius: 5px;
-        }
-
-        .container_search {
-            background-color: transparent;
-            margin-top: 20px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .search_input {
-            width: 500px;
-            background-color: white;
-            border-radius: 5px;
-            padding: 5px 10px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .search_input_text {
-            display: flex;
-        }
-
-
-        .search_input form {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .container .container_search input {
-            font-size: 16px;
-            padding: 2px 8px;
-            border: none;
-            outline: none;
-            -webkit-padding-start: 2px;
-            margin-left: 5px;
-        }
-
-        .container .container_search label {
-            color: gray;
-        }
-
-        .container .container_search .btn-search {
-            font-size: 14px;
-            background-color: rgb(7, 105, 185);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-        }
-
-        .btn_Add_Product {
-            font-size: 14px;
-            background-color: rgb(7, 105, 185);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-        }
-
-        .container .container_search .container_search_btnAdd {
-            display: flex;
-            align-items: center;
-            justify-content: space-around;
-        }
-
-        .container .container_search .container_search_btnAdd button {
-            font-size: 15px;
-            background-color: rgb(7, 105, 185);
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
-            border: none;
-        }
-
-        .container_list {
-            margin-top: 20px;
-            background-color: white;
-            height: max-content;
-        }
-
-        .container_list table {
-            padding: 5px;
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .container_list table th {
-            font-size: 16px;
-            color: white;
-            padding: 8px;
-            background-color: rgb(7, 105, 185);
-        }
-
-        .container_list td {
-            padding: 8px;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            cursor: default;
-            text-transform: capitalize;
-        }
-
-        .container_list tr .product-description {
-            max-width: 300px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .container_list tr:nth-child(even) {
-            background-color: rgb(248, 248, 248);
-        }
-
-        .container_list tr:hover {
-            background-color: rgb(244, 244, 244);
-        }
-
-        .container_list tr:hover td {
-            color: rgb(7, 105, 185);
-        }
-
-        .td_center {
-            text-align: center;
-        }
-
-        .td_right {
-            text-align: right;
-        }
-
-        .td_5 {
-            max-width: 5%;
-        }
-
-        .td_20 {
-            max-width: 20%;
-        }
-
-        .td_15 {
-            max-width: 15%;
-        }
-
-        .td_30 {
-            max-width: 30%;
-        }
-
-        .td_50 {
-            max-width: 50%;
-        }
-
-        .frmAdd {
-            display: flex;
-            flex-direction: column;
-            height: 550px;
-            width: 500px;
-            padding: 10px;
-            border-radius: 5px;
-            justify-content: space-around;
-            background-color: white;
-            border-radius: 8px;
-        }
-
-        .frmTitle {
-            display: flex;
-            justify-content: space-between;
-            height: 30px;
-            align-items: center;
-        }
-
-        .frmTitle p {
-            font-weight: 600;
-            font-size: 20px;
-        }
-
-        .frmInput {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .frmInputRow {
-            display: flex;
-            width: 100%;
-            justify-content: space-between;
-        }
-
-        .frmAdd input[type='text'],
-        .frmAdd input[type='number'],
-        .frmAdd input[type='file'],
-        .frmAdd input[type='password'] {
-            font-size: 14px;
-            padding: 8px;
-            border: 1px solid rgb(196, 196, 196);
-            margin-top: 5px;
-            outline: none;
-        }
-
-        label {
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-        }
-
-        .txtDescription {
-            font-size: 14px;
-            padding: 8px;
-            border: 1px solid rgb(196, 196, 196);
-            outline: none;
-            margin-top: 5px;
-            resize: none;
-        }
-
-        input[type="date"] {
-            font-size: 14px;
-            padding: 8px;
-            border: 1px solid rgb(196, 196, 196);
-            outline: none;
-            margin-top: 5px;
-            resize: none;
-        }
-
-        .slCategory {
-            font-size: 15px;
-            padding: 7px;
-            margin-top: 5px;
-            border: 1px solid rgb(196, 196, 196);
-        }
-
-        .wd_60 {
-            width: 60%;
-        }
-
-        .wd_40 {
-            width: 38%;
-        }
-
-        .wd_100 {
-            width: 100%;
-        }
-
-        .close {
-            font-size: 18px;
-            text-align: center;
-            background-color: white;
-            border: none;
-        }
-
-        .img_product {
-            height: 180px;
-            border-radius: 50%;
-        }
-
-        img_product1 {
-            height: 180px;
-            border-radius: 50%;
-        }
-
-        .frmInputBtn {
-            display: flex;
-            flex-direction: row;
-            justify-content: flex-end;
-        }
-
-        .frmBtnAction {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .frmBtnAction button {
-            font-size: 14px;
-            padding: 6px 10px;
-            width: 80px;
-        }
-
-        .btnAcept {
-            margin-right: 10px;
-            border: 1px solid rgb(196, 196, 196);
-            border-radius: 3px;
-            background-color: rgb(15, 149, 15);
-            color: white;
-        }
-
-        .btnAcept:hover {
-            background-color: rgb(11, 123, 11);
-        }
-
-        .btnCancel {
-            border: 1px solid rgb(196, 196, 196);
-            border-radius: 3px;
-            background-color: white;
-        }
-
-        .btnCancel:hover {
-            background-color: rgb(255, 0, 0);
-            color: white;
-        }
-
-        .content_list {
-            display: flex;
-        }
-
-
-        /* content */
-        .container_wrapper {
-            display: flex;
-            height: 100%;
-            flex-direction: row;
-        }
-
-        .info_category {
-            display: flex;
-            flex-direction: column;
-            background-color: white;
-            margin-top: 20px;
-            height: max-content;
-            margin-left: 20px;
-            width: 300px;
-        }
-
-        .title p {
-            font-size: 16px;
-            background-color: rgb(7, 105, 185);
-            color: white;
-            padding: 8px;
-            font-weight: 600;
-        }
-
-        .txtNameCategory {
-            font-size: 15px;
-            padding: 5px;
-            margin-top: 5px;
-            outline: none;
-            border: 1px solid rgb(196, 196, 196);
-        }
-
-        .pad_10 {
-            padding: 10px;
-        }
-
-        .btnAceptCategory {
-            font-size: 15px;
-            padding: 5px;
-            margin-top: 5px;
-            background-color: rgb(15, 116, 199);
-            color: white;
-            border: none;
-        }
-
-        .btnAceptCategory:hover {
-            background-color: rgb(20, 121, 180);
-        }
-
-        .frmInputCkb {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .frmInputCkb input {
-            margin-left: 10px;
-        }
-
-        .delivery-wrapper {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-        }
-
-        .delivery-wrapper-lists {
-            width: 400px
-        }
-
-        .active-bold {
-            font-weight: bold;
-        }
-
-        .delivery-tabs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            background-color: white;
-            border-radius: 7px;
-            position: relative;
-        }
-
-        .tab-selected {
-            transition: .3s ease-in-out;
-            position: absolute;
-            top: 0;
-            left: 0;
-            border-radius: 8px;
-            background-color: rgba(7, 105, 185, 0.16);
-            height: 100%;
-            width: 33.33%;
-        }
-
-        .delivery-wrapper-detail {
-            height: max-content;
-            width: calc(100% - 440px);
-            background-color: white;
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .delivery-tabs-items {
-            padding: 7px 10px;
-            text-align: center;
-            cursor: default;
-        }
-
-        .delivery-list-container {
-            background-color: white;
-            padding: 4px;
-            border-radius: 8px;
-            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .delivery-list-order {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            margin-top: 10px;
-        }
-
-        .order-item:hover {
-            background-color: rgb(252, 252, 252);
-            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .order-item {
-            background-color: white;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-        }
-
-        .order-item-info {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .item-infor p {
-            margin-bottom: 5px;
-            font-size: 18px;
-            font-weight: 600;
-            color: rgb(73, 73, 73);
-        }
-
-        .item-infor span {
-            font-size: 15px;
-        }
-
-        .order-item-total {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .detail-top-text {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 22px;
-        }
-
-        .detail-top-info {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .order-text {
-            font-size: 15px;
-            color: rgb(124, 124, 124);
-        }
-
-        .order-text-content {
-            font-size: 17px;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-
-        .order {
-            padding: 0 10px;
-            position: relative;
-        }
-
-        .order::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            height: 100%;
-            width: 1px;
-            background-color: rgb(229, 229, 229);
-            border-radius: 1px;
-        }
-
-        .order:last-child::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            right: 0;
-            height: 100%;
-            width: 1px;
-            background-color: rgb(229, 229, 229);
-            border-radius: 1px;
-        }
-
-        .delivery-detail-content {
-            margin-top: 35px;
-        }
-
-        .tb-detail {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .tb-detail tr td img {
-            height: 80px;
-            width: 80px;
-            border-radius: 10px;
-        }
-
-        .tb-detail tr td {
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            font-size: 17px;
-        }
-
-        .tb-pad10 {
-            padding: 0 10px;
-        }
-
-        .tb-border {
-            border-bottom: 1px solid rgb(212, 212, 212);
-            ;
-        }
-
-        .max-wd30 {
-            max-width: 30%;
-        }
-
-        .max-wd5 {
-            max-width: 5%;
-        }
-
-        .td-img {
-            width: 80px;
-        }
-
-        .td-left {
-            text-align: left;
-        }
-
-        .max-wd20 {
-            max-width: 20%;
-        }
-
-        .max-wd10 {
-            max-width: 10%;
-        }
-
-        .td-pad-right-10 {
-            padding-right: 10px;
-        }
-
-        .td-pad-top-10 {
-            padding-top: 10px;
-        }
-
-        .td-pad-bottom-10 {
-            padding-bottom: 10px;
-        }
-
-        .sldeliverystaff {
-            font-size: 16px;
-        }
-
-        .btnDelivery {
-            background-color: rgb(83, 241, 120);
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: none;
-            font-size: 17px;
-            cursor: pointer;
-            box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .btnDelivery:hover {
-            background-color: rgb(65, 188, 94);
-            color: white;
-        }
-
-        option,
-        select {
-            text-transform: capitalize;
-        }
-
-        .popup {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0, 0, 0);
-            background-color: rgba(0, 0, 0, 0.4);
-        }
-
-        .popup-content {
-            background-color: #fefefe;
-            margin: 10% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 20%;
-        }
-
-        .closep {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .closep:hover,
-        .closep:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-    </style>
-</head>
-
-<body>
-    <div id="popup" class="popup">
-        <div class="popup-content">
-            <span class="closep" id="closePopupBtn">&times;</span>
-            <span style="font: 22px; font-weight: 600;display: block; margin-bottom: 10px;">Name category:</span>
-            <input type="text" id="userInput" style="font-size: 16px; padding: 10px; width: calc(100% - 25px);">
-            <button id="submitBtn" onclick="updateCategory2()"
-                style="display: block; font-size: 16px; padding: 5px 10px; margin-top: 10px; background-color: rgb(15, 116, 199);width: 100%; color: white; border: none;">Submit</button>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Home - NewLands Shop</title>
+        <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            rel="stylesheet"
+        />
+        <style>
+            * {
+                list-style: none;
+                text-decoration: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background: #f5f6fa;
+                font-family: Cambria, Cochin, Georgia, Times, "Times New Roman",
+                    serif;
+                overflow: hidden;
+            }
+
+            #wrapper {
+                height: 100%;
+            }
+
+            .sidebar {
+                background: rgb(5, 68, 104);
+                width: 225px;
+                padding: 20px 0;
+                transition: all 0.5s ease;
+                height: 100vh;
+            }
+
+            .sidebar .profile {
+                margin-bottom: 30px;
+                text-align: center;
+            }
+
+            .sidebar .profile img {
+                display: block;
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                margin: 0 auto;
+            }
+
+            .sidebar .profile h3 {
+                color: #ffffff;
+                margin: 10px 0 5px;
+                white-space: nowrap;
+            }
+
+            .sidebar .profile p {
+                color: rgb(206, 204, 253);
+                font-size: 14px;
+                white-space: nowrap;
+            }
+
+            .sidebar ul li a {
+                display: block;
+                padding: 13px 30px;
+                border-bottom: 1px solid #10558d;
+                color: rgb(241, 237, 237);
+                font-size: 16px;
+                position: relative;
+                white-space: nowrap;
+            }
+
+            .sidebar ul li a .icon {
+                color: #dee4ec;
+                width: 30px;
+                display: inline-block;
+            }
+
+            .sidebar ul li a:hover,
+            .sidebar ul li a.active {
+                color: #0c7db1;
+                background: white;
+                border-right: 2px solid rgb(5, 68, 104);
+            }
+
+            .sidebar ul li a:hover .icon,
+            .sidebar ul li a.active .icon {
+                color: #0c7db1;
+            }
+
+            .sidebar ul li a:hover::before,
+            .sidebar ul li a.active::before {
+                display: block;
+            }
+
+            .section {
+                overflow-y: scroll;
+                height: 100%;
+            }
+
+            .section::-webkit-scrollbar {
+                width: 5px;
+            }
+
+            .section::-webkit-scrollbar-thumb {
+                background: rgb(7, 105, 185);
+            }
+
+            .section::-webkit-scrollbar-track {
+                background-color: #eee;
+            }
+
+            .section .top_navbar {
+                background: rgb(7, 105, 185);
+                height: 50px;
+                display: flex;
+                align-items: center;
+                padding: 0 20px;
+                position: sticky;
+                top: 0;
+                z-index: 1;
+            }
+
+            .section .top_navbar .navbar_title {
+                font-size: 22px;
+                color: white;
+                font-weight: 500;
+                margin-left: 20px;
+            }
+
+            .section .top_navbar .hamburger a {
+                font-size: 28px;
+                color: #f4fbff;
+                display: flex;
+                align-items: center;
+            }
+
+            .section .top_navbar .hamburger a:hover {
+                color: #a3ecff;
+            }
+
+            body.active .sidebar {
+                width: 0px;
+                visibility: hidden;
+            }
+
+            body.active .content {
+                width: 100%;
+            }
+
+            /* edit modal */
+            .modal_wrapper {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-around;
+                align-items: center;
+                height: 100vh;
+                position: fixed;
+                width: 100%;
+                top: 0;
+                left: 0;
+                display: none;
+                background-color: rgba(0, 0, 0, 0.4);
+                /* Màu nền với độ mờ */
+            }
+
+            /* container */
+            .container {
+                display: flex;
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .content {
+                overflow: hidden;
+                width: calc(100% - 225px);
+                transition: all 0.5s ease;
+                max-height: 100vh;
+            }
+
+            .container .container_title {
+                font-size: 18px;
+                color: rgb(7, 105, 185);
+                background-color: white;
+                padding: 10px;
+                font-weight: 600;
+                border-radius: 5px;
+            }
+
+            .container_search {
+                background-color: transparent;
+                margin-top: 20px;
+                border-radius: 5px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .search_input {
+                width: 500px;
+                background-color: white;
+                border-radius: 5px;
+                padding: 5px 10px;
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .search_input_text {
+                display: flex;
+            }
+
+            .search_input form {
+                width: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+
+            .container .container_search input {
+                font-size: 16px;
+                padding: 2px 8px;
+                border: none;
+                outline: none;
+                -webkit-padding-start: 2px;
+                margin-left: 5px;
+            }
+
+            .container .container_search label {
+                color: gray;
+            }
+
+            .container .container_search .btn-search {
+                font-size: 14px;
+                background-color: rgb(7, 105, 185);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 5px;
+                border: none;
+            }
+
+            .btn_Add_Product {
+                font-size: 14px;
+                background-color: rgb(7, 105, 185);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 5px;
+                border: none;
+            }
+
+            .container .container_search .container_search_btnAdd {
+                display: flex;
+                align-items: center;
+                justify-content: space-around;
+            }
+
+            .container .container_search .container_search_btnAdd button {
+                font-size: 15px;
+                background-color: rgb(7, 105, 185);
+                color: white;
+                padding: 8px 15px;
+                border-radius: 5px;
+                border: none;
+            }
+
+            .container_list {
+                margin-top: 20px;
+                background-color: white;
+                height: max-content;
+            }
+
+            .container_list table {
+                padding: 5px;
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .container_list table th {
+                font-size: 16px;
+                color: white;
+                padding: 8px;
+                background-color: rgb(7, 105, 185);
+            }
+
+            .container_list td {
+                padding: 8px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                cursor: default;
+                text-transform: capitalize;
+            }
+
+            .container_list tr .product-description {
+                max-width: 300px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            .container_list tr:nth-child(even) {
+                background-color: rgb(248, 248, 248);
+            }
+
+            .container_list tr:hover {
+                background-color: rgb(244, 244, 244);
+            }
+
+            .container_list tr:hover td {
+                color: rgb(7, 105, 185);
+            }
+
+            .td_center {
+                text-align: center;
+            }
+
+            .td_right {
+                text-align: right;
+            }
+
+            .td_5 {
+                max-width: 5%;
+            }
+
+            .td_20 {
+                max-width: 20%;
+            }
+
+            .td_15 {
+                max-width: 15%;
+            }
+
+            .td_30 {
+                max-width: 30%;
+            }
+
+            .td_50 {
+                max-width: 50%;
+            }
+
+            .frmAdd {
+                display: flex;
+                flex-direction: column;
+                height: 550px;
+                width: 500px;
+                padding: 10px;
+                border-radius: 5px;
+                justify-content: space-around;
+                background-color: white;
+                border-radius: 8px;
+            }
+
+            .frmTitle {
+                display: flex;
+                justify-content: space-between;
+                height: 30px;
+                align-items: center;
+            }
+
+            .frmTitle p {
+                font-weight: 600;
+                font-size: 20px;
+            }
+
+            .frmInput {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .frmInputRow {
+                display: flex;
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .frmAdd input[type="text"],
+            .frmAdd input[type="number"],
+            .frmAdd input[type="file"],
+            .frmAdd input[type="password"] {
+                font-size: 14px;
+                padding: 8px;
+                border: 1px solid rgb(196, 196, 196);
+                margin-top: 5px;
+                outline: none;
+            }
+
+            label {
+                font-size: 16px;
+                display: flex;
+                align-items: center;
+            }
+
+            .txtDescription {
+                font-size: 14px;
+                padding: 8px;
+                border: 1px solid rgb(196, 196, 196);
+                outline: none;
+                margin-top: 5px;
+                resize: none;
+            }
+
+            input[type="date"] {
+                font-size: 14px;
+                padding: 8px;
+                border: 1px solid rgb(196, 196, 196);
+                outline: none;
+                margin-top: 5px;
+                resize: none;
+            }
+
+            .slCategory {
+                font-size: 15px;
+                padding: 7px;
+                margin-top: 5px;
+                border: 1px solid rgb(196, 196, 196);
+            }
+
+            .wd_60 {
+                width: 60%;
+            }
+
+            .wd_40 {
+                width: 38%;
+            }
+
+            .wd_100 {
+                width: 100%;
+            }
+
+            .close {
+                font-size: 18px;
+                text-align: center;
+                background-color: white;
+                border: none;
+            }
+
+            .img_product {
+                height: 180px;
+                border-radius: 50%;
+            }
+
+            img_product1 {
+                height: 180px;
+                border-radius: 50%;
+            }
+
+            .frmInputBtn {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-end;
+            }
+
+            .frmBtnAction {
+                display: flex;
+                justify-content: space-between;
+            }
+
+            .frmBtnAction button {
+                font-size: 14px;
+                padding: 6px 10px;
+                width: 80px;
+            }
+
+            .btnAcept {
+                margin-right: 10px;
+                border: 1px solid rgb(196, 196, 196);
+                border-radius: 3px;
+                background-color: rgb(15, 149, 15);
+                color: white;
+            }
+
+            .btnAcept:hover {
+                background-color: rgb(11, 123, 11);
+            }
+
+            .btnCancel {
+                border: 1px solid rgb(196, 196, 196);
+                border-radius: 3px;
+                background-color: white;
+            }
+
+            .btnCancel:hover {
+                background-color: rgb(255, 0, 0);
+                color: white;
+            }
+
+            .content_list {
+                display: flex;
+            }
+
+            /* content */
+            .container_wrapper {
+                display: flex;
+                height: 100%;
+                flex-direction: row;
+            }
+
+            .info_category {
+                display: flex;
+                flex-direction: column;
+                background-color: white;
+                margin-top: 20px;
+                height: max-content;
+                margin-left: 20px;
+                width: 300px;
+            }
+
+            .title p {
+                font-size: 16px;
+                background-color: rgb(7, 105, 185);
+                color: white;
+                padding: 8px;
+                font-weight: 600;
+            }
+
+            .txtNameCategory {
+                font-size: 15px;
+                padding: 5px;
+                margin-top: 5px;
+                outline: none;
+                border: 1px solid rgb(196, 196, 196);
+            }
+
+            .pad_10 {
+                padding: 10px;
+            }
+
+            .btnAceptCategory {
+                font-size: 15px;
+                padding: 5px;
+                margin-top: 5px;
+                background-color: rgb(15, 116, 199);
+                color: white;
+                border: none;
+            }
+
+            .btnAceptCategory:hover {
+                background-color: rgb(20, 121, 180);
+            }
+
+            .frmInputCkb {
+                display: flex;
+                align-items: center;
+                margin-bottom: 5px;
+            }
+
+            .frmInputCkb input {
+                margin-left: 10px;
+            }
+
+            .delivery-wrapper {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+            }
+
+            .delivery-wrapper-lists {
+                width: 400px;
+            }
+
+            .active-bold {
+                font-weight: bold;
+            }
+
+            .delivery-tabs {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                background-color: white;
+                border-radius: 7px;
+                position: relative;
+            }
+
+            .tab-selected {
+                transition: 0.3s ease-in-out;
+                position: absolute;
+                top: 0;
+                left: 0;
+                border-radius: 8px;
+                background-color: rgba(7, 105, 185, 0.16);
+                height: 100%;
+                width: 33.33%;
+            }
+
+            .delivery-wrapper-detail {
+                height: max-content;
+                width: calc(100% - 440px);
+                background-color: white;
+                padding: 10px;
+                border-radius: 8px;
+                box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .delivery-tabs-items {
+                padding: 7px 10px;
+                text-align: center;
+                cursor: default;
+            }
+
+            .delivery-list-container {
+                background-color: white;
+                padding: 4px;
+                border-radius: 8px;
+                box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .delivery-list-order {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                margin-top: 10px;
+            }
+
+            .order-item:hover {
+                background-color: rgb(252, 252, 252);
+                box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .order-item {
+                background-color: white;
+                border-radius: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 15px 20px;
+            }
+
+            .order-item-info {
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
+
+            .item-infor p {
+                margin-bottom: 5px;
+                font-size: 18px;
+                font-weight: 600;
+                color: rgb(73, 73, 73);
+            }
+
+            .item-infor span {
+                font-size: 15px;
+            }
+
+            .order-item-total {
+                font-size: 18px;
+                font-weight: bold;
+            }
+
+            .detail-top-text {
+                font-size: 20px;
+                font-weight: 600;
+                margin-bottom: 22px;
+            }
+
+            .detail-top-info {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .order-text {
+                font-size: 15px;
+                color: rgb(124, 124, 124);
+            }
+
+            .order-text-content {
+                font-size: 17px;
+                font-weight: 600;
+                margin-top: 10px;
+            }
+
+            .order {
+                padding: 0 10px;
+                position: relative;
+            }
+
+            .order::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 1px;
+                background-color: rgb(229, 229, 229);
+                border-radius: 1px;
+            }
+
+            .order:last-child::after {
+                content: "";
+                position: absolute;
+                top: 0;
+                right: 0;
+                height: 100%;
+                width: 1px;
+                background-color: rgb(229, 229, 229);
+                border-radius: 1px;
+            }
+
+            .delivery-detail-content {
+                margin-top: 35px;
+            }
+
+            .tb-detail {
+                width: 100%;
+                border-collapse: collapse;
+            }
+
+            .tb-detail tr td img {
+                height: 80px;
+                width: 80px;
+                border-radius: 10px;
+            }
+
+            .tb-detail tr td {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                font-size: 17px;
+            }
+
+            .tb-pad10 {
+                padding: 0 10px;
+            }
+
+            .tb-border {
+                border-bottom: 1px solid rgb(212, 212, 212);
+            }
+
+            .max-wd30 {
+                max-width: 30%;
+            }
+
+            .max-wd5 {
+                max-width: 5%;
+            }
+
+            .td-img {
+                width: 80px;
+            }
+
+            .td-left {
+                text-align: left;
+            }
+
+            .max-wd20 {
+                max-width: 20%;
+            }
+
+            .max-wd10 {
+                max-width: 10%;
+            }
+
+            .td-pad-right-10 {
+                padding-right: 10px;
+            }
+
+            .td-pad-top-10 {
+                padding-top: 10px;
+            }
+
+            .td-pad-bottom-10 {
+                padding-bottom: 10px;
+            }
+
+            .sldeliverystaff {
+                font-size: 16px;
+            }
+
+            .btnDelivery {
+                background-color: rgb(83, 241, 120);
+                padding: 10px 20px;
+                border-radius: 10px;
+                border: none;
+                font-size: 17px;
+                cursor: pointer;
+                box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .btnDelivery:hover {
+                background-color: rgb(65, 188, 94);
+                color: white;
+            }
+
+            option,
+            select {
+                text-transform: capitalize;
+            }
+
+            .popup {
+                display: none;
+                position: fixed;
+                z-index: 1;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: rgb(0, 0, 0);
+                background-color: rgba(0, 0, 0, 0.4);
+            }
+
+            .popup-content {
+                background-color: #fefefe;
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 20%;
+            }
+
+            .closep {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+            }
+
+            .closep:hover,
+            .closep:focus {
+                color: black;
+                text-decoration: none;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <span class="closep" id="closePopupBtn">&times;</span>
+                <span
+                    style="
+                        font: 22px;
+                        font-weight: 600;
+                        display: block;
+                        margin-bottom: 10px;
+                    "
+                    >Name category:</span
+                >
+                <input
+                    type="text"
+                    id="userInput"
+                    style="
+                        font-size: 16px;
+                        padding: 10px;
+                        width: calc(100% - 25px);
+                    "
+                />
+                <button
+                    id="submitBtn"
+                    onclick="updateCategory2()"
+                    style="
+                        display: block;
+                        font-size: 16px;
+                        padding: 5px 10px;
+                        margin-top: 10px;
+                        background-color: rgb(15, 116, 199);
+                        width: 100%;
+                        color: white;
+                        border: none;
+                    "
+                >
+                    Submit
+                </button>
+            </div>
         </div>
-    </div>
-    <div id="wrapper">
-        <div class="modal_wrapper modal_product_update">
-            <div class="frmAdd">
-                <div class="frmTitle">
-                    <p>Update product</p>
-                    <button onclick="closeModalAddProduct_Update()" class="close1">&times;</button>
-                </div>
-                <div class="frmInput">
-                    <label for="txtNameProduct1">Name product:</label>
-                    <input type="text" name="txtNameProduct1" id="txtNameProduct1">
-                </div>
-                <div class="frmInputRow">
-                    <div class="frmInput wd_60">
-                        <label for="txtPriceProduct1">Price</label>
-                        <input type="number" name="txtPriceProduct1" id="txtPriceProduct1">
+        <div id="wrapper">
+            <div class="modal_wrapper modal_product_update">
+                <div class="frmAdd">
+                    <div class="frmTitle">
+                        <p>Update product</p>
+                        <button
+                            onclick="closeModalAddProduct_Update()"
+                            class="close1"
+                        >
+                            &times;
+                        </button>
                     </div>
-                    <div class="frmInput wd_40">
-                        <label for="slCategory1">Category</label>
-                        <select name="slCategory1" class="slCategory" id="slCategory1">
-                            <script>
-                                select = document.querySelector('#slCategory1');
-                                const option = document.createElement('option');
-                                option.value = -1;
-                                option.textContent = 'Choose Category';
-                                select.appendChild(option);
-                                fetch('http://localhost:3001/category')
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        data.forEach(item => {
-                                            const option = document.createElement('option');
-                                            option.value = item._id;
-                                            option.textContent = item.name;
-                                            select.appendChild(option);
+                    <div class="frmInput">
+                        <label for="txtNameProduct1">Name product:</label>
+                        <input
+                            type="text"
+                            name="txtNameProduct1"
+                            id="txtNameProduct1"
+                        />
+                    </div>
+                    <div class="frmInputRow">
+                        <div class="frmInput wd_60">
+                            <label for="txtPriceProduct1">Price</label>
+                            <input
+                                type="number"
+                                name="txtPriceProduct1"
+                                id="txtPriceProduct1"
+                            />
+                        </div>
+                        <div class="frmInput wd_40">
+                            <label for="slCategory1">Category</label>
+                            <select
+                                name="slCategory1"
+                                class="slCategory"
+                                id="slCategory1"
+                            >
+                                <script>
+                                    select =
+                                        document.querySelector("#slCategory1");
+                                    const option =
+                                        document.createElement("option");
+                                    option.value = -1;
+                                    option.textContent = "Choose Category";
+                                    select.appendChild(option);
+                                    fetch("http://localhost:3001/category")
+                                        .then((res) => res.json())
+                                        .then((data) => {
+                                            data.forEach((item) => {
+                                                const option =
+                                                    document.createElement(
+                                                        "option",
+                                                    );
+                                                option.value = item._id;
+                                                option.textContent = item.name;
+                                                select.appendChild(option);
+                                            });
+                                        })
+                                        .catch((err) => {
+                                            console.log(err);
                                         });
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                    })
-                            </script>
-                        </select>
+                                </script>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="frmInputRow">
-                    <div class="frmInput wd_60">
-                        <label for="fImageProduct1">Image</label>
-                        <input type="file" name="fImageProduct1" id="fImageProduct1">
+                    <div class="frmInputRow">
+                        <div class="frmInput wd_60">
+                            <label for="fImageProduct1">Image</label>
+                            <input
+                                type="file"
+                                name="fImageProduct1"
+                                id="fImageProduct1"
+                            />
+                        </div>
+                        <img
+                            src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180"
+                            alt=""
+                            class="wd_40 img_product1"
+                        />
                     </div>
-                    <img src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180" alt=""
-                        class="wd_40 img_product1">
-                </div>
-                <div class="frmInput">
-                    <div class="frmInputCkb">
-                        <label for="ckbPopular1">Popular:</label>
-                        <input type="checkbox" name="ckbPopular1" id="ckbPopular1">
+                    <div class="frmInput">
+                        <div class="frmInputCkb">
+                            <label for="ckbPopular1">Popular:</label>
+                            <input
+                                type="checkbox"
+                                name="ckbPopular1"
+                                id="ckbPopular1"
+                            />
+                        </div>
                     </div>
-                </div>
-                <div class="frmInput">
-                    <label for="txtDescription1">Description</label>
-                    <textarea name="txtDescription1" class="txtDescription" id="txtDescription1" cols="30"
-                        rows="6"></textarea>
-                </div>
-                <div class="frmInputBtn">
-                    <div class="frmBtnAction">
-                        <button class="btnAcept" onclick="updateProduct_input()">Acept</button>
-                        <button class="btnCancel" onclick="closeModalAddProduct_Update()">Cancel</button>
+                    <div class="frmInput">
+                        <label for="txtDescription1">Description</label>
+                        <textarea
+                            name="txtDescription1"
+                            class="txtDescription"
+                            id="txtDescription1"
+                            cols="30"
+                            rows="6"
+                        ></textarea>
+                    </div>
+                    <div class="frmInputBtn">
+                        <div class="frmBtnAction">
+                            <button
+                                class="btnAcept"
+                                onclick="updateProduct_input()"
+                            >
+                                Acept
+                            </button>
+                            <button
+                                class="btnCancel"
+                                onclick="closeModalAddProduct_Update()"
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal_wrapper modal_product">
-            <div class="frmAdd">
-                <div class="frmTitle">
-                    <p>Add new product</p>
-                    <button class="close">&times;</button>
-                </div>
-                <div class="frmInput">
-                    <label for="txtNameProduct">Name product:</label>
-                    <input type="text" name="txtNameProduct" id="txtNameProduct">
-                </div>
-                <div class="frmInputRow">
-                    <div class="frmInput wd_60">
-                        <label for="txtPriceProduct">Price</label>
-                        <input type="number" name="txtPriceProduct" id="txtPriceProduct">
+            <div class="modal_wrapper modal_product">
+                <div class="frmAdd">
+                    <div class="frmTitle">
+                        <p>Add new product</p>
+                        <button class="close">&times;</button>
                     </div>
-                    <div class="frmInput wd_40">
-                        <label for="slCategory">Category</label>
-                        <select name="slCategory" class="slCategory" id="slCategory">
-                            <script>
-                                var select2 = document.querySelector('#slCategory');
-                                let option2 = document.createElement('option');
-                                option2.value = -1;
-                                option2.textContent = 'Choose Category';
-                                select2.appendChild(option2);
-                                fetch('http://localhost:3001/category')
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        data.forEach(item => {
-                                            const option = document.createElement('option');
-                                            option.value = item._id;
-                                            option.textContent = item.name;
-                                            select2.appendChild(option);
+                    <div class="frmInput">
+                        <label for="txtNameProduct">Name product:</label>
+                        <input
+                            type="text"
+                            name="txtNameProduct"
+                            id="txtNameProduct"
+                        />
+                    </div>
+                    <div class="frmInputRow">
+                        <div class="frmInput wd_60">
+                            <label for="txtPriceProduct">Price</label>
+                            <input
+                                type="number"
+                                name="txtPriceProduct"
+                                id="txtPriceProduct"
+                            />
+                        </div>
+                        <div class="frmInput wd_40">
+                            <label for="slCategory">Category</label>
+                            <select
+                                name="slCategory"
+                                class="slCategory"
+                                id="slCategory"
+                            >
+                                <script>
+                                    var select2 =
+                                        document.querySelector("#slCategory");
+                                    let option2 =
+                                        document.createElement("option");
+                                    option2.value = -1;
+                                    option2.textContent = "Choose Category";
+                                    select2.appendChild(option2);
+                                    fetch("http://localhost:3001/category")
+                                        .then((res) => res.json())
+                                        .then((data) => {
+                                            data.forEach((item) => {
+                                                const option =
+                                                    document.createElement(
+                                                        "option",
+                                                    );
+                                                option.value = item._id;
+                                                option.textContent = item.name;
+                                                select2.appendChild(option);
+                                            });
+                                        })
+                                        .catch((err) => {
+                                            console.log(err);
                                         });
-                                    })
-                                    .catch(err => {
-                                        console.log(err);
-                                    })
-                            </script>
-                        </select>
+                                </script>
+                            </select>
+                        </div>
                     </div>
-                </div>
-                <div class="frmInputRow">
-                    <div class="frmInput wd_60">
-                        <label for="fImageProduct">Image</label>
-                        <input type="file" name="fImageProduct" id="fImageProduct">
+                    <div class="frmInputRow">
+                        <div class="frmInput wd_60">
+                            <label for="fImageProduct">Image</label>
+                            <input
+                                type="file"
+                                name="fImageProduct"
+                                id="fImageProduct"
+                            />
+                        </div>
+                        <img
+                            src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180"
+                            alt=""
+                            class="wd_40 img_product"
+                        />
                     </div>
-                    <img src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180" alt=""
-                        class="wd_40 img_product">
-                </div>
-                <div class="frmInput">
-                    <div class="frmInputCkb">
-                        <label for="ckbPopular">Popular:</label>
-                        <input type="checkbox" name="ckbPopular" id="ckbPopular">
+                    <div class="frmInput">
+                        <div class="frmInputCkb">
+                            <label for="ckbPopular">Popular:</label>
+                            <input
+                                type="checkbox"
+                                name="ckbPopular"
+                                id="ckbPopular"
+                            />
+                        </div>
                     </div>
-                </div>
-                <div class="frmInput">
-                    <label for="txtDescription">Description</label>
-                    <textarea name="txtDescription" class="txtDescription" id="txtDescription" cols="30"
-                        rows="6"></textarea>
-                </div>
-                <div class="frmInputBtn">
-                    <div class="frmBtnAction">
-                        <button class="btnAcept" onclick="handleProduct()">Acept</button>
-                        <button class="btnCancel" onclick="closeModalAddProduct()">Cancel</button>
+                    <div class="frmInput">
+                        <label for="txtDescription">Description</label>
+                        <textarea
+                            name="txtDescription"
+                            class="txtDescription"
+                            id="txtDescription"
+                            cols="30"
+                            rows="6"
+                        ></textarea>
+                    </div>
+                    <div class="frmInputBtn">
+                        <div class="frmBtnAction">
+                            <button class="btnAcept" onclick="handleProduct()">
+                                Acept
+                            </button>
+                            <button
+                                class="btnCancel"
+                                onclick="closeModalAddProduct()"
+                            >
+                                Cancel
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="modal_wrapper modal_staff">
-            <div class="frmAdd">
-                <div class="frmTitle">
-                    <p>Add new staff</p>
-                    <button class="close" onclick="closeModalAddStaff()">&times;</button>
-                </div>
-                <div class="frmInput">
-                    <label for="txtNameStaff">Name staff:</label>
-                    <input type="text" name="txtNameStaff" id="txtNameStaff">
-                </div>
-                <div class="frmInputRow">
-                    <div class="frmInput wd_60">
-                        <label for="txtDateOfBirth">Date of birth:</label>
-                        <input type="date" name="txtDateOfBirth" id="txtDateOfBirth">
+            <div class="modal_wrapper modal_staff">
+                <div class="frmAdd">
+                    <div class="frmTitle">
+                        <p>Add new staff</p>
+                        <button class="close" onclick="closeModalAddStaff()">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="frmInput">
+                        <label for="txtNameStaff">Name staff:</label>
+                        <input
+                            type="text"
+                            name="txtNameStaff"
+                            id="txtNameStaff"
+                        />
+                    </div>
+                    <div class="frmInputRow">
+                        <div class="frmInput wd_60">
+                            <label for="txtDateOfBirth">Date of birth:</label>
+                            <input
+                                type="date"
+                                name="txtDateOfBirth"
+                                id="txtDateOfBirth"
+                            />
+                        </div>
+                        <div class="frmInput wd_40">
+                            <label for="slGender">Gender:</label>
+                            <select
+                                name="slGender"
+                                class="slCategory"
+                                id="slGender"
+                            >
+                                <option value="-1">Choose Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="frmInputRow">
+                        <div class="frmInput wd_60">
+                            <label for="txtPhone">Phone Number:</label>
+                            <input type="text" name="txtPhone" id="txtPhone" />
+                        </div>
+                        <div class="frmInput wd_40">
+                            <label for="slPosition">Position:</label>
+                            <select
+                                name="slPosition"
+                                class="slCategory"
+                                id="slPosition"
+                            >
+                                <option value="-1">Choose Position</option>
+                                <option value="staff">Staff</option>
+                                <option value="delivery">Delivery</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="frmInput">
+                        <label for="txtAdress">Address:</label>
+                        <input type="text" name="txtAdress" id="txtAdress" />
+                    </div>
+                    <div class="frmInput">
+                        <label for="txtUsername">Username:</label>
+                        <input
+                            type="text"
+                            name="txtUsername"
+                            id="txtUsername"
+                        />
+                    </div>
+                    <div class="frmInput">
+                        <label for="txtPassword">Password:</label>
+                        <input
+                            type="password"
+                            name="txtPassword"
+                            id="txtPassword"
+                        />
                     </div>
                     <div class="frmInput wd_40">
-                        <label for="slGender">Gender:</label>
-                        <select name="slGender" class="slCategory" id="slGender">
-                            <option value="-1">Choose Gender</option>
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="frmInputRow">
-                    <div class="frmInput wd_60">
-                        <label for="txtPhone">Phone Number:</label>
-                        <input type="text" name="txtPhone" id="txtPhone">
-                    </div>
-                    <div class="frmInput wd_40">
-                        <label for="slPosition">Position:</label>
-                        <select name="slPosition" class="slCategory" id="slPosition">
-                            <option value="-1">Choose Position</option>
+                        <label for="slRole">Role</label>
+                        <select name="slRole" class="slCategory" id="slRole">
+                            <option value="-1">Choose Role</option>
+                            <option value="admin">Admin</option>
                             <option value="staff">Staff</option>
-                            <option value="delivery">Delivery</option>
                         </select>
                     </div>
+                    <div class="frmInputBtn">
+                        <div class="frmBtnAction">
+                            <button class="btnAcept" onclick="handleStaff()">
+                                Acept
+                            </button>
+                            <button
+                                class="btnCancel"
+                                onclick="closeModalAddStaff()"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="frmInput">
-                    <label for="txtAdress">Address:</label>
-                    <input type="text" name="txtAdress" id="txtAdress">
+            </div>
+            <div class="container_wrapper">
+                <div class="sidebar">
+                    <div class="profile">
+                        <img
+                            src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180"
+                            alt=""
+                            srcset=""
+                        />
+                        <h3>Trần Văn Bánh</h3>
+                        <p>Administrator</p>
+                    </div>
+                    <ul>
+                        <li>
+                            <a
+                                href="index.html?my-dashboard"
+                                class="item-menu active"
+                            >
+                                <span class="icon"
+                                    ><i class="fa-solid fa-house"></i
+                                ></span>
+                                <span class="item">My Dashboard</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="index.html?product" class="item-menu">
+                                <span class="icon"
+                                    ><i class="fa-solid fa-mug-saucer"></i
+                                ></span>
+                                <span class="item">Product</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="index.html?category" class="item-menu">
+                                <span class="icon"
+                                    ><i class="fa-solid fa-layer-group"></i
+                                ></span>
+                                <span class="item">Category</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="index.html?staff" class="item-menu">
+                                <span class="icon"
+                                    ><i class="fa-solid fa-user"></i
+                                ></span>
+                                <span class="item">Staff</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="index.html?delivery" class="item-menu">
+                                <span class="icon"
+                                    ><i class="fa-solid fa-truck-fast"></i
+                                ></span>
+                                <span class="item">Delivery</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="index.html?settings" class="item-menu">
+                                <span class="icon"
+                                    ><i class="fa-solid fa-gear"></i
+                                ></span>
+                                <span class="item">Settings</span>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
-                <div class="frmInput">
-                    <label for="txtUsername">Username:</label>
-                    <input type="text" name="txtUsername" id="txtUsername">
-                </div>
-                <div class="frmInput">
-                    <label for="txtPassword">Password:</label>
-                    <input type="password" name="txtPassword" id="txtPassword">
-                </div>
-                <div class="frmInput wd_40">
-                    <label for="slRole">Role</label>
-                    <select name="slRole" class="slCategory" id="slRole">
-                        <option value="-1">Choose Role</option>
-                        <option value="admin">Admin</option>
-                        <option value="staff">Staff</option>
-                    </select>
-                </div>
-                <div class="frmInputBtn">
-                    <div class="frmBtnAction">
-                        <button class="btnAcept" onclick="handleStaff()">Acept</button>
-                        <button class="btnCancel" onclick="closeModalAddStaff()">Cancel</button>
+                <div class="content">
+                    <div class="section">
+                        <div class="top_navbar">
+                            <div class="hamburger">
+                                <a><i class="fa-solid fa-bars"></i></a>
+                            </div>
+                            <div class="navbar_title">Hello Administrator</div>
+                        </div>
+                        <div class="container"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="container_wrapper">
-            <div class="sidebar">
-                <div class="profile">
-                    <img src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180" alt=""
-                        srcset="">
-                    <h3>Trần Văn Bánh</h3>
-                    <p>Administrator</p>
-                </div>
-                <ul>
-                    <li>
-                        <a href="index.html?my-dashboard" class="item-menu active">
-                            <span class="icon"><i class="fa-solid fa-house"></i></span>
-                            <span class="item">My Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.html?product" class="item-menu">
-                            <span class="icon"><i class="fa-solid fa-mug-saucer"></i></span>
-                            <span class="item">Product</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.html?category" class="item-menu">
-                            <span class="icon"><i class="fa-solid fa-layer-group"></i></span>
-                            <span class="item">Category</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.html?staff" class="item-menu">
-                            <span class="icon"><i class="fa-solid fa-user"></i></span>
-                            <span class="item">Staff</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.html?delivery" class="item-menu">
-                            <span class="icon"><i class="fa-solid fa-truck-fast"></i></span>
-                            <span class="item">Delivery</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="index.html?settings" class="item-menu">
-                            <span class="icon"><i class="fa-solid fa-gear"></i></span>
-                            <span class="item">Settings</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-            <div class="content">
-                <div class="section">
-                    <div class="top_navbar">
-                        <div class="hamburger">
-                            <a><i class="fa-solid fa-bars"></i></a>
-                        </div>
-                        <div class="navbar_title">
-                            Hello Administrator
-                        </div>
-                    </div>
-                    <div class="container">
+        <script>
+            let staffID;
+            function formatDateReverse(inputDate) {
+                const parts = inputDate.split("/");
+                const day = parts[0];
+                const month = parts[1];
+                const year = parts[2];
+                return year + "-" + month + "-" + day;
+            }
+            async function updateStaff(id) {
+                isAdd = false;
+                reset2();
+                modal_staff.style.display = "flex";
+                staffID = id;
+                const data = await getData("http://localhost:3001/user/" + id);
+                txtNameStaff.value = data.name;
+                txtDateOfBirth.value = formatDateReverse(data.dateOfBirth);
+                txtGender.value = data.gender;
+                txtPhone.value = data.phone;
+                txtPosition.value = data.position;
+                txtAddress.value = data.address;
 
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        let staffID;
-        function formatDateReverse(inputDate) {
-            const parts = inputDate.split('/');
-            const day = parts[0];
-            const month = parts[1];
-            const year = parts[2];
-            return year + '-' + month + '-' + day;
-        }
-        async function updateStaff(id) {
-            isAdd = false;
-            reset2();
-            modal_staff.style.display = "flex";
-            staffID = id;
-            const data = await getData('http://localhost:3001/user/' + id);
-            txtNameStaff.value = data.name;
-            txtDateOfBirth.value = formatDateReverse(data.dateOfBirth);
-            txtGender.value = data.gender;
-            txtPhone.value = data.phone;
-            txtPosition.value = data.position;
-            txtAddress.value = data.address;
-
-            const data2 = await getData('http://localhost:3001/account/' + data.username);
-            txtUsername.value = data.username;
-            txtPassword.value = data2.password;
-            txtRole.value = data2.role;
-            txtUsername.readOnly = true;
-        }
-        function formatDate(inputDate) {
-            const date = new Date(inputDate);
-            const day = date.getDate();
-            const month = date.getMonth() + 1;
-            const year = date.getFullYear();
-            const formattedDay = day < 10 ? '0' + day : day;
-            const formattedMonth = month < 10 ? '0' + month : month;
-            return formattedDay + '/' + formattedMonth + '/' + year;
-        }
-        let isAdd = false;
-        const txtNameStaff = document.querySelector('#txtNameStaff');
-        const txtDateOfBirth = document.querySelector('#txtDateOfBirth');
-        const txtGender = document.querySelector('#slGender');
-        const txtPhone = document.querySelector('#txtPhone');
-        const txtPosition = document.querySelector('#slPosition');
-        const txtAddress = document.querySelector('#txtAdress');
-        const txtUsername = document.querySelector('#txtUsername');
-        const txtPassword = document.querySelector('#txtPassword');
-        const txtRole = document.querySelector('#slRole');
-        function reset2() {
-            txtNameStaff.value = "";
-            txtDateOfBirth.value = "";
-            txtGender.value = -1;
-            txtPhone.value = "";
-            txtPosition.value = -1;
-            txtAddress.value = "";
-            txtUsername.value = "";
-            txtPassword.value = "";
-            txtRole.value = -1
-        }
-        function handleStaff() {
-            if (txtNameStaff.value.length == 0) {
-                alert("Enter name of this staff, please");
-                txtNameStaff.focus();
-                return;
+                const data2 = await getData(
+                    "http://localhost:3001/account/" + data.username,
+                );
+                txtUsername.value = data.username;
+                txtPassword.value = data2.password;
+                txtRole.value = data2.role;
+                txtUsername.readOnly = true;
             }
-            if (txtDateOfBirth.value.length == 0) {
-                alert("Enter date of birth of this staff, please");
-                txtDateOfBirth.focus();
-                return;
+            function formatDate(inputDate) {
+                const date = new Date(inputDate);
+                const day = date.getDate();
+                const month = date.getMonth() + 1;
+                const year = date.getFullYear();
+                const formattedDay = day < 10 ? "0" + day : day;
+                const formattedMonth = month < 10 ? "0" + month : month;
+                return formattedDay + "/" + formattedMonth + "/" + year;
             }
-            if (txtGender.value == -1) {
-                alert("Choose gender of this staff, please");
-                txtGender.focus();
-                return;
+            let isAdd = false;
+            const txtNameStaff = document.querySelector("#txtNameStaff");
+            const txtDateOfBirth = document.querySelector("#txtDateOfBirth");
+            const txtGender = document.querySelector("#slGender");
+            const txtPhone = document.querySelector("#txtPhone");
+            const txtPosition = document.querySelector("#slPosition");
+            const txtAddress = document.querySelector("#txtAdress");
+            const txtUsername = document.querySelector("#txtUsername");
+            const txtPassword = document.querySelector("#txtPassword");
+            const txtRole = document.querySelector("#slRole");
+            function reset2() {
+                txtNameStaff.value = "";
+                txtDateOfBirth.value = "";
+                txtGender.value = -1;
+                txtPhone.value = "";
+                txtPosition.value = -1;
+                txtAddress.value = "";
+                txtUsername.value = "";
+                txtPassword.value = "";
+                txtRole.value = -1;
             }
-            if (txtPhone.value.length == 0) {
-                alert("Enter phone number of this staff, please");
-                txtPhone.focus();
-                return;
-            }
-            if (txtPosition.value == -1) {
-                alert("Choose position of this staff, please");
-                txttxtPositionGender.focus();
-                return;
-            }
-            if (txtAddress.value.length == 0) {
-                alert("Enter address of this staff, please");
-                txtAddress.focus();
-                return;
-            }
-            if (txtUsername.value.length == 0) {
-                alert("Enter username of this staff, please");
-                txtUsername.focus();
-                return;
-            }
-            if (txtPassword.value.length == 0) {
-                alert("Enter password of this staff, please");
-                txtPassword.focus();
-                return;
-            }
-            if (txtRole.value == -1) {
-                alert("Choose role of this staff, please");
-                txtRole.focus();
-                return;
-            }
-            const account = {
-                username: txtUsername.value,
-                password: txtPassword.value,
-                role: txtRole.value,
-            }
-            const staff = {
-                name: txtNameStaff.value,
-                gender: txtGender.value,
-                dateOfBirth: formatDate(txtDateOfBirth.value),
-                phone: txtPhone.value,
-                address: txtAddress.value,
-                position: txtPosition.value,
-                username: txtUsername.value,
-                isStaff: true,
-            }
-            if (isAdd) {
-                postData('http://localhost:3001/account/add', account);
-                postData('http://localhost:3001/user/add/staff', staff);
-                closeModalAddProduct();
-                window.location.reload();
-            } else {
-                putData('http://localhost:3001/account/update/' + account.username, { password: account.password });
-                putData('http://localhost:3001/account/update/staff/' + account.username, { role: account.role });
-                putData('http://localhost:3001/user/update/staff/' + staffID, staff);
-                closeModalAddProduct();
-                window.location.reload();
-            }
-        }
-        const nameCategory = document.querySelector('#userInput');
-        let categoryId;
-        function updateCategory2() {
-            if (nameCategory.value.length == 0) {
-                alert("Enter the name of this category, please");
-                nameCategory.focus();
-            } else {
-                const category = {
-                    name: nameCategory.value,
+            function handleStaff() {
+                if (txtNameStaff.value.length == 0) {
+                    alert("Enter name of this staff, please");
+                    txtNameStaff.focus();
+                    return;
+                }
+                if (txtDateOfBirth.value.length == 0) {
+                    alert("Enter date of birth of this staff, please");
+                    txtDateOfBirth.focus();
+                    return;
+                }
+                if (txtGender.value == -1) {
+                    alert("Choose gender of this staff, please");
+                    txtGender.focus();
+                    return;
+                }
+                if (txtPhone.value.length == 0) {
+                    alert("Enter phone number of this staff, please");
+                    txtPhone.focus();
+                    return;
+                }
+                if (txtPosition.value == -1) {
+                    alert("Choose position of this staff, please");
+                    txttxtPositionGender.focus();
+                    return;
+                }
+                if (txtAddress.value.length == 0) {
+                    alert("Enter address of this staff, please");
+                    txtAddress.focus();
+                    return;
+                }
+                if (txtUsername.value.length == 0) {
+                    alert("Enter username of this staff, please");
+                    txtUsername.focus();
+                    return;
+                }
+                if (txtPassword.value.length == 0) {
+                    alert("Enter password of this staff, please");
+                    txtPassword.focus();
+                    return;
+                }
+                if (txtRole.value == -1) {
+                    alert("Choose role of this staff, please");
+                    txtRole.focus();
+                    return;
+                }
+                const account = {
+                    username: txtUsername.value,
+                    password: txtPassword.value,
+                    role: txtRole.value,
                 };
-                putData('http://localhost:3001/category/update/' + categoryId, category);
-                document.getElementById("popup").style.display = "none";
-                window.location.reload();
+                const staff = {
+                    name: txtNameStaff.value,
+                    gender: txtGender.value,
+                    dateOfBirth: formatDate(txtDateOfBirth.value),
+                    phone: txtPhone.value,
+                    address: txtAddress.value,
+                    position: txtPosition.value,
+                    username: txtUsername.value,
+                    isStaff: true,
+                };
+                if (isAdd) {
+                    postData("http://localhost:3001/account/add", account);
+                    postData("http://localhost:3001/user/add/staff", staff);
+                    closeModalAddProduct();
+                    window.location.reload();
+                } else {
+                    putData(
+                        "http://localhost:3001/account/update/" +
+                            account.username,
+                        {
+                            password: account.password,
+                        },
+                    );
+                    putData(
+                        "http://localhost:3001/account/update/staff/" +
+                            account.username,
+                        { role: account.role },
+                    );
+                    putData(
+                        "http://localhost:3001/user/update/staff/" + staffID,
+                        staff,
+                    );
+                    closeModalAddProduct();
+                    window.location.reload();
+                }
             }
-        }
-
-        document.getElementById("closePopupBtn").onclick = function () {
-            document.getElementById("popup").style.display = "none";
-            nameCategory.value = "";
-        }
-        async function updateCategory(id) {
-            document.getElementById("popup").style.display = "block";
-            const data = await getData('http://localhost:3001/category/' + id);
-            nameCategory.value = data.name;
-            categoryId = data._id;
-        }
-        let isUpdateCategory = false;
-        function handleCategory() {
-            if (isUpdateCategory) {
-                const txtNameCategory = document.querySelector('#txtNameCategory');
-            } else {
-                if (txtNameCategory.value.length == 0) {
+            const nameCategory = document.querySelector("#userInput");
+            let categoryId;
+            function updateCategory2() {
+                if (nameCategory.value.length == 0) {
                     alert("Enter the name of this category, please");
-                    txtNameCategory.focus();
+                    nameCategory.focus();
                 } else {
-                    const data = {
-                        name: txtNameCategory.value,
-                    }
-                    postData('http://localhost:3001/category/add', data);
+                    const category = {
+                        name: nameCategory.value,
+                    };
+                    putData(
+                        "http://localhost:3001/category/update/" + categoryId,
+                        category,
+                    );
+                    document.getElementById("popup").style.display = "none";
                     window.location.reload();
-                    txtNameCategory.value = "";
                 }
             }
-        }
-        let productID = "";
-        function reset(items) {
-            items.forEach(item => {
-                item.classList.remove('active-bold');
-            })
-        }
 
-        async function tabSelect(item) {
-            const tab_selected = document.querySelector('.tab-selected');
-            const delivering_tabs = document.querySelectorAll('.delivery-tabs-items');
-            reset(delivering_tabs);
-            item.classList.add('active-bold');
-            tab_selected.style.left = item.offsetLeft + 'px';
-            tab_selected.style.width = item.offsetWidth + 'px'
-            let container = document.querySelector('.wrapper-container-list-task');
-            const status = item.innerText.toLowerCase();
-            const delivery_wrapper_detail = document.getElementsByClassName('delivery-wrapper-detail')[0]
-            delivery_wrapper_detail.innerHTML = '';
-            container.innerHTML =
-                `
+            document.getElementById("closePopupBtn").onclick = function () {
+                document.getElementById("popup").style.display = "none";
+                nameCategory.value = "";
+            };
+            async function updateCategory(id) {
+                document.getElementById("popup").style.display = "block";
+                const data = await getData(
+                    "http://localhost:3001/category/" + id,
+                );
+                nameCategory.value = data.name;
+                categoryId = data._id;
+            }
+            let isUpdateCategory = false;
+            function handleCategory() {
+                if (isUpdateCategory) {
+                    const txtNameCategory =
+                        document.querySelector("#txtNameCategory");
+                } else {
+                    if (txtNameCategory.value.length == 0) {
+                        alert("Enter the name of this category, please");
+                        txtNameCategory.focus();
+                    } else {
+                        const data = {
+                            name: txtNameCategory.value,
+                        };
+                        postData("http://localhost:3001/category/add", data);
+                        window.location.reload();
+                        txtNameCategory.value = "";
+                    }
+                }
+            }
+            let productID = "";
+            function reset(items) {
+                items.forEach((item) => {
+                    item.classList.remove("active-bold");
+                });
+            }
+
+            async function tabSelect(item) {
+                const tab_selected = document.querySelector(".tab-selected");
+                const delivering_tabs = document.querySelectorAll(
+                    ".delivery-tabs-items",
+                );
+                reset(delivering_tabs);
+                item.classList.add("active-bold");
+                tab_selected.style.left = item.offsetLeft + "px";
+                tab_selected.style.width = item.offsetWidth + "px";
+                let container = document.querySelector(
+                    ".wrapper-container-list-task",
+                );
+                const status = item.innerText.toLowerCase();
+                const delivery_wrapper_detail = document.getElementsByClassName(
+                    "delivery-wrapper-detail",
+                )[0];
+                delivery_wrapper_detail.innerHTML = "";
+                container.innerHTML = `
                     ${await getOrdersStatus(status)}
-                `
-        }
+                `;
+            }
 
-        var hamburger = document.querySelector(".hamburger");
-        hamburger.addEventListener("click", function () {
-            document.querySelector("body").classList.toggle("active");
-        })
-        const btnAdd = document.querySelector('.btn_Add_Product');
-        const modal_wrapper = document.querySelector('.modal_product');
-        const modal_wrapper_update = document.querySelector('.modal_product_update');
-        const modal_staff = document.querySelector('.modal_staff');
-        function openModalAddProduct() {
-            modal_wrapper.style.display = 'flex';
-        }
-        function closeModalAddProduct() {
-            modal_wrapper.style.display = "none";
-        }
-        function openModalAddProduct_Update() {
-            modal_wrapper_update.style.display = 'flex';
-        }
-        function closeModalAddProduct_Update() {
-            modal_wrapper_update.style.display = "none";
-        }
+            var hamburger = document.querySelector(".hamburger");
+            hamburger.addEventListener("click", function () {
+                document.querySelector("body").classList.toggle("active");
+            });
+            const btnAdd = document.querySelector(".btn_Add_Product");
+            const modal_wrapper = document.querySelector(".modal_product");
+            const modal_wrapper_update = document.querySelector(
+                ".modal_product_update",
+            );
+            const modal_staff = document.querySelector(".modal_staff");
+            function openModalAddProduct() {
+                modal_wrapper.style.display = "flex";
+            }
+            function closeModalAddProduct() {
+                modal_wrapper.style.display = "none";
+            }
+            function openModalAddProduct_Update() {
+                modal_wrapper_update.style.display = "flex";
+            }
+            function closeModalAddProduct_Update() {
+                modal_wrapper_update.style.display = "none";
+            }
 
-        function openModalAddStaff() {
-            txtUsername.readOnly = false;
-            isAdd = true;
-            modal_staff.style.display = "flex";
-        }
+            function openModalAddStaff() {
+                txtUsername.readOnly = false;
+                isAdd = true;
+                modal_staff.style.display = "flex";
+            }
 
-        function closeModalAddStaff() {
-            isAdd = false;
-            reset2();
-            modal_staff.style.display = "none";
-        }
+            function closeModalAddStaff() {
+                isAdd = false;
+                reset2();
+                modal_staff.style.display = "none";
+            }
 
-        const btnCloseModal = document.querySelector('.close');
-        btnCloseModal.addEventListener('click', function () {
-            closeModalAddProduct();
-        })
+            const btnCloseModal = document.querySelector(".close");
+            btnCloseModal.addEventListener("click", function () {
+                closeModalAddProduct();
+            });
 
-        async function updateProduct(id) {
-            const product = await getData('http://localhost:3001/products/' + id);
-            txtNameProduct1.value = product.name;
-            txtPriceProduct1.value = product.price;
-            isPopular1.checked = product.popular;
-            txtDescriptionProduct1.value = product.description;
-            txtCategoryProduct1.value = product.category;
-            openModalAddProduct_Update();
-            productID = id;
-        }
+            async function updateProduct(id) {
+                const product = await getData(
+                    "http://localhost:3001/products/" + id,
+                );
+                txtNameProduct1.value = product.name;
+                txtPriceProduct1.value = product.price;
+                isPopular1.checked = product.popular;
+                txtDescriptionProduct1.value = product.description;
+                txtCategoryProduct1.value = product.category;
+                openModalAddProduct_Update();
+                productID = id;
+            }
 
-        async function getValidStaffs() {
-            const staffs = await getData('http://localhost:3001/delivery/staffs');
-            return staffs;
-        }
+            async function getValidStaffs() {
+                const staffs = await getData(
+                    "http://localhost:3001/delivery/staffs",
+                );
+                return staffs;
+            }
 
-        function updateProduct_input() {
-            if (txtNameProduct1.value.length == 0) {
-                alert("Enter name product please");
-                txtNameProduct1.focus();
-            } else {
-                if (txtPriceProduct1.value.length == 0) {
-                    alert("Enter price product please");
-                    txtPriceProduct.focus();
+            function updateProduct_input() {
+                if (txtNameProduct1.value.length == 0) {
+                    alert("Enter name product please");
+                    txtNameProduct1.focus();
                 } else {
-                    if (txtCategoryProduct1.value == -1) {
-                        alert("Choose category product please");
-                        txtCategoryProduct1.focus();
+                    if (txtPriceProduct1.value.length == 0) {
+                        alert("Enter price product please");
+                        txtPriceProduct.focus();
                     } else {
-                        if (txtImageProduct1.files[0] == null) {
-                            alert("Choose image product please");
+                        if (txtCategoryProduct1.value == -1) {
+                            alert("Choose category product please");
+                            txtCategoryProduct1.focus();
                         } else {
-                            if (txtDescriptionProduct1.value.length == 0) {
-                                alert("Enter description please");
+                            if (txtImageProduct1.files[0] == null) {
+                                alert("Choose image product please");
                             } else {
-                                product = {
-                                    name: txtNameProduct1.value,
-                                    image: txtImageProduct1.files[0].name,
-                                    description: txtDescriptionProduct1.value,
-                                    price: parseFloat(txtPriceProduct1.value),
-                                    popular: isPopular1.checked,
-                                    category: txtCategoryProduct1.value,
+                                if (txtDescriptionProduct1.value.length == 0) {
+                                    alert("Enter description please");
+                                } else {
+                                    product = {
+                                        name: txtNameProduct1.value,
+                                        image: txtImageProduct1.files[0].name,
+                                        description:
+                                            txtDescriptionProduct1.value,
+                                        price: parseFloat(
+                                            txtPriceProduct1.value,
+                                        ),
+                                        popular: isPopular1.checked,
+                                        category: txtCategoryProduct1.value,
+                                    };
+                                    putData(
+                                        "http://localhost:3001/products/update/" +
+                                            productID,
+                                        product,
+                                    );
+                                    closeModalAddProduct();
+                                    window.location.reload();
+                                    // console.log(JSON.stringify(product, null, '\t'));
                                 }
-                                putData('http://localhost:3001/products/update/' + productID, product);
-                                closeModalAddProduct();
-                                window.location.reload();
-                                // console.log(JSON.stringify(product, null, '\t'));
                             }
                         }
                     }
                 }
             }
-        }
 
-        const txtNameProduct1 = document.querySelector('#txtNameProduct1');
-        const txtPriceProduct1 = document.querySelector('#txtPriceProduct1');
-        const txtCategoryProduct1 = document.querySelector('#slCategory1');
-        const txtImageProduct1 = document.querySelector('#fImageProduct1');
-        const txtDescriptionProduct1 = document.querySelector('#txtDescription1');
-        const isPopular1 = document.querySelector('#ckbPopular1');
+            const txtNameProduct1 = document.querySelector("#txtNameProduct1");
+            const txtPriceProduct1 =
+                document.querySelector("#txtPriceProduct1");
+            const txtCategoryProduct1 = document.querySelector("#slCategory1");
+            const txtImageProduct1 = document.querySelector("#fImageProduct1");
+            const txtDescriptionProduct1 =
+                document.querySelector("#txtDescription1");
+            const isPopular1 = document.querySelector("#ckbPopular1");
 
-        const txtNameProduct = document.querySelector('#txtNameProduct');
-        const txtPriceProduct = document.querySelector('#txtPriceProduct');
-        const txtCategoryProduct = document.querySelector('#slCategory');
-        const txtImageProduct = document.querySelector('#fImageProduct');
-        const txtDescriptionProduct = document.querySelector('#txtDescription');
-        const isPopular = document.querySelector('#ckbPopular');
+            const txtNameProduct = document.querySelector("#txtNameProduct");
+            const txtPriceProduct = document.querySelector("#txtPriceProduct");
+            const txtCategoryProduct = document.querySelector("#slCategory");
+            const txtImageProduct = document.querySelector("#fImageProduct");
+            const txtDescriptionProduct =
+                document.querySelector("#txtDescription");
+            const isPopular = document.querySelector("#ckbPopular");
 
-        function handleProduct() {
-            if (txtNameProduct.value.length == 0) {
-                alert("Enter name product please");
-                txtNameProduct.focus();
-            } else {
-                if (txtPriceProduct.value.length == 0) {
-                    alert("Enter price product please");
-                    txtPriceProduct.focus();
+            function handleProduct() {
+                if (txtNameProduct.value.length == 0) {
+                    alert("Enter name product please");
+                    txtNameProduct.focus();
                 } else {
-                    if (txtCategoryProduct.value == -1) {
-                        alert("Choose category product please");
-                        txtCategoryProduct.focus();
+                    if (txtPriceProduct.value.length == 0) {
+                        alert("Enter price product please");
+                        txtPriceProduct.focus();
                     } else {
-                        if (txtImageProduct.files[0] == null) {
-                            alert("Choose image product please");
+                        if (txtCategoryProduct.value == -1) {
+                            alert("Choose category product please");
+                            txtCategoryProduct.focus();
                         } else {
-                            if (txtDescriptionProduct.value.length == 0) {
-                                alert("Enter description please");
+                            if (txtImageProduct.files[0] == null) {
+                                alert("Choose image product please");
                             } else {
-                                product = {
-                                    name: txtNameProduct.value,
-                                    image: txtImageProduct.files[0].name,
-                                    description: txtDescriptionProduct.value,
-                                    price: parseFloat(txtPriceProduct.value),
-                                    popular: isPopular.checked,
-                                    category: txtCategoryProduct.value,
+                                if (txtDescriptionProduct.value.length == 0) {
+                                    alert("Enter description please");
+                                } else {
+                                    product = {
+                                        name: txtNameProduct.value,
+                                        image: txtImageProduct.files[0].name,
+                                        description:
+                                            txtDescriptionProduct.value,
+                                        price: parseFloat(
+                                            txtPriceProduct.value,
+                                        ),
+                                        popular: isPopular.checked,
+                                        category: txtCategoryProduct.value,
+                                    };
+                                    postData(
+                                        "http://localhost:3001/products/add",
+                                        product,
+                                    );
+                                    closeModalAddProduct();
+                                    window.location.reload();
+                                    // console.log(JSON.stringify(product, null, '\t'));
                                 }
-                                postData('http://localhost:3001/products/add', product);
-                                closeModalAddProduct();
-                                window.location.reload();
-                                // console.log(JSON.stringify(product, null, '\t'));
                             }
                         }
                     }
                 }
             }
-        }
 
-        window.onload = function (e) {
-            e.preventDefault();
-            var url = window.location.href;
-            var id = url.split('?')[1];
-            var list = document.querySelectorAll('.item-menu');
-            var title_navbar = document.querySelector('.navbar_title');
-            list.forEach(item => {
-                if (item.classList.contains('active'))
-                    item.classList.remove('active');
-            })
-            switch (id) {
-                case 'my-dashboard':
-                    list[0].classList.add('active')
-                    title_navbar.innerText = 'My Dashboard';
-                    break;
-                case 'product':
-                    list[1].classList.add('active')
-                    title_navbar.innerText = 'Product';
-                    setDisplayProduct();
-                    break;
-                case 'category':
-                    list[2].classList.add('active')
-                    title_navbar.innerText = 'Category';
-                    setDisplayCategory();
-                    break;
-                case 'staff':
-                    list[3].classList.add('active')
-                    title_navbar.innerText = 'Staff';
-                    setDisplayStaff();
-                    break;
-                case 'delivery':
-                    list[4].classList.add('active')
-                    title_navbar.innerText = 'Delivery';
-                    setDisplayDelivery();
-                    break;
-                case 'settings':
-                    list[5].classList.add('active')
-                    title_navbar.innerText = 'Settings';
-                    break;
-            }
-        }
+            window.onload = function (e) {
+                e.preventDefault();
+                var url = window.location.href;
+                var id = url.split("?")[1];
+                var list = document.querySelectorAll(".item-menu");
+                var title_navbar = document.querySelector(".navbar_title");
+                list.forEach((item) => {
+                    if (item.classList.contains("active"))
+                        item.classList.remove("active");
+                });
+                switch (id) {
+                    case "my-dashboard":
+                        list[0].classList.add("active");
+                        title_navbar.innerText = "My Dashboard";
+                        break;
+                    case "product":
+                        list[1].classList.add("active");
+                        title_navbar.innerText = "Product";
+                        setDisplayProduct();
+                        break;
+                    case "category":
+                        list[2].classList.add("active");
+                        title_navbar.innerText = "Category";
+                        setDisplayCategory();
+                        break;
+                    case "staff":
+                        list[3].classList.add("active");
+                        title_navbar.innerText = "Staff";
+                        setDisplayStaff();
+                        break;
+                    case "delivery":
+                        list[4].classList.add("active");
+                        title_navbar.innerText = "Delivery";
+                        setDisplayDelivery();
+                        break;
+                    case "settings":
+                        list[5].classList.add("active");
+                        title_navbar.innerText = "Settings";
+                        break;
+                }
+            };
 
-        async function deleteCategory(id) {
-            if (confirm("Do you want to delete this category?")) {
-                if (deleteRecord('http://localhost:3001/category/delete/' + id)) {
-                    window.location.reload();
-                } else {
-                    alert("Delete this category is not successfully")
+            async function deleteCategory(id) {
+                if (confirm("Do you want to delete this category?")) {
+                    if (
+                        deleteRecord(
+                            "http://localhost:3001/category/delete/" + id,
+                        )
+                    ) {
+                        window.location.reload();
+                    } else {
+                        alert("Delete this category is not successfully");
+                    }
                 }
             }
-        }
 
-        async function setDisplayCategory() {
-            const data = await getData('http://localhost:3001/category');
-            let container = document.querySelector('.container');
-            var s = '';
-            data.forEach((item, index) => {
-                s +=
-                    `
+            async function setDisplayCategory() {
+                const data = await getData("http://localhost:3001/category");
+                let container = document.querySelector(".container");
+                var s = "";
+                data.forEach((item, index) => {
+                    s += `
                     <tr>
                         <td class='td_center td_5'>${++index}</td>
                         <td class='td_30'>${item.name}</td>
                         <td class='td_center td_50'><Button onclick="updateCategory('${item._id}')">Update</Button><Button onclick="deleteCategory('${item._id}')">Delete</Button></td>
                     </tr>
-                `
-            })
-            container.innerHTML =
-                `
+                `;
+                });
+                container.innerHTML = `
                     <div class="container_title">
                         List Categories
                     </div>
@@ -1544,23 +1759,21 @@
                             </div>
                         </div>
                     </div>
-                `
-        }
-
-
-        function deleteStaff(id) {
-            if (confirm("Do you want to delete this staff?")) {
-                deleteRecord('http://localhost:3001/user/delete/' + id);
-                window.location.reload();
+                `;
             }
-        }
-        async function setDisplayStaff() {
-            let container = document.querySelector('.container');
-            const data = await getData('http://localhost:3001/user/staff');
-            var s = '';
-            data.forEach((item, index) => {
-                s +=
-                    `
+
+            function deleteStaff(id) {
+                if (confirm("Do you want to delete this staff?")) {
+                    deleteRecord("http://localhost:3001/user/delete/" + id);
+                    window.location.reload();
+                }
+            }
+            async function setDisplayStaff() {
+                let container = document.querySelector(".container");
+                const data = await getData("http://localhost:3001/user/staff");
+                var s = "";
+                data.forEach((item, index) => {
+                    s += `
                     <tr>
                         <td class='td_center td_5'>${++index}</td>
                         <td class='td_20'>${item.commonuser.name}</td>
@@ -1572,10 +1785,9 @@
                         <td class='td_10'>${item.commonuser.account.username}</td>
                         <td class='td_center td_20'><Button onclick="updateStaff('${item._id}')">Update</Button><Button onclick="deleteStaff('${item._id}')">Delete</Button></td>
                     </tr>
-                `
-            })
-            container.innerHTML =
-                `
+                `;
+                });
+                container.innerHTML = `
                     <div class="container_title">
                         List Staffs
                     </div>
@@ -1609,47 +1821,60 @@
                             ${s}
                         </table>
                     </div>
-                `
-        }
-
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            const now = new Date();
-            const diffTime = Math.abs(now - date);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            if (diffDays === 0) {
-                return `Today, ${date.toLocaleDateString('en-US', { hour: 'numeric', minute: 'numeric', second: 'numeric' })}`;
-            } else {
-                return date.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
+                `;
             }
-        }
-        async function viewOrder(id) {
-            const data = await getData(`http://localhost:3001/orders/admin/${id}`);
-            HienThi(data)
-        }
 
-        function createNewDelivery(orderId) {
-            userId = document.querySelector('#sldeliverystaff').value
-            const data = {
-                orderId: orderId,
-                staffId: userId
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffTime = Math.abs(now - date);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if (diffDays === 0) {
+                    return `Today, ${date.toLocaleDateString("en-US", { hour: "numeric", minute: "numeric", second: "numeric" })}`;
+                } else {
+                    return date.toLocaleDateString("en-US", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                    });
+                }
             }
-            const statusOrder = {
-                status: 'delivering'
+            async function viewOrder(id) {
+                const data = await getData(
+                    `http://localhost:3001/orders/admin/${id}`,
+                );
+                HienThi(data);
             }
-            patchData(`http://localhost:3001/orders/update/${orderId}`, statusOrder);
-            postData('http://localhost:3001/delivery/add', data);
-            window.location.reload();
-        }
 
-        async function HienThi(data) {
-            const delivery_wrapper_detail = document.getElementsByClassName('delivery-wrapper-detail')[0]
-            const formattedDate = formatDate(data.orderDateTime);
-            let totalProduct = 0;
-            let totalItems = 0;
-            let total = 0;
-            s =
-                `
+            function createNewDelivery(orderId) {
+                userId = document.querySelector("#sldeliverystaff").value;
+                const data = {
+                    orderId: orderId,
+                    staffId: userId,
+                };
+                const statusOrder = {
+                    status: "delivering",
+                };
+                patchData(
+                    `http://localhost:3001/orders/update/${orderId}`,
+                    statusOrder,
+                );
+                postData("http://localhost:3001/delivery/add", data);
+                window.location.reload();
+            }
+
+            async function HienThi(data) {
+                const delivery_wrapper_detail = document.getElementsByClassName(
+                    "delivery-wrapper-detail",
+                )[0];
+                const formattedDate = formatDate(data.orderDateTime);
+                let totalProduct = 0;
+                let totalItems = 0;
+                let total = 0;
+                s = `
                 <div class="delivery-detail-top">
                     <div class="detail-top-text">
                         Task info
@@ -1683,12 +1908,12 @@
                 </div>
                 <div class="delivery-detail-content">
                         <table class="tb-detail">
-            `
-            data.detailOrders.forEach(item => {
-                totalProduct++;
-                totalItems += item.amount;
-                total += item.product.price * item.amount
-                s += `
+            `;
+                data.detailOrders.forEach((item) => {
+                    totalProduct++;
+                    totalItems += item.amount;
+                    total += item.product.price * item.amount;
+                    s += `
                 <tr>
                     <td class="td-img td-pad-right-10"><img src="data:image/jpeg;base64,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"
                             alt="" srcset=""></td>
@@ -1697,15 +1922,14 @@
                     <td class="max-wd30 tb-pad10 tb-border">${data.note}</td>
                     <td class="max-wd20 tb-pad10 tb-border td_right">$${item.amount * item.product.price}</td>
                 </tr>
-                `
-            })
-            select = '';
-            datastaff = await getValidStaffs();
-            datastaff.forEach(item => {
-                select += `<option value='${item._id}'>${item.commonuser.name}</option>`;
-            })
-            s +=
-                `
+                `;
+                });
+                select = "";
+                datastaff = await getValidStaffs();
+                datastaff.forEach((item) => {
+                    select += `<option value='${item._id}'>${item.commonuser.name}</option>`;
+                });
+                s += `
                 <tr>
                     <td class="td-pad-top-10" colspan="4">Total product:</td>
                     <td class="td_right td-pad-top-10">${totalProduct} items</td>
@@ -1744,30 +1968,31 @@
                         </select>
                     </td>
                 </tr>
-            `
-            if (data.status == 'now') {
-                s +=
-                    `
+            `;
+                if (data.status == "now") {
+                    s += `
                 <tr>
                     <td class="td_right td-pad-top-10" colspan="5">
                         <Button class="btnDelivery" onclick="createNewDelivery('${data._id}')">Delivery confirmation</Button>
                     </td>
                 </tr>
-                `
+                `;
+                }
+                delivery_wrapper_detail.innerHTML = s + `</table> </div>`;
             }
-            delivery_wrapper_detail.innerHTML = s + `</table> </div>`
-        }
 
-        async function getOrdersStatus(status) {
-            const data = await getData(`http://localhost:3001/orders/status/${status}`);
-            var s = '';
-            data.forEach(item => {
-                const formattedDate = formatDate(item.orderDateTime);
-                let total = 0.0
-                item.detailOrders.forEach(detailOrder => {
-                    total += detailOrder.product.price * detailOrder.amount
-                })
-                s += `
+            async function getOrdersStatus(status) {
+                const data = await getData(
+                    `http://localhost:3001/orders/status/${status}`,
+                );
+                var s = "";
+                data.forEach((item) => {
+                    const formattedDate = formatDate(item.orderDateTime);
+                    let total = 0.0;
+                    item.detailOrders.forEach((detailOrder) => {
+                        total += detailOrder.product.price * detailOrder.amount;
+                    });
+                    s += `
                 <div class="delivery-list-order" onclick="viewOrder('${item._id}')">
                     <div class="order-item">
                         <div class="order-item-info">
@@ -1783,14 +2008,13 @@
                         </div>
                     </div>
                 </div>
-                `
-            });
-            return s;
-        }
-        async function setDisplayDelivery() {
-            let container = document.querySelector('.container');
-            container.innerHTML =
-                ` 
+                `;
+                });
+                return s;
+            }
+            async function setDisplayDelivery() {
+                let container = document.querySelector(".container");
+                container.innerHTML = ` 
             <div class="delivery-wrapper">
                 <div class="delivery-wrapper-lists">
                     <div class="delivery-list-container">
@@ -1802,34 +2026,33 @@
                         </div>
                     </div>
                     <div class="wrapper-container-list-task">
-                        ${await getOrdersStatus('now')}
+                        ${await getOrdersStatus("now")}
                     </div>
                 </div>
                 <div class="delivery-wrapper-detail">
                     
                 </div>
             </div>
-            `
-        }
-
-        function deleteProduct(id) {
-            if (confirm("Do you want to delete this product?")) {
-                deleteRecord('http://localhost:3001/products/delete/' + id);
-                window.location.reload();
+            `;
             }
-        }
 
-        async function setDisplayProduct() {
-            const data = await getData('http://localhost:3001/products');
-            let container = document.querySelector('.container');
-            var s = '';
-            data.forEach((item, index) => {
-                var check = '';
-                if (item.popular) {
-                    check = 'checked="checked"'
+            function deleteProduct(id) {
+                if (confirm("Do you want to delete this product?")) {
+                    deleteRecord("http://localhost:3001/products/delete/" + id);
+                    window.location.reload();
                 }
-                s +=
-                    `
+            }
+
+            async function setDisplayProduct() {
+                const data = await getData("http://localhost:3001/products");
+                let container = document.querySelector(".container");
+                var s = "";
+                data.forEach((item, index) => {
+                    var check = "";
+                    if (item.popular) {
+                        check = 'checked="checked"';
+                    }
+                    s += `
                     <tr>
                         <td class='td_center td_5'>${index + 1}</td>
                         <td class='td_20'>${item.name}</td>
@@ -1839,10 +2062,9 @@
                         <td class='td_center td_10 disable'><input type="checkbox" name="ckbPopular" id="ckbPopular" ${check} onclick="return false "></td>
                         <td class='td_center td_20'><Button onclick="updateProduct('${item._id}')">Update</Button><Button onclick="deleteProduct('${item._id}')">Delete</Button></td>
                     </tr>
-                `
-            })
-            container.innerHTML =
-                `
+                `;
+                });
+                container.innerHTML = `
                     <div class="container_title">
                         List Products
                     </div>
@@ -1874,96 +2096,99 @@
                             ${s}
                         </table>
                     </div>
-                `
-        }
-        modal_wrapper.addEventListener("mousedown", function (event) {
-            if (event.target == modal_wrapper) {
-                modal_wrapper.style.display = "none";
+                `;
             }
-        });
+            modal_wrapper.addEventListener("mousedown", function (event) {
+                if (event.target == modal_wrapper) {
+                    modal_wrapper.style.display = "none";
+                }
+            });
 
-        const imageProduct = document.querySelector('.img_product');
-        const inputImage = document.querySelector('#fImageProduct');
-        inputImage.addEventListener('change', (e) => {
-            imageProduct.src = URL.createObjectURL(e.target.files[0]);
-        })
-        const imageProduct1 = document.querySelector('.img_product1');
-        const inputImage1 = document.querySelector('#fImageProduct1');
-        inputImage1.addEventListener('change', (e) => {
-            imageProduct1.src = URL.createObjectURL(e.target.files[0]);
-        })
+            const imageProduct = document.querySelector(".img_product");
+            const inputImage = document.querySelector("#fImageProduct");
+            inputImage.addEventListener("change", (e) => {
+                imageProduct.src = URL.createObjectURL(e.target.files[0]);
+            });
+            const imageProduct1 = document.querySelector(".img_product1");
+            const inputImage1 = document.querySelector("#fImageProduct1");
+            inputImage1.addEventListener("change", (e) => {
+                imageProduct1.src = URL.createObjectURL(e.target.files[0]);
+            });
 
-        // call BE
-        // Get 
-        async function getData(url) {
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                return data;
-            } catch (error) { console.log('Error') }
-        }
-
-        // Post 
-        async function postData(url, data) {
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                })
-                const result = await response.json();
-                console.log(result);
-            } catch (error) { console.log('Error') }
-        }
-
-        async function putData(url, data) {
-            try {
-                const response = await fetch(url, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                console.log('Record updated:', result);
-            } catch (error) {
-                console.error('Error updating record:', error);
+            // call BE
+            // Get
+            async function getData(url) {
+                try {
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    return data;
+                } catch (error) {
+                    console.log("Error");
+                }
             }
-        }
 
-        async function patchData(url, data) {
-            try {
-                const response = await fetch(url, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                });
-                const result = await response.json();
-                console.log('Record updated:', result);
-            } catch (error) {
-                console.error('Error updating record:', error);
+            // Post
+            async function postData(url, data) {
+                try {
+                    const response = await fetch(url, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    const result = await response.json();
+                    console.log(result);
+                } catch (error) {
+                    console.log("Error");
+                }
             }
-        }
 
-        async function deleteRecord(url) {
-            try {
-                const response = await fetch(url, {
-                    method: 'DELETE'
-                });
-                const result = await response.text();
-                console.log('Record deleted:', result);
-                return true;
-            } catch (error) {
-                console.error('Error deleting record:', error);
-                return false;
+            async function putData(url, data) {
+                try {
+                    const response = await fetch(url, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    const result = await response.json();
+                    console.log("Record updated:", result);
+                } catch (error) {
+                    console.error("Error updating record:", error);
+                }
             }
-        }
-    </script>
-</body>
 
+            async function patchData(url, data) {
+                try {
+                    const response = await fetch(url, {
+                        method: "PATCH",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    const result = await response.json();
+                    console.log("Record updated:", result);
+                } catch (error) {
+                    console.error("Error updating record:", error);
+                }
+            }
+
+            async function deleteRecord(url) {
+                try {
+                    const response = await fetch(url, {
+                        method: "DELETE",
+                    });
+                    const result = await response.text();
+                    console.log("Record deleted:", result);
+                    return true;
+                } catch (error) {
+                    console.error("Error deleting record:", error);
+                    return false;
+                }
+            }
+        </script>
+    </body>
 </html>

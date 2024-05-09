@@ -1,4 +1,4 @@
-const Token = require('../models/tokenModel');
+const Token = require("../models/tokenModel");
 
 async function authenticate(token) {
     try {
@@ -8,7 +8,7 @@ async function authenticate(token) {
         }
         return true;
     } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         return false;
     }
 }

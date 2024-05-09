@@ -49,7 +49,7 @@ exports.login = async (req, res) => {
 
         const userWithRole = await Account.findOne(
             { _id: user._id },
-            { role: 1 }
+            { role: 1 },
         );
         const role = userWithRole.role;
 

@@ -3,5 +3,5 @@ exports.ipAccessControl = require("express-ip-access-control")({
     mode: "allow",
     allows: WHITELIST_IPS,
     statusCode: 403,
-    message: "Forbidden, this client IP is not whitelisted."
-})
+    message: "Forbidden, this client IP is not whitelisted.",
+});

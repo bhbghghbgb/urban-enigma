@@ -1,21 +1,23 @@
-const Category = require('../models/categoryModel');
-const Product = require('../models/productModel');
-const Rating = require('../models/ratingModel');
-const { ObjectId } = require('mongodb');
+const Category = require("../models/categoryModel");
+const Product = require("../models/productModel");
+const Rating = require("../models/ratingModel");
+const { ObjectId } = require("mongodb");
 
 exports.getAllProducts = async (req, res) => {
     try {
-        const products = await Product.find().populate('category');
+        const products = await Product.find().populate("category");
         res.status(200).json(products);
         return;
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 exports.getAllProductsPopular = async (req, res) => {
     try {
-        const products = await Product.find({ popular: true }).populate('category');
+        const products = await Product.find({ popular: true }).populate(
+            "category",
+        );
         const productRatings = await Rating.aggregate([
             {
                 $group: {
@@ -27,7 +29,7 @@ exports.getAllProductsPopular = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString()
+                (rating) => rating._id.toString() === product._id.toString(),
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -37,11 +39,13 @@ exports.getAllProductsPopular = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 exports.getAllProductsPopularLimit = async (req, res) => {
     try {
-        const products = await Product.find({ popular: true }).populate('category').limit(5);
+        const products = await Product.find({ popular: true })
+            .populate("category")
+            .limit(5);
         const productRatings = await Rating.aggregate([
             {
                 $group: {
@@ -53,7 +57,7 @@ exports.getAllProductsPopularLimit = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString()
+                (rating) => rating._id.toString() === product._id.toString(),
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -63,7 +67,7 @@ exports.getAllProductsPopularLimit = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 exports.getAllProductsOfCategory = async (req, res) => {
     try {
@@ -73,26 +77,30 @@ exports.getAllProductsOfCategory = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 exports.findProductById = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.id).populate('category');
+        const product = await Product.findById(req.params.id).populate(
+            "category",
+        );
         if (product) {
             res.status(200).json(product);
         } else {
-            res.status(404).json({ message: 'Product is not fount' });
+            res.status(404).json({ message: "Product is not fount" });
         }
         return;
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 exports.findProductByName = async (req, res) => {
     try {
         const name = req.params.name;
-        const products = await Product.find({ name: { $regex: name, $options: 'i' } }).populate('category');
+        const products = await Product.find({
+            name: { $regex: name, $options: "i" },
+        }).populate("category");
         const productRatings = await Rating.aggregate([
             {
                 $group: {
@@ -104,7 +112,7 @@ exports.findProductByName = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString()
+                (rating) => rating._id.toString() === product._id.toString(),
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -114,24 +122,24 @@ exports.findProductByName = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 exports.createProduct = async (req, res) => {
     try {
         const product = new Product(req.body);
         await product.save();
-        res.status(201).json({ message: 'Product created successfully' });
+        res.status(201).json({ message: "Product created successfully" });
         return;
     } catch (error) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 
 exports.updateProductById = async (req, res) => {
     try {
         const product = Product.findById(req.params.id);
         if (!product) {
-            res.status(404).json({ message: 'Product is not found' });
+            res.status(404).json({ message: "Product is not found" });
             return;
         }
         const { name, image, description, price, popular, category } = req.body;
@@ -144,10 +152,10 @@ exports.updateProductById = async (req, res) => {
                 price: price,
                 popular: popular,
                 category: category,
-            }
+            },
         };
         await Product.updateOne(myQuery, newValues);
-        res.status(201).json({ message: 'Product updated successfully' });
+        res.status(201).json({ message: "Product updated successfully" });
         return;
     } catch (error) {
         return res.status(500).json({ message: error.message });
@@ -158,11 +166,11 @@ exports.deleteProductById = async (req, res) => {
     try {
         const product = Product.findById(req.params.id);
         if (!product) {
-            res.status(404).json({ message: 'Product is not found' });
+            res.status(404).json({ message: "Product is not found" });
             return;
         }
-        await Product.deleteOne({ _id: new ObjectId(req.params.id) })
-        res.status(200).json({ message: 'Product deleted successfully.' });
+        await Product.deleteOne({ _id: new ObjectId(req.params.id) });
+        res.status(200).json({ message: "Product deleted successfully." });
         return;
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -183,7 +191,7 @@ exports.getFullProducts = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString()
+                (rating) => rating._id.toString() === product._id.toString(),
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -193,4 +201,4 @@ exports.getFullProducts = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
