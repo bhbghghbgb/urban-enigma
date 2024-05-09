@@ -61,6 +61,39 @@ class OrderViewModel : ViewModel() {
         return name
     }
 
+    fun getTotalOrderNotDiscount(orderId: String): Double {
+        var total = 0.0
+        _order.value?.let { order ->
+            if (order.id == orderId) {
+                order.detailOrders.forEach { item ->
+                    val product = item.product
+                    if (product != null) {
+                        total += product.price * item.amount
+                    }
+                }
+            }
+        }
+
+        return total
+    }
+    fun getTotalOrderHaveDiscount(orderId: String): Double {
+        var discount = 0.0
+        var total = 0.0
+        _order.value?.let { order ->
+            if (order.id == orderId) {
+                order.detailOrders.forEach { item ->
+                    val product = item.product
+                    if (product != null) {
+                        total += product.price * item.amount
+                    }
+                }
+                discount = order.discount
+            }
+        }
+
+        return total - discount
+    }
+
     fun getOrdersNotYetDelivered(token: String) {
         _state.postValue(State.LOADING)
         viewModelScope.launch(Dispatchers.IO) {

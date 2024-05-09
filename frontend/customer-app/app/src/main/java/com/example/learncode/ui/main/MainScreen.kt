@@ -53,12 +53,12 @@ import com.example.learncode.ui.screen.TransactionScreen
 import com.example.learncode.ui.screen.WelcomeScreen
 import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.viewmodel.AuthViewModel
+import com.example.learncode.viewmodel.NavControllerViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
-////
     val navController = rememberNavController()
 
     Scaffold {
@@ -92,7 +92,9 @@ fun MainScreen() {
                     RegisterScreen(navController = navController)
                 }
                 composable("homescreen") {
-                    NavigateHomeScreen()
+                    val navControllerViewModel = NavControllerViewModel()
+                    navControllerViewModel.setNavController(navController)
+                    NavigateHomeScreen(navControllerViewModel)
                 }
             }
         } else if (isValidToken == null) {

@@ -85,6 +85,32 @@ exports.findOrderById = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 }
+exports.findOrderByIdAdmin = async (req, res) => {
+    try {
+        const order = await Order.findOne({ _id: req.params.id }).populate({
+            path: 'user',
+            model: 'Customer',
+            populate: {
+                path: 'commonuser.account',
+                model: 'Account'
+            }
+        })
+            .populate({
+                path: 'detailOrders.product',
+                populate: {
+                    path: 'category'
+                }
+            });
+        if (order) {
+            res.status(200).json(order);
+        } else {
+            res.status(404).json({ message: 'Order is not found' });
+        }
+        return;
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
 
 exports.createOrder = async (req, res) => {
     try {
@@ -114,7 +140,7 @@ exports.updateStatus = async (req, res) => {
             res.status(404).json({ message: 'Order is not found' })
         }
         const { status } = req.body;
-        var myQuery = { _id: new ObjectId(req.params.id) };
+        var myQuery = { _id: req.params.id };
         var newData = {
             $set: {
                 status: status,
@@ -130,9 +156,14 @@ exports.updateStatus = async (req, res) => {
 
 exports.getOrdersOfStatus = async (req, res) => {
     try {
-        const orders = await Order.find({ status: req.params.status }).populate('detailOrders.product');
+        var numDesc = -1
+        if(req.params.status == 'now') {
+            numDesc = 1
+        }
+        const orders = await Order.find({ status: req.params.status })
+            .populate('detailOrders.product')
+            .sort({ orderDateTime: numDesc });
         res.status(200).json(orders);
-        return;
     } catch (err) {
         res.status(500).json({ message: err.message });
     }

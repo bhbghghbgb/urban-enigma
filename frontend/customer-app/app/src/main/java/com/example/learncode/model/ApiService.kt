@@ -26,7 +26,7 @@ interface ApiService {
     suspend fun login(@Body request: Account): Response<Token>
 
     @POST("/logout")
-    suspend fun logout(): Response<ResponseBody>
+    suspend fun logout(@Header("Authorization") token: String): Response<ResponseFromServer>
 
     @GET("/authenticate")
     suspend fun authenticate(@Header("Authorization") token: String): Response<AuthResult>
@@ -36,12 +36,14 @@ interface ApiService {
 
     @POST("/cart/add-to-cart")
     suspend fun addToCart(
-        @Header("Authorization") token: String, @Body request: AddToCartRequest
+        @Header("Authorization") token: String,
+        @Body request: AddToCartRequest
     ): Response<ResponseFromServer>
 
     @PATCH("/cart/delete")
     suspend fun deleteProductOfCart(
-        @Header("Authorization") token: String, @Body request: AddToCartRequest
+        @Header("Authorization") token: String,
+        @Body request: AddToCartRequest
     ): Response<ResponseFromServer>
 
     @GET("/orders/not-yet-delivered")
@@ -52,6 +54,12 @@ interface ApiService {
 
     @GET("/user/infocustomer")
     suspend fun getInfoOfCustomer(@Header("Authorization") token: String): Response<UserClass.Customer>
+
+    @GET("/orders/{id}")
+    suspend fun getOrderById(
+        @Header("Authorization") token: String,
+        @Path("id") id: String
+    ): Response<Order>
 
     @GET("/orders/{id}")
     suspend fun getOrderById(

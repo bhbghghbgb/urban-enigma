@@ -2,6 +2,7 @@ package com.example.learncode.repository
 
 import com.example.learncode.model.Account
 import com.example.learncode.model.AuthResult
+import com.example.learncode.model.ResponseFromServer
 import com.example.learncode.model.RetrofitInstance
 import com.example.learncode.model.Token
 import okhttp3.ResponseBody
@@ -14,8 +15,8 @@ class AuthRepository {
         return authService.login(Account(username, password))
     }
 
-    suspend fun logout(): Response<ResponseBody> {
-        return authService.logout()
+    suspend fun logout(token: String): Response<ResponseFromServer> {
+        return authService.logout(token)
     }
 
     suspend fun authenticate(token: String): Response<AuthResult> {

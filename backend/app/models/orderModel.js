@@ -9,6 +9,7 @@ const orderSchema = new mongoose.Schema({
     deliveryLocation: { type: String, required: true },
     note: { type: String, required: true },
     discount: { type: Number, required: true },
+    paymentMethod: { type: String, required: true },
     detailOrders: [{
         product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
         amount: { type: Number, required: true }

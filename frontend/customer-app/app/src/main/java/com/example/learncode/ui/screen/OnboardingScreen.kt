@@ -3,7 +3,6 @@ package com.example.learncode.ui.screen
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,9 +11,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -31,12 +30,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.example.learncode.R
-import com.example.learncode.model.NavigationItem
 import com.example.learncode.model.OnboardingSheet
 import com.example.learncode.ui.components.NewTextButton
 import com.example.learncode.ui.components.NewsButton
@@ -89,7 +86,9 @@ fun OnboardingScreen(navController: NavHostController) {
             }
         }
         Row(verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.align(Alignment.BottomEnd)) {
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 5.dp, end = 10.dp)) {
             val scope = rememberCoroutineScope()
             if (buttonState.value[0].isNotEmpty()) {
                 NewTextButton(
@@ -98,10 +97,11 @@ fun OnboardingScreen(navController: NavHostController) {
                         scope.launch {
                             pageState.animateScrollToPage(page = pageState.currentPage - 1)
                         }
-                    }
+                    },
                 )
             }
-            NewsButton(text = buttonState.value[1], {
+            Spacer(modifier = Modifier.width(5.dp))
+            NewsButton(text = buttonState.value[1]) {
                 scope.launch {
                     if (pageState.currentPage == 2) {
                         navController.navigate("welcome")
@@ -109,7 +109,7 @@ fun OnboardingScreen(navController: NavHostController) {
                         pageState.animateScrollToPage(page = pageState.currentPage + 1)
                     }
                 }
-            })
+            }
         }
     }
 
@@ -130,17 +130,26 @@ fun OnboardingSlide(modifier: Modifier = Modifier, slide: OnboardingSheet) {
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = slide.title,
-            fontSize = 28.sp,
+            fontSize = 25.sp,
             fontFamily = FontFamily(fontPoppinsSemi),
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            color = Color(0xFF9d7055),
+            maxLines = 2,
+            lineHeight = 30.sp
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = slide.des,
-            fontSize = 20.sp,
+            fontSize = 16.sp,
             fontFamily = FontFamily(fontPoppinsRegular),
-            modifier = Modifier.padding(horizontal = 16.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth(),
+            textAlign = TextAlign.Center,
+            color = Color(0xFFA0A0A0)
         )
     }
-
 }

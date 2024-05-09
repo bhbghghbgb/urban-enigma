@@ -88,10 +88,10 @@ fun NewsButton(
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
+            containerColor = Color(0xFF9d7055),
             contentColor = Color.White
         ),
-        shape = RoundedCornerShape(6.dp)
+        shape = RoundedCornerShape(10.dp)
     ) {
         Text(
             text = text
@@ -104,7 +104,12 @@ fun NewTextButton(
     text: String,
     onClick: () -> Unit
 ) {
-    TextButton(onClick = onClick) {
+    TextButton(
+        onClick = onClick, colors = ButtonDefaults.buttonColors(
+            containerColor = Color.LightGray
+        ),
+        shape = RoundedCornerShape(10.dp)
+    ) {
         Text(text)
     }
 }

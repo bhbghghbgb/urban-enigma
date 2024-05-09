@@ -78,8 +78,6 @@ fun WelcomeScreen(navController: NavHostController) {
                 modifier = Modifier.padding(horizontal = 24.dp)
 
             ) {
-                EmailButton()
-                Spacer(modifier = Modifier.height(20.dp))
                 GmailButton()
                 Spacer(modifier = Modifier.height(20.dp))
                 NumberButton(navController)

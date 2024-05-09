@@ -156,7 +156,7 @@ fun ContentOrder(
     var isEditAddressDialogVisible by remember { mutableStateOf(false) }
     var noteText by remember { mutableStateOf("") }
     val deliveryAddress by viewModel.address.observeAsState("")
-    var selectedPaymentMethod by remember { mutableStateOf("") }
+    var selectedPaymentMethod by remember { mutableStateOf("Cash") }
     val context: Context = LocalContext.current
     LaunchedEffect(Unit) {
         token?.let { token -> viewModel.getCardOfUser(token) }
@@ -244,7 +244,9 @@ fun ContentOrder(
                                                             latitude = latitude,
                                                             longitude = longitude
                                                         )
-                                                        fusedLocationClient.removeLocationUpdates(this)
+                                                        fusedLocationClient.removeLocationUpdates(
+                                                            this
+                                                        )
                                                     }
                                                 }
                                             },
@@ -310,19 +312,7 @@ fun ContentOrder(
                         )
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    if (cart == null) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.width(35.dp),
-                                color = MaterialTheme.colorScheme.secondary,
-                                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                            )
-                        }
-                    } else {
+                    if (cart != null) {
                         for (item in cart!!.products) {
                             ItemOrder(product = item,
                                 onDeleteClicked = {
@@ -357,17 +347,17 @@ fun ContentOrder(
             item { Spacer(modifier = Modifier.height(5.dp)) }
             item {
                 if (cart == null) {
-//                    Row(
-//                        horizontalArrangement = Arrangement.Center,
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        modifier = Modifier.fillMaxSize()
-//                    ) {
-//                        CircularProgressIndicator(
-//                            modifier = Modifier.width(35.dp),
-//                            color = MaterialTheme.colorScheme.secondary, // Sử dụng MaterialTheme.colors.secondary thay vì MaterialTheme.colorScheme.secondary
-//                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-//                        )
-//                    }
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.width(35.dp),
+                            color = MaterialTheme.colorScheme.secondary,
+                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                        )
+                    }
                 } else {
                     Column(
                         modifier = Modifier

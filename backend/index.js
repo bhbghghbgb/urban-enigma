@@ -13,6 +13,7 @@ const cartRoutes = require('./app/routes/cartRouter');
 const ratingRoutes = require('./app/routes/ratingRouter');
 const userRoutes = require('./app/routes/userRouter');
 const authRoutes = require('./app/routes/authRouter');
+const deliveryRoutes = require('./app/routes/deliveryRouter');
 const accountInfoRoutes = require('./app/routes/accountInfoRouter')
 
 // Middleware authentication
@@ -31,6 +32,7 @@ app.use('/cart', authenticate.authenticate, cartRoutes);
 app.use('/rating', ratingRoutes);
 app.use('/user', userRoutes);
 app.use('', authRoutes);
+app.use('/delivery', deliveryRoutes);
 app.use('/accountinfo', accountInfoRoutes)
 
 // API để thống kê doanh thu trong một ngày

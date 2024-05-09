@@ -1,6 +1,6 @@
 package com.example.learncode.model
 
-data class Product (
+data class Product(
     val id: Int,
     val image: Int,
     val title: String,

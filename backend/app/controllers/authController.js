@@ -73,10 +73,7 @@ exports.login = async (req, res) => {
 exports.logout = async (req, res) => {
     try {
         const token = req.headers.authorization;
-        const deletedToken = await Token.findOneAndDelete({
-            userId: new ObjectId(req.params.userId),
-            token,
-        });
+        const deletedToken = await Token.findOneAndDelete({ token });
         if (!deletedToken) {
             return res
                 .status(404)

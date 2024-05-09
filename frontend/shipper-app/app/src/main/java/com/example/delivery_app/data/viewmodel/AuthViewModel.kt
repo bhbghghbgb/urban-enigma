@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.delivery_app.data.model.ResponseFromServer
 import com.example.delivery_app.data.repository.AuthRepository
 import com.example.learncode.model.PreferenceManager
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +36,23 @@ class AuthViewModel : ViewModel() {
     private val _isInvalidDataDialogVisible = MutableLiveData<Boolean>()
     val isInvalidDataDialogVisible: LiveData<Boolean> = _isInvalidDataDialogVisible
 
+    private val _message = MutableLiveData<ResponseFromServer>()
+    val message: LiveData<ResponseFromServer> = _message
+    fun logout(token: String, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = repository.logout(token)
+                if (response.isSuccessful) {
+                    _message.postValue(response.body())
+                } else {
+                    _message.postValue(response.body())
+                }
+                Log.d("AuthViewModel-DATA", _message.value.toString())
+            } finally {
+                PreferenceManager.clearToken(context)
+            }
+        }
+    }
     fun authenticate(token: String) {
         viewModelScope.launch(Dispatchers.Main) {
             try {
@@ -111,11 +129,5 @@ class AuthViewModel : ViewModel() {
 
     fun clearPasswordError() {
         _passwordError.value = ""
-    }
-
-    fun logout() {
-        viewModelScope.launch(Dispatchers.IO) {
-            repository.logout()
-        }
     }
 }

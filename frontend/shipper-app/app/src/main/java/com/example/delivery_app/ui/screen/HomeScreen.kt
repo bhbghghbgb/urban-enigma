@@ -30,7 +30,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -38,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,12 +52,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.delivery_app.R
+import com.example.delivery_app.data.model.Order
+import com.example.delivery_app.data.viewmodel.HomeViewModel
 import com.example.delivery_app.data.viewmodel.ProfileViewModel
+import com.example.delivery_app.data.viewmodel.State
+import com.example.delivery_app.ui.LoadingScreen
+import com.example.delivery_app.util.FormatDateTime
+import com.example.learncode.model.PreferenceManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(navController: NavController) {
-    val profileViewModel = remember { ProfileViewModel() }
+fun HomeView(
+    navControllerMain: NavController,
+    viewModel: HomeViewModel,
+    profileViewModel: ProfileViewModel
+) {
+    val navController = rememberNavController()
     var currentScreen by rememberSaveable {
         mutableStateOf("home")
     }
@@ -147,17 +160,21 @@ fun HomeView(navController: NavController) {
             when (currentScreen) {
                 "home" -> {
                     title = "Current orders"
-                    HomeScreen(navController = navController)
+                    HomeScreen(navController = navController, viewModel = viewModel)
                 }
 
                 "history" -> {
                     title = "Delivered order history"
-                    HistoryScreen(navController = navController)
+                    HistoryScreen(navController = navController, viewModel = viewModel)
                 }
 
                 "profile" -> {
                     title = "Your profile"
-                    ProfileScreen(profileViewModel)
+                    ProfileScreen(
+                        navControllerMain = navControllerMain,
+                        navController = navController,
+                        viewModel = profileViewModel
+                    )
                 }
             }
         }
@@ -165,152 +182,198 @@ fun HomeView(navController: NavController) {
 }
 
 @Composable
-fun HomeScreen(navController: NavController) {
-    LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxWidth()) {
-        item { OrderItemNow(navController = navController) }
-    };
+fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
+    val order by viewModel.order.observeAsState()
+    val state by viewModel.state.observeAsState()
+    val token: String? = PreferenceManager.getToken(LocalContext.current)
+    LaunchedEffect(Unit) {
+        if (token != null) {
+            viewModel.getOrderByStaff(token)
+        }
+    }
+    when (state) {
+        State.LOADING -> {
+            LoadingScreen()
+        }
+
+        State.SUCCESS -> {
+            LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxWidth()) {
+                item {
+                    if (order != null) {
+                        OrderItemNow(
+                            navController = navController,
+                            order = order!!,
+                            viewModel = viewModel
+                        )
+                    } else {
+                        Text(
+                            text = "There are currently no orders",
+                            maxLines = 1,
+                            fontSize = 16.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.Gray
+                        )
+                    }
+                }
+            };
+        }
+
+        State.ERROR -> {
+            ErrorScreen {
+                if (token != null)
+                    viewModel.getOrderByStaff(token)
+            }
+        }
+
+        else -> {}
+    }
 }
 
 @Composable
-fun OrderItemNow(navController: NavController) {
-    ElevatedCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clickable {
-                navController.navigate("information")
-            },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 5.dp
-        )
-    ) {
-        Row(
+fun OrderItemNow(navController: NavController, order: Order, viewModel: HomeViewModel) {
+    val formatDateTime = FormatDateTime()
+    if (order != null) {
+        ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp),
+                .wrapContentHeight()
+                .clickable {
+                    navController.navigate("information/${order.id}")
+                },
+            shape = RoundedCornerShape(8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 5.dp
+            )
         ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Order ID: 6610d75d520537d636970c49",
-                    maxLines = 2,
-                    fontSize = 15.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight(600),
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(10.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Bottom
-                ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+            ) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "To: ",
-                        maxLines = 1,
-                        fontSize = 17.sp,
+                        text = "Order ID: ${order.id}",
+                        maxLines = 2,
+                        fontSize = 15.sp,
                         overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth()
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight(600),
+                        modifier = Modifier.fillMaxWidth()
                     )
-                    Text(
-                        text = "273 An Duong Vuong, P5, Q5",
-                        maxLines = 1,
-                        fontSize = 17.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth(),
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(
+                            text = "To: ",
+                            maxLines = 1,
+                            fontSize = 17.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth()
+                        )
+                        Text(
+                            text = "${order.deliveryLocation}",
+                            maxLines = 1,
+                            fontSize = 17.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth(),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(
+                            text = "Customer: ",
+                            maxLines = 1,
+                            fontSize = 17.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth()
+                        )
+                        Text(
+                            text = "${order.user.commonuser.name}",
+                            maxLines = 1,
+                            fontSize = 17.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth(),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(
+                            text = "Number phone: ",
+                            maxLines = 1,
+                            fontSize = 17.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth()
+                        )
+                        Text(
+                            text = "${order.user.commonuser.phone}",
+                            maxLines = 1,
+                            fontSize = 17.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth(),
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Divider(
+                        color = Color(0xFF9c7055),
+                        thickness = 1.dp,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                }
-                Spacer(modifier = Modifier.height(5.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        text = "Customer: ",
-                        maxLines = 1,
-                        fontSize = 17.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth()
-                    )
-                    Text(
-                        text = "Nguyễn Thùy Linh",
-                        maxLines = 1,
-                        fontSize = 17.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth(),
-                    )
-                }
-                Spacer(modifier = Modifier.height(5.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    Text(
-                        text = "Number phone: ",
-                        maxLines = 1,
-                        fontSize = 17.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth()
-                    )
-                    Text(
-                        text = "0987654321",
-                        maxLines = 1,
-                        fontSize = 17.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth(),
-                    )
-                }
-                Spacer(modifier = Modifier.height(5.dp))
-                Divider(
-                    color = Color(0xFF9c7055),
-                    thickness = 1.dp,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(5.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Now",
-                        maxLines = 1,
-                        fontSize = 18.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth(),
-                        color = Color(0xFF009900)
-                    )
-                    Text(
-                        text = "+2.80$",
-                        maxLines = 1,
-                        fontSize = 20.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.wrapContentWidth(),
-                        color = Color(0xFF006633)
-                    )
-                }
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "6 Items",
-                        maxLines = 1,
-                        fontSize = 16.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        color = Color.Gray
-                    )
-                    Text(
-                        text = "12/03/2024 07:07",
-                        maxLines = 1,
-                        fontSize = 16.sp,
-                        overflow = TextOverflow.Ellipsis,
-                        color = Color.Gray
-                    )
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Now",
+                            maxLines = 1,
+                            fontSize = 18.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth(),
+                            color = Color(0xFF009900)
+                        )
+                        Text(
+                            text = "+${viewModel.getTotalOrderHaveDiscount(order.id)}$",
+                            maxLines = 1,
+                            fontSize = 20.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.wrapContentWidth(),
+                            color = Color(0xFF006633)
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "${viewModel.getTotalItem(order.id)} Items",
+                            maxLines = 1,
+                            fontSize = 16.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = "${formatDateTime.formattedDateTime(order.orderDateTime)}",
+                            maxLines = 1,
+                            fontSize = 16.sp,
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.Gray
+                        )
+                    }
                 }
             }
         }
+    } else {
+        Text(text = "Hiện không có đơn hàng nào")
     }
 }
