@@ -1,7 +1,6 @@
-const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Rating = require("../models/ratingModel");
-const { ObjectId } = require("mongodb");
+const { ObjectId } = require("mongoose").Types;
 
 exports.getAllProducts = async (req, res) => {
     try {
@@ -130,7 +129,7 @@ exports.createProduct = async (req, res) => {
         await product.save();
         res.status(201).json({ message: "Product created successfully" });
         return;
-    } catch (error) {
+    } catch (err) {
         res.status(500).json({ message: err.message });
     }
 };

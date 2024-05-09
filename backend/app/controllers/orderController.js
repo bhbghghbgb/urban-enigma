@@ -1,6 +1,5 @@
 const Order = require("../models/orderModel");
 const { Customer } = require("../models/userModel");
-const { ObjectId } = require("mongodb");
 
 exports.getAllOrders = async (req, res) => {
     try {

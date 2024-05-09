@@ -1,7 +1,7 @@
 const Account = require("../models/accountModel");
-
+const { checkUserNameExist } = require("../controllers/accountController");
 exports.changeEmail = async (username, newEmail) => {
-    if (!(await checkUserNameExist(req.params.username))) {
+    if (!(await checkUserNameExist(username))) {
         throw new Error("Username is not exist");
     }
     await Account.updateOne(
@@ -11,12 +11,12 @@ exports.changeEmail = async (username, newEmail) => {
                 email: newEmail,
                 emailVerified: true,
             },
-        },
+        }
     );
 };
 
 exports.changePhone = async (username, newPhone) => {
-    if (!(await checkUserNameExist(req.params.username))) {
+    if (!(await checkUserNameExist(username))) {
         throw new Error("Username is not exist");
     }
     await Account.updateOne(
@@ -26,6 +26,6 @@ exports.changePhone = async (username, newPhone) => {
                 phone: newPhone,
                 phoneVerified: true,
             },
-        },
+        }
     );
 };

@@ -118,7 +118,7 @@ app.get("/revenue/month/:year/:month", async (req, res) => {
     try {
         const year = req.params.year;
         const month = req.params.month;
-        myQuery = [
+        const myQuery = [
             {
                 $match: {
                     orderDateTime: {

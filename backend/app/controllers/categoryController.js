@@ -1,6 +1,6 @@
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
-const { ObjectId } = require("mongodb");
+const { ObjectId } = require("mongoose").Types;
 
 exports.getAllCategories = async (req, res) => {
     try {
@@ -56,7 +56,7 @@ exports.updateCategoryById = async (req, res) => {
         res.status(201).json({ message: "Category updated successfully" });
         return;
     } catch (err) {
-        res.status(500).json({ message: er.message });
+        res.status(500).json({ message: err.message });
     }
 };
 

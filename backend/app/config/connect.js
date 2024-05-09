@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
-const { DATABASE_CONNECTION_URL } = require("./_APP");
+const { DATABASE_CONNECTION_URL, DATABASE_NAME } = require("./_APP");
 mongoose.connect(DATABASE_CONNECTION_URL, {
-    dbName: "CoffeeApp",
+    dbName: DATABASE_NAME,
     useNewUrlParser: true,
     useUnifiedTopology: true,
 });

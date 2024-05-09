@@ -1,5 +1,4 @@
 const Account = require("../models/accountModel");
-const { ObjectId } = require("mongodb");
 
 exports.findAccountByUsername = async (req, res) => {
     try {
@@ -39,7 +38,7 @@ async function checkUserNameExist(username) {
         return false;
     }
 }
-
+exports.checkUserNameExist = checkUserNameExist;
 exports.createAccount = async (req, res) => {
     try {
         const account = new Account(req.body);

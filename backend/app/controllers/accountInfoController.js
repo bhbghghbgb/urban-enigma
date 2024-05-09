@@ -1,5 +1,6 @@
 const AccountInfoVerify = require("../models/accountInfoVerifyModel");
 const { changeEmail, changePhone } = require("../service/accountInfoService");
+const { checkUserNameExist } = require("../controllers/accountController");
 const { generate6digit: verifyCodeGen } = require("../utils/rng");
 exports.getAllRequests = async (req, res) => {
     try {

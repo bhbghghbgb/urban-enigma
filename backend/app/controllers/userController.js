@@ -1,5 +1,5 @@
 const { Staff, Customer } = require("../models/userModel");
-const { ObjectId } = require("mongodb");
+const { ObjectId } = require("mongoose").Types;
 
 exports.getStaffs = async (req, res) => {
     try {

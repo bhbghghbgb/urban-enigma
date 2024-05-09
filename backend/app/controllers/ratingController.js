@@ -1,7 +1,5 @@
 const Rating = require("../models/ratingModel");
 const Product = require("../models/productModel");
-const { Customer } = require("../models/userModel");
-const { ObjectId } = require("mongodb");
 
 async function checkRating(user, product) {
     try {
@@ -11,7 +9,6 @@ async function checkRating(user, product) {
         });
         return ratingCount > 0;
     } catch (err) {
-        res.status(500).json({ message: err.message });
         return false;
     }
 }

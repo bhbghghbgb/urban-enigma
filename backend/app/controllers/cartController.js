@@ -1,7 +1,6 @@
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 const { Customer } = require("../models/userModel");
-const { ObjectId } = require("mongodb");
 
 exports.getCartOfUser = async (req, res) => {
     try {

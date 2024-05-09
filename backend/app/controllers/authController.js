@@ -1,8 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Account = require("../models/accountModel");
-const { ACCESS_TOKEN, TOKEN_TIME_LIFE } = require("../config/_APP");
+const { ACCESS_TOKEN } = require("../config/_APP");
 const Token = require("../models/tokenModel");
-const { ObjectId } = require("mongodb");
 const authService = require("../service/authService");
 
 exports.login = async (req, res) => {
@@ -97,9 +96,9 @@ exports.authenticate = async (req, res) => {
         return res
             .status(200)
             .json({ message: "Token is valid", isValid: true });
-    } catch (error) {
+    } catch (err) {
         return res
             .status(500)
-            .json({ message: "Internal server error", isValid: false });
+            .json({ message: err.message, isValid: false });
     }
 };
