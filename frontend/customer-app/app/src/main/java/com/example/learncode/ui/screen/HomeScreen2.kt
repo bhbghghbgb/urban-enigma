@@ -38,7 +38,7 @@ import com.example.learncode.ui.components.ItemView2
 import com.example.learncode.ui.components.ItemViewRow2
 import com.example.learncode.ui.components.SearchView
 import com.example.learncode.ui.theme.fontPoppinsSemi
-import com.example.learncode.ui.viewmodels.HomeScreen2ViewModel
+import com.example.learncode.viewmodel.HomeScreen2ViewModel
 
 @Composable
 fun HomeScreen2(navController: NavHostController, viewModel: HomeScreen2ViewModel, bottom: @Composable () -> Unit) {

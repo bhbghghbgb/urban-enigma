@@ -5,6 +5,8 @@ const accountController = require('../controllers/accountController');
 //PASS
 // -> lấy thông tin tài khoản bằng username
 router.get('/:username', accountController.findAccountByUsername);
+// -> lấy thông tin tài khoản bằng username/email/phone
+router.get('/:identifiable', accountController.findAccountByAllIdentifiable);
 // -> tạo 1 tài khoản mới
 router.post('/add', accountController.createAccount);
 // -> đổi mật khẩu

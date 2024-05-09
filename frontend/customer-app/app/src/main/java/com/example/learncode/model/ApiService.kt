@@ -7,7 +7,6 @@ import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -62,4 +61,32 @@ interface ApiService {
         @Path("id") id: String
     ): Response<Order>
 
+    @GET("/orders/{id}")
+    suspend fun getOrderById(
+        @Header("Authorization") token: String, @Path("id") id: String
+    ): Response<Order>
+
+    // dang ki
+    @POST("/account/add")
+    suspend fun registerAccount(@Body account: Account): Response<ResponseFromServer>
+
+    @POST("/accountinfo/email")
+    suspend fun requestChangeAccountEmail(
+        @Body request: AccountInfoChangeEmailRequest
+    ): Response<ResponseFromServer>
+
+    @POST("/accountinfo/phone")
+    suspend fun requestChangeAccountPhone(
+        @Body request: AccountInfoChangePhoneRequest
+    ): Response<ResponseFromServer>
+
+    @PATCH("/accountinfo/email")
+    suspend fun attemptChangeAccountEmail(
+        @Body request: AccountInfoChangeEmailAttempt
+    ): Response<ResponseFromServer>
+
+    @PATCH("/accountinfo/phone")
+    suspend fun attemptChangeAccountPhone(
+        @Body request: AccountInfoChangePhoneAttempt
+    ): Response<ResponseFromServer>
 }
