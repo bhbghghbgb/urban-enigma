@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const db = require("./app/config/connect");
+const logger = require("morgan");
 
 // Routes
 const productRoutes = require("./app/routes/productRouter");
@@ -20,14 +21,20 @@ const accountInfoRoutes = require("./app/routes/accountInfoRouter");
 const { authenticate } = require("./app/middleware/authenticate");
 const { ipAccessControl } = require("./app/middleware/ipAccessControl");
 const { error2jsonHandler } = require("./app/middleware/error2jsonHandler");
+const { publicImages } = require("./app/middleware/images");
+app.use(logger("common"));
 app.use(ipAccessControl);
+app.use(publicImages);
 
 // Sử dụng body-parser middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
+
+// must add last
 app.use(error2jsonHandler);
+
 app.use("/products", productRoutes);
 app.use("/category", categoryRoutes);
 app.use("/account", accountRoutes);
@@ -38,6 +45,10 @@ app.use("/user", userRoutes);
 app.use("", authRoutes);
 app.use("/delivery", deliveryRoutes);
 app.use("/accountinfo", accountInfoRoutes);
+
+app.get("/", function (req, res) {
+    res.sendFile(require("path").join(__dirname, "/views/index.html"));
+});
 
 // API để thống kê doanh thu trong một ngày
 app.get("/revenue/date", async (req, res) => {

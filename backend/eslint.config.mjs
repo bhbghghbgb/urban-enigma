@@ -17,4 +17,14 @@ export default [
             ],
         },
     },
+    // Overrides for browser-specific files
+    {
+        files: ["views/**/*.js"], // Target files in the /views directory
+        languageOptions: {
+            globals: globals.browser, // Apply browser-specific globals
+        },
+        rules: {
+            // You can add or override rules specific to browser environment here
+        },
+    },
 ];

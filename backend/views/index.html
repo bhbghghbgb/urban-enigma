@@ -1,9 +1,16 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
     <head>
         <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0"
+        />
         <title>Home - NewLands Shop</title>
+        <script
+            type="text/javascript"
+            src="main.js"
+        ></script>
         <link
             href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
             rel="stylesheet"
@@ -820,9 +827,16 @@
     </head>
 
     <body>
-        <div id="popup" class="popup">
+        <div
+            id="popup"
+            class="popup"
+        >
             <div class="popup-content">
-                <span class="closep" id="closePopupBtn">&times;</span>
+                <span
+                    class="closep"
+                    id="closePopupBtn"
+                    >&times;</span
+                >
                 <span
                     style="
                         font: 22px;
@@ -903,13 +917,13 @@
                                     option.value = -1;
                                     option.textContent = "Choose Category";
                                     select.appendChild(option);
-                                    fetch("http://localhost:3001/category")
+                                    fetch("/category")
                                         .then((res) => res.json())
                                         .then((data) => {
                                             data.forEach((item) => {
                                                 const option =
                                                     document.createElement(
-                                                        "option",
+                                                        "option"
                                                     );
                                                 option.value = item._id;
                                                 option.textContent = item.name;
@@ -933,7 +947,7 @@
                             />
                         </div>
                         <img
-                            src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180"
+                            src="/images/VSCode.png"
                             alt=""
                             class="wd_40 img_product1"
                         />
@@ -1014,13 +1028,13 @@
                                     option2.value = -1;
                                     option2.textContent = "Choose Category";
                                     select2.appendChild(option2);
-                                    fetch("http://localhost:3001/category")
+                                    fetch("/category")
                                         .then((res) => res.json())
                                         .then((data) => {
                                             data.forEach((item) => {
                                                 const option =
                                                     document.createElement(
-                                                        "option",
+                                                        "option"
                                                     );
                                                 option.value = item._id;
                                                 option.textContent = item.name;
@@ -1039,12 +1053,13 @@
                             <label for="fImageProduct">Image</label>
                             <input
                                 type="file"
+                                accept="image/*"
                                 name="fImageProduct"
                                 id="fImageProduct"
                             />
                         </div>
                         <img
-                            src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180"
+                            src="/images/VSCode.png"
                             alt=""
                             class="wd_40 img_product"
                         />
@@ -1071,7 +1086,10 @@
                     </div>
                     <div class="frmInputBtn">
                         <div class="frmBtnAction">
-                            <button class="btnAcept" onclick="handleProduct()">
+                            <button
+                                class="btnAcept"
+                                onclick="handleProduct()"
+                            >
                                 Acept
                             </button>
                             <button
@@ -1088,7 +1106,10 @@
                 <div class="frmAdd">
                     <div class="frmTitle">
                         <p>Add new staff</p>
-                        <button class="close" onclick="closeModalAddStaff()">
+                        <button
+                            class="close"
+                            onclick="closeModalAddStaff()"
+                        >
                             &times;
                         </button>
                     </div>
@@ -1125,7 +1146,11 @@
                     <div class="frmInputRow">
                         <div class="frmInput wd_60">
                             <label for="txtPhone">Phone Number:</label>
-                            <input type="text" name="txtPhone" id="txtPhone" />
+                            <input
+                                type="text"
+                                name="txtPhone"
+                                id="txtPhone"
+                            />
                         </div>
                         <div class="frmInput wd_40">
                             <label for="slPosition">Position:</label>
@@ -1142,7 +1167,11 @@
                     </div>
                     <div class="frmInput">
                         <label for="txtAdress">Address:</label>
-                        <input type="text" name="txtAdress" id="txtAdress" />
+                        <input
+                            type="text"
+                            name="txtAdress"
+                            id="txtAdress"
+                        />
                     </div>
                     <div class="frmInput">
                         <label for="txtUsername">Username:</label>
@@ -1162,7 +1191,11 @@
                     </div>
                     <div class="frmInput wd_40">
                         <label for="slRole">Role</label>
-                        <select name="slRole" class="slCategory" id="slRole">
+                        <select
+                            name="slRole"
+                            class="slCategory"
+                            id="slRole"
+                        >
                             <option value="-1">Choose Role</option>
                             <option value="admin">Admin</option>
                             <option value="staff">Staff</option>
@@ -1170,7 +1203,10 @@
                     </div>
                     <div class="frmInputBtn">
                         <div class="frmBtnAction">
-                            <button class="btnAcept" onclick="handleStaff()">
+                            <button
+                                class="btnAcept"
+                                onclick="handleStaff()"
+                            >
                                 Acept
                             </button>
                             <button
@@ -1187,7 +1223,7 @@
                 <div class="sidebar">
                     <div class="profile">
                         <img
-                            src="https://tse2.mm.bing.net/th?id=OIP.QhHv-wWailfgTVNVf22inAAAAA&pid=Api&P=0&h=180"
+                            src="/images/VSCode.png"
                             alt=""
                             srcset=""
                         />
@@ -1197,7 +1233,7 @@
                     <ul>
                         <li>
                             <a
-                                href="index.html?my-dashboard"
+                                href="?my-dashboard"
                                 class="item-menu active"
                             >
                                 <span class="icon"
@@ -1207,7 +1243,10 @@
                             </a>
                         </li>
                         <li>
-                            <a href="index.html?product" class="item-menu">
+                            <a
+                                href="?product"
+                                class="item-menu"
+                            >
                                 <span class="icon"
                                     ><i class="fa-solid fa-mug-saucer"></i
                                 ></span>
@@ -1215,7 +1254,10 @@
                             </a>
                         </li>
                         <li>
-                            <a href="index.html?category" class="item-menu">
+                            <a
+                                href="?category"
+                                class="item-menu"
+                            >
                                 <span class="icon"
                                     ><i class="fa-solid fa-layer-group"></i
                                 ></span>
@@ -1223,7 +1265,10 @@
                             </a>
                         </li>
                         <li>
-                            <a href="index.html?staff" class="item-menu">
+                            <a
+                                href="?staff"
+                                class="item-menu"
+                            >
                                 <span class="icon"
                                     ><i class="fa-solid fa-user"></i
                                 ></span>
@@ -1231,7 +1276,10 @@
                             </a>
                         </li>
                         <li>
-                            <a href="index.html?delivery" class="item-menu">
+                            <a
+                                href="?delivery"
+                                class="item-menu"
+                            >
                                 <span class="icon"
                                     ><i class="fa-solid fa-truck-fast"></i
                                 ></span>
@@ -1239,7 +1287,10 @@
                             </a>
                         </li>
                         <li>
-                            <a href="index.html?settings" class="item-menu">
+                            <a
+                                href="?settings"
+                                class="item-menu"
+                            >
                                 <span class="icon"
                                     ><i class="fa-solid fa-gear"></i
                                 ></span>
@@ -1275,7 +1326,7 @@
                 reset2();
                 modal_staff.style.display = "flex";
                 staffID = id;
-                const data = await getData("http://localhost:3001/user/" + id);
+                const data = await getData("/user/" + id);
                 txtNameStaff.value = data.name;
                 txtDateOfBirth.value = formatDateReverse(data.dateOfBirth);
                 txtGender.value = data.gender;
@@ -1283,9 +1334,7 @@
                 txtPosition.value = data.position;
                 txtAddress.value = data.address;
 
-                const data2 = await getData(
-                    "http://localhost:3001/account/" + data.username,
-                );
+                const data2 = await getData("/account/" + data.username);
                 txtUsername.value = data.username;
                 txtPassword.value = data2.password;
                 txtRole.value = data2.role;
@@ -1383,27 +1432,18 @@
                     isStaff: true,
                 };
                 if (isAdd) {
-                    postData("http://localhost:3001/account/add", account);
-                    postData("http://localhost:3001/user/add/staff", staff);
+                    postData("/account/add", account);
+                    postData("/user/add/staff", staff);
                     closeModalAddProduct();
                     window.location.reload();
                 } else {
-                    putData(
-                        "http://localhost:3001/account/update/" +
-                            account.username,
-                        {
-                            password: account.password,
-                        },
-                    );
-                    putData(
-                        "http://localhost:3001/account/update/staff/" +
-                            account.username,
-                        { role: account.role },
-                    );
-                    putData(
-                        "http://localhost:3001/user/update/staff/" + staffID,
-                        staff,
-                    );
+                    putData("/account/update/" + account.username, {
+                        password: account.password,
+                    });
+                    putData("/account/update/staff/" + account.username, {
+                        role: account.role,
+                    });
+                    putData("/user/update/staff/" + staffID, staff);
                     closeModalAddProduct();
                     window.location.reload();
                 }
@@ -1418,10 +1458,7 @@
                     const category = {
                         name: nameCategory.value,
                     };
-                    putData(
-                        "http://localhost:3001/category/update/" + categoryId,
-                        category,
-                    );
+                    putData("/category/update/" + categoryId, category);
                     document.getElementById("popup").style.display = "none";
                     window.location.reload();
                 }
@@ -1433,9 +1470,7 @@
             };
             async function updateCategory(id) {
                 document.getElementById("popup").style.display = "block";
-                const data = await getData(
-                    "http://localhost:3001/category/" + id,
-                );
+                const data = await getData("/category/" + id);
                 nameCategory.value = data.name;
                 categoryId = data._id;
             }
@@ -1452,7 +1487,7 @@
                         const data = {
                             name: txtNameCategory.value,
                         };
-                        postData("http://localhost:3001/category/add", data);
+                        postData("/category/add", data);
                         window.location.reload();
                         txtNameCategory.value = "";
                     }
@@ -1468,18 +1503,18 @@
             async function tabSelect(item) {
                 const tab_selected = document.querySelector(".tab-selected");
                 const delivering_tabs = document.querySelectorAll(
-                    ".delivery-tabs-items",
+                    ".delivery-tabs-items"
                 );
                 reset(delivering_tabs);
                 item.classList.add("active-bold");
                 tab_selected.style.left = item.offsetLeft + "px";
                 tab_selected.style.width = item.offsetWidth + "px";
                 let container = document.querySelector(
-                    ".wrapper-container-list-task",
+                    ".wrapper-container-list-task"
                 );
                 const status = item.innerText.toLowerCase();
                 const delivery_wrapper_detail = document.getElementsByClassName(
-                    "delivery-wrapper-detail",
+                    "delivery-wrapper-detail"
                 )[0];
                 delivery_wrapper_detail.innerHTML = "";
                 container.innerHTML = `
@@ -1494,7 +1529,7 @@
             const btnAdd = document.querySelector(".btn_Add_Product");
             const modal_wrapper = document.querySelector(".modal_product");
             const modal_wrapper_update = document.querySelector(
-                ".modal_product_update",
+                ".modal_product_update"
             );
             const modal_staff = document.querySelector(".modal_staff");
             function openModalAddProduct() {
@@ -1528,9 +1563,7 @@
             });
 
             async function updateProduct(id) {
-                const product = await getData(
-                    "http://localhost:3001/products/" + id,
-                );
+                const product = await getData("/products/" + id);
                 txtNameProduct1.value = product.name;
                 txtPriceProduct1.value = product.price;
                 isPopular1.checked = product.popular;
@@ -1541,9 +1574,7 @@
             }
 
             async function getValidStaffs() {
-                const staffs = await getData(
-                    "http://localhost:3001/delivery/staffs",
-                );
+                const staffs = await getData("/delivery/staffs");
                 return staffs;
             }
 
@@ -1572,15 +1603,14 @@
                                         description:
                                             txtDescriptionProduct1.value,
                                         price: parseFloat(
-                                            txtPriceProduct1.value,
+                                            txtPriceProduct1.value
                                         ),
                                         popular: isPopular1.checked,
                                         category: txtCategoryProduct1.value,
                                     };
                                     putData(
-                                        "http://localhost:3001/products/update/" +
-                                            productID,
-                                        product,
+                                        "/products/update/" + productID,
+                                        product
                                     );
                                     closeModalAddProduct();
                                     window.location.reload();
@@ -1628,24 +1658,27 @@
                                 if (txtDescriptionProduct.value.length == 0) {
                                     alert("Enter description please");
                                 } else {
+                                    fileName =
+                                        getUniqueFileName(txtImageProduct);
                                     product = {
                                         name: txtNameProduct.value,
-                                        image: txtImageProduct.files[0].name,
+                                        image: fileName,
                                         description:
                                             txtDescriptionProduct.value,
                                         price: parseFloat(
-                                            txtPriceProduct.value,
+                                            txtPriceProduct.value
                                         ),
                                         popular: isPopular.checked,
                                         category: txtCategoryProduct.value,
                                     };
-                                    postData(
-                                        "http://localhost:3001/products/add",
-                                        product,
+                                    postData("/products/add", product);
+                                    uploadImage(txtImageProduct, fileName).then(
+                                        () => {
+                                            closeModalAddProduct();
+                                            window.location.reload();
+                                            // console.log(JSON.stringify(product, null, '\t'));
+                                        }
                                     );
-                                    closeModalAddProduct();
-                                    window.location.reload();
-                                    // console.log(JSON.stringify(product, null, '\t'));
                                 }
                             }
                         }
@@ -1697,11 +1730,7 @@
 
             async function deleteCategory(id) {
                 if (confirm("Do you want to delete this category?")) {
-                    if (
-                        deleteRecord(
-                            "http://localhost:3001/category/delete/" + id,
-                        )
-                    ) {
+                    if (deleteRecord("/category/delete/" + id)) {
                         window.location.reload();
                     } else {
                         alert("Delete this category is not successfully");
@@ -1710,7 +1739,7 @@
             }
 
             async function setDisplayCategory() {
-                const data = await getData("http://localhost:3001/category");
+                const data = await getData("/category");
                 let container = document.querySelector(".container");
                 var s = "";
                 data.forEach((item, index) => {
@@ -1718,7 +1747,11 @@
                     <tr>
                         <td class='td_center td_5'>${++index}</td>
                         <td class='td_30'>${item.name}</td>
-                        <td class='td_center td_50'><Button onclick="updateCategory('${item._id}')">Update</Button><Button onclick="deleteCategory('${item._id}')">Delete</Button></td>
+                        <td class='td_center td_50'><Button onclick="updateCategory('${
+                            item._id
+                        }')">Update</Button><Button onclick="deleteCategory('${
+                        item._id
+                    }')">Delete</Button></td>
                     </tr>
                 `;
                 });
@@ -1764,26 +1797,38 @@
 
             function deleteStaff(id) {
                 if (confirm("Do you want to delete this staff?")) {
-                    deleteRecord("http://localhost:3001/user/delete/" + id);
+                    deleteRecord("/user/delete/" + id);
                     window.location.reload();
                 }
             }
             async function setDisplayStaff() {
                 let container = document.querySelector(".container");
-                const data = await getData("http://localhost:3001/user/staff");
+                const data = await getData("/user/staff");
                 var s = "";
                 data.forEach((item, index) => {
                     s += `
                     <tr>
                         <td class='td_center td_5'>${++index}</td>
                         <td class='td_20'>${item.commonuser.name}</td>
-                        <td class='td_15 td_center'>${item.commonuser.gender}</td>
-                        <td class='td_center td_15'>${formatDate(item.commonuser.dateOfBirth)}</td>
-                        <td class='td_center td_15'>${item.commonuser.phone}</td>
+                        <td class='td_15 td_center'>${
+                            item.commonuser.gender
+                        }</td>
+                        <td class='td_center td_15'>${formatDate(
+                            item.commonuser.dateOfBirth
+                        )}</td>
+                        <td class='td_center td_15'>${
+                            item.commonuser.phone
+                        }</td>
                         <td class='product-description'>${item.address}</td>
                         <td class='td_center td_15'>${item.position}</td>
-                        <td class='td_10'>${item.commonuser.account.username}</td>
-                        <td class='td_center td_20'><Button onclick="updateStaff('${item._id}')">Update</Button><Button onclick="deleteStaff('${item._id}')">Delete</Button></td>
+                        <td class='td_10'>${
+                            item.commonuser.account.username
+                        }</td>
+                        <td class='td_center td_20'><Button onclick="updateStaff('${
+                            item._id
+                        }')">Update</Button><Button onclick="deleteStaff('${
+                        item._id
+                    }')">Delete</Button></td>
                     </tr>
                 `;
                 });
@@ -1830,7 +1875,11 @@
                 const diffTime = Math.abs(now - date);
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 if (diffDays === 0) {
-                    return `Today, ${date.toLocaleDateString("en-US", { hour: "numeric", minute: "numeric", second: "numeric" })}`;
+                    return `Today, ${date.toLocaleDateString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                    })}`;
                 } else {
                     return date.toLocaleDateString("en-US", {
                         day: "2-digit",
@@ -1843,9 +1892,7 @@
                 }
             }
             async function viewOrder(id) {
-                const data = await getData(
-                    `http://localhost:3001/orders/admin/${id}`,
-                );
+                const data = await getData(`/orders/admin/${id}`);
                 HienThi(data);
             }
 
@@ -1858,17 +1905,14 @@
                 const statusOrder = {
                     status: "delivering",
                 };
-                patchData(
-                    `http://localhost:3001/orders/update/${orderId}`,
-                    statusOrder,
-                );
-                postData("http://localhost:3001/delivery/add", data);
+                patchData(`/orders/update/${orderId}`, statusOrder);
+                postData("/delivery/add", data);
                 window.location.reload();
             }
 
             async function HienThi(data) {
                 const delivery_wrapper_detail = document.getElementsByClassName(
-                    "delivery-wrapper-detail",
+                    "delivery-wrapper-detail"
                 )[0];
                 const formattedDate = formatDate(data.orderDateTime);
                 let totalProduct = 0;
@@ -1917,10 +1961,16 @@
                 <tr>
                     <td class="td-img td-pad-right-10"><img src="data:image/jpeg;base64,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"
                             alt="" srcset=""></td>
-                    <td class="max-wd30 td-left tb-border">${item.product.name}</td>
-                    <td class="max-wd5 tb-pad10 tb-border td_center">x${item.amount}</td>
+                    <td class="max-wd30 td-left tb-border">${
+                        item.product.name
+                    }</td>
+                    <td class="max-wd5 tb-pad10 tb-border td_center">x${
+                        item.amount
+                    }</td>
                     <td class="max-wd30 tb-pad10 tb-border">${data.note}</td>
-                    <td class="max-wd20 tb-pad10 tb-border td_right">$${item.amount * item.product.price}</td>
+                    <td class="max-wd20 tb-pad10 tb-border td_right">$${
+                        item.amount * item.product.price
+                    }</td>
                 </tr>
                 `;
                 });
@@ -1950,13 +2000,17 @@
                     <td class="td-pad-top-10 tb-border td-pad-bottom-10" colspan="4"
                         style="font-weight: bold;">Total:</td>
                     <td class="td_right td-pad-top-10 tb-border td-pad-bottom-10"
-                        style="font-weight: bold;">$${total - data.discount}</td>
+                        style="font-weight: bold;">$${
+                            total - data.discount
+                        }</td>
                 </tr>
                 <tr>
                     <td class="td-pad-top-10 tb-border td-pad-bottom-10" colspan="4"
                         style="font-weight: bold;">Payment method:</td>
                     <td class="td_right td-pad-top-10 tb-border td-pad-bottom-10"
-                        style="font-weight: bold; text-transform: capitalize;">${data.paymentMethod}</td>
+                        style="font-weight: bold; text-transform: capitalize;">${
+                            data.paymentMethod
+                        }</td>
                 </tr>
                 <tr>
                     <td class="td-pad-top-10 tb-border td-pad-bottom-10" colspan="4"
@@ -1982,9 +2036,7 @@
             }
 
             async function getOrdersStatus(status) {
-                const data = await getData(
-                    `http://localhost:3001/orders/status/${status}`,
-                );
+                const data = await getData(`/orders/status/${status}`);
                 var s = "";
                 data.forEach((item) => {
                     const formattedDate = formatDate(item.orderDateTime);
@@ -2038,13 +2090,13 @@
 
             function deleteProduct(id) {
                 if (confirm("Do you want to delete this product?")) {
-                    deleteRecord("http://localhost:3001/products/delete/" + id);
+                    deleteRecord("/products/delete/" + id);
                     window.location.reload();
                 }
             }
 
             async function setDisplayProduct() {
-                const data = await getData("http://localhost:3001/products");
+                const data = await getData("/products");
                 let container = document.querySelector(".container");
                 var s = "";
                 data.forEach((item, index) => {
@@ -2060,7 +2112,11 @@
                         <td class='product-description'>${item.description}</td>
                         <td class='td_right td_10'>${item.price}</td>
                         <td class='td_center td_10 disable'><input type="checkbox" name="ckbPopular" id="ckbPopular" ${check} onclick="return false "></td>
-                        <td class='td_center td_20'><Button onclick="updateProduct('${item._id}')">Update</Button><Button onclick="deleteProduct('${item._id}')">Delete</Button></td>
+                        <td class='td_center td_20'><Button onclick="updateProduct('${
+                            item._id
+                        }')">Update</Button><Button onclick="deleteProduct('${
+                        item._id
+                    }')">Delete</Button></td>
                     </tr>
                 `;
                 });
