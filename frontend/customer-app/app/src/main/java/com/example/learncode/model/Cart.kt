@@ -10,7 +10,7 @@ data class Cart(
     val products: MutableList<ProductOfCart>
 )
 
-data class Order (
+data class Order(
     @SerializedName("_id")
     val id: String,
     @SerializedName("user")
@@ -26,10 +26,12 @@ data class Order (
     @SerializedName("discount")
     val discount: Double,
     @SerializedName("detailOrders")
-    val detailOrders: List<DetailOrders>
-)
+    val detailOrders: List<DetailOrders>,
+    @SerializedName("paymentMethod")
+    val paymentMethod: String
+);
 
-data class DetailOrders (
+data class DetailOrders(
     @SerializedName("product")
     val product: Products,
     @SerializedName("amount")

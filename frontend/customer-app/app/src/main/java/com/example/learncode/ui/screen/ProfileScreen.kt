@@ -1,6 +1,5 @@
 package com.example.learncode.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,24 +8,19 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
@@ -59,28 +52,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.learncode.R
-import com.example.learncode.model.NavigationItem
 import com.example.learncode.model.PreferenceManager
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.util.generateQRCode
+import com.example.learncode.viewmodel.AuthViewModel
+import com.example.learncode.viewmodel.NavControllerViewModel
 import com.example.learncode.viewmodel.ProfileViewModel
 import com.example.learncode.viewmodel.StateProfile
 import java.text.SimpleDateFormat
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel) {
+fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel, navControllerViewModel: NavControllerViewModel) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         Scaffold(
             topBar = {
-                TopBarProfile(navController)
+                TopBarProfile(navControllerViewModel)
             },
             containerColor = Color.Transparent,
         ) { paddingValues ->
@@ -91,9 +84,12 @@ fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarProfile(navController: NavController) {
+fun TopBarProfile(navControllerViewModel: NavControllerViewModel) {
     var expanded by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val token = PreferenceManager.getToken(context).toString()
+    val navControllerMain by navControllerViewModel.navController.observeAsState()
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = Color.White,
@@ -111,19 +107,37 @@ fun TopBarProfile(navController: NavController) {
         actions = {
             IconButton(onClick = { expanded = !expanded }) {
                 Icon(
-                    imageVector = Icons.Filled.Menu,
+                    imageVector = Icons.Filled.Settings,
                     contentDescription = "Localized description"
                 )
             }
             DropdownMenu(
                 expanded = expanded,
-                onDismissRequest = { expanded = false }
+                onDismissRequest = { expanded = false },
+                modifier = Modifier.background(Color.White)
             ) {
+                DropdownMenuItem(
+                    onClick = {}
+                ) {
+                    Text(
+                        "Update Profile",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(fontPoppinsRegular),
+                        color = Color.Black,
+                        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+                    )
+                }
                 DropdownMenuItem(onClick = {
                     expanded = false
                     showLogoutDialog = true
                 }) {
-                    Text("Đăng xuất")
+                    Text(
+                        "Log out",
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(fontPoppinsRegular),
+                        color = Color.Black,
+                        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+                    )
                 }
             }
         },
@@ -132,8 +146,11 @@ fun TopBarProfile(navController: NavController) {
         LogoutAlertDialog(
             showDialog = remember { mutableStateOf(showLogoutDialog) },
             onConfirm = {
-                // Xử lý khi người dùng đồng ý đăng xuất ở đây...
-                Log.d("Logout", "Đã đăng xuất")
+                if (token != null) {
+                    val viewModel = AuthViewModel()
+                    viewModel.logout(token, context)
+                    navControllerMain!!.popBackStack("login", true)
+                }
             },
             onDismiss = {
                 showLogoutDialog = false
@@ -143,32 +160,6 @@ fun TopBarProfile(navController: NavController) {
             },
         )
     }
-//    Row(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .height(70.dp)
-//            .background(Color.White)
-//            .padding(horizontal = 10.dp),
-//        verticalAlignment = Alignment.CenterVertically,
-//        horizontalArrangement = Arrangement.Center
-//    ) {
-//        Text(
-//            modifier = Modifier.padding(start = 5.dp),
-//            text = "Profile",
-//            fontSize = 20.sp,
-//            fontWeight = FontWeight(600),
-//            fontFamily = FontFamily(fontPoppinsSemi),
-//        )
-//        IconButton(onClick = {}) {
-//            Icon(
-//                modifier = Modifier.size(width = 40.dp, height = 40.dp),
-//                painter = painterResource(id = R.drawable.iconcoffee),
-//                contentDescription = null,
-//                tint = Color.Black
-//            )
-//        }
-//
-//    }
 }
 
 @Composable
@@ -179,35 +170,60 @@ fun LogoutAlertDialog(
     onDismissRequest: () -> Unit
 ) {
     if (showDialog.value) {
-        AlertDialog(
-            onDismissRequest = { onDismissRequest },
-            title = {
-                Text(text = "Đăng xuất")
-            },
-            text = {
-                Text("Bạn có chắc chắn muốn đăng xuất?")
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showDialog.value = false
-                        onConfirm()
-                    }
-                ) {
-                    Text("Đồng ý")
-                }
-            },
-            dismissButton = {
-                Button(
-                    onClick = { onDismiss() }
-                ) {
-                    Text("Hủy")
-                }
-            },
-            properties = DialogProperties(
-                dismissOnClickOutside = false
-            )
-        )
+        Surface(
+            color = Color.Black.copy(alpha = 0.5f),
+            modifier = Modifier.fillMaxSize(),
+            contentColor = Color.Transparent,
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                AlertDialog(
+                    onDismissRequest = { onDismissRequest },
+                    title = {
+                        Text(
+                            text = "Log out",
+                            fontFamily = FontFamily(fontPoppinsSemi),
+                            color = Color.Black
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "Are you sure you want to log out?",
+                            color = Color.Black,
+                            fontFamily = FontFamily(fontPoppinsRegular)
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                showDialog.value = false
+                                onConfirm()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Yes",
+                                color = Color.White
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = { onDismiss() },
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                        ) {
+                            Text(
+                                text = "No",
+                                color = Color.White
+                            )
+                        }
+                    },
+                    containerColor = Color.White,
+                    textContentColor = Color.Black
+                )
+            }
+        }
     }
 }
 
@@ -230,7 +246,8 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
         }
 
         StateProfile.SUCCESS -> {
-            val qrCodeBitmap = generateQRCode("${customer!!.commonuser._id}", 512, LocalContext.current)
+            val qrCodeBitmap =
+                generateQRCode("${customer!!.commonuser._id}", 512, LocalContext.current)
             val timestamp = customer!!.commonuser.dateOfBirth
 
             val date = Date(timestamp.time)
@@ -285,23 +302,12 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
                         title = "Mobile Phone",
                         des = "${customer!!.commonuser.phone}"
                     )
-//            Spacer(modifier = Modifier.height(5.dp))
-//                    ItemProfile(
-//                        image = R.drawable.icongift,
-//                        title = "Membership Point",
-//                        des = "${customer!!.commonuser.phone}"
-//                    )
-//            Spacer(modifier = Modifier.height(5.dp))
-//                    ItemProfile(image = R.drawable.iconlocation, title = "Address", des = "Franklin Avenue")
-//            Spacer(modifier = Modifier.height(5.dp))
                 }
             }
         }
 
         else -> {}
     }
-
-
 }
 
 @Composable
@@ -335,7 +341,6 @@ fun ItemProfile(image: Int, title: String, des: String) {
             }
 
         }
-
         Column(
             modifier = Modifier
                 .fillMaxSize()

@@ -10,31 +10,50 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="18cdeb7f-c641-4b85-962f-029f97f2cfa0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/HomeScreen.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../customer-app/app/src/main/res/drawable/ic_delivery.gif" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../customer-app/app/src/main/res/drawable/ic_shipper.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/NavControllerViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../customer-app/app/src/main/res/drawable/bg_onboarding_1.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../customer-app/app/src/main/res/drawable/bg_onboarding_2.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../customer-app/app/src/main/res/drawable/bg_onboarding_3.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/repository/DeliveryRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/repository/OrderRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/viewmodel/OrderViewModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/ExceptionScreen.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/util/FormatDateTime.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../backend/app/controllers/authController.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/app/controllers/authController.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../backend/app/controllers/orderController.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/app/controllers/orderController.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../backend/app/controllers/productController.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/app/controllers/productController.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../backend/app/models/orderModel.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/app/models/orderModel.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../../backend/app/routes/orderRouter.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/app/routes/orderRouter.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../backend/app/routes/productRouter.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/app/routes/productRouter.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/.idea/gradle.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../backend/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../backend/views/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../backend/views/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/ApiService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/repository/OrderRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/repository/OrderRepository.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/components/SearchView.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/components/SearchView.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/Cart.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/Cart.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/OnboardingSheet.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/OnboardingSheet.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/Product.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/Product.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/RetrofitInstance.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/model/RetrofitInstance.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/repository/AuthRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/repository/AuthRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/components/Button.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/components/Button.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/main/MainScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/main/MainScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/HomeNavigateScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/HomeNavigateScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/HomeScreen2.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/HomeScreen2.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/MenuProducts.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/MenuProducts.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/OnboardingScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/OnboardingScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/OrderScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/OrderScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/ProfileScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/TransactionScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/TransactionScreen.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/CartViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/CartViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/HomeViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/HomeViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/WelcomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/ui/screen/WelcomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/AuthViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/AuthViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/OrderViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/OrderViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/SearchViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../customer-app/app/src/main/java/com/example/learncode/viewmodel/SearchViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/model/ApiService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/model/ApiService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/model/ObjectJson.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/model/ObjectJson.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/model/RetrofitInstance.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/model/RetrofitInstance.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/repository/AuthRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/repository/AuthRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/viewmodel/AuthViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/viewmodel/AuthViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/viewmodel/HomeViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/data/viewmodel/HomeViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/navigation/MainNavHost.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/navigation/MainNavHost.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/HistoryScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/HistoryScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/HomeScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/HomeScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/InformationOrder.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/InformationOrder.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/LoginScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/LoginScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/delivery_app/ui/screen/ProfileScreen.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,9 +110,9 @@
         <option value="Kotlin Data Class" />
         <option value="Kotlin Interface" />
         <option value="Kotlin Object" />
-        <option value="Kotlin Class" />
         <option value="resourceFile" />
         <option value="Kotlin File" />
+        <option value="Kotlin Class" />
       </list>
     </option>
   </component>
@@ -115,7 +134,7 @@
     "RunOnceActivity.cidr.known.project.marker": "true",
     "cidr.known.project.marker": "true",
     "com.google.services.firebase.aqiPopupShown": "true",
-    "last_opened_file_path": "C:/Users/ACER/Desktop/AppMobile/urban-enigma/frontend/shipper-app"
+    "last_opened_file_path": "C:/Users/ACER/Desktop/AppMobile/urban-enigma/frontend/customer-app"
   }
 }]]></component>
   <component name="RecentsManager">

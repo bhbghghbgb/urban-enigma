@@ -1,8 +1,5 @@
 package com.example.learncode.ui.screen
 
-import android.provider.MediaStore.Video
-import android.widget.VideoView
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -18,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -29,10 +25,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -67,24 +64,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.NavHostController
 import com.example.learncode.R
 import com.example.learncode.model.NavigationItem
 import com.example.learncode.model.Order
 import com.example.learncode.model.PreferenceManager
-import com.example.learncode.model.Product
-import com.example.learncode.model.Token
+import com.example.learncode.model.Products
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
-import com.example.learncode.viewmodel.HomeViewModel
 import com.example.learncode.viewmodel.OrderViewModel
 import com.example.learncode.viewmodel.State
 import kotlinx.coroutines.launch
@@ -139,7 +133,11 @@ fun TransactionScreen(navController: NavController) {
                 )
             }
         }
-        HorizontalPager(beyondBoundsPageCount = tabItems.size, state = pagerState) { currentPage ->
+        HorizontalPager(
+            beyondBoundsPageCount = tabItems.size,
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { currentPage ->
             when (currentPage) {
                 0 -> {
                     if (token != null) {
@@ -260,10 +258,10 @@ fun LoadingScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(Color.Transparent),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(color = Color.Black) // Hiển thị một thanh tiến trình loading
+        CircularProgressIndicator(color = Color.Black)
     }
 }
 
@@ -272,7 +270,7 @@ fun ErrorScreen(errorMessage: String, onRetry: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(Color.Transparent),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -367,13 +365,17 @@ fun OrderItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Delivering",
+                        text = order.status.capitalize(),
                         maxLines = 1,
                         fontSize = 18.sp,
                         fontFamily = FontFamily(fontPoppinsRegular),
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.wrapContentWidth(),
-                        color = Color(0xFFCCCC00)
+                        color = when (order.status) {
+                            "delivered" -> Color(0xFF009900)
+                            "delivering" -> Color(0xFFCCCC00)
+                            else -> Color(0xFFFF0000)
+                        }
                     )
                     Text(
                         text = "$total$",
@@ -417,7 +419,7 @@ fun InformationOrder(navController: NavController, id: String) {
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = { TopBarCenterOrderInformation(navController) },
-            containerColor = Color.Transparent
+            containerColor = Color.White
         ) { paddingValues ->
             ContentInformationOrder(paddingValues, id)
         }
@@ -463,8 +465,8 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
     val viewModel = remember {
         OrderViewModel()
     }
-    val order = viewModel.order.observeAsState()
     val state = viewModel.state.observeAsState()
+    val orderList by viewModel.order.observeAsState()
     LaunchedEffect(Unit) {
         if (token != null) {
             viewModel.getOrderById(token, id)
@@ -479,7 +481,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
             contentPadding = PaddingValues(vertical = 16.dp),
             modifier = Modifier.background(Color.Transparent)
         ) {
-            when (state) {
+            when (state.value) {
                 State.LOADING -> {
                     item { LoadingScreen() }
                 }
@@ -519,7 +521,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "ABC number, ABC street, ABC ward, ABC district, ABC city",
+                                            text = orderList!!.deliveryLocation,
                                             fontSize = 16.sp,
                                             modifier = Modifier.wrapContentHeight()
                                         )
@@ -533,7 +535,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "Tran Van Banh",
+                                            text = orderList!!.user.commonuser.name,
                                             fontSize = 16.sp,
                                             modifier = Modifier.wrapContentHeight()
                                         )
@@ -547,7 +549,21 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "0987654321",
+                                            text = orderList!!.user.commonuser.phone,
+                                            fontSize = 16.sp,
+                                            modifier = Modifier.wrapContentHeight()
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(5.dp))
+                                    Row {
+                                        Icon(
+                                            imageVector = Icons.Default.MailOutline,
+                                            contentDescription = "NoteIcon",
+                                            tint = Color.Gray
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = orderList!!.note,
                                             fontSize = 16.sp,
                                             modifier = Modifier.wrapContentHeight()
                                         )
@@ -564,9 +580,21 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                                 .padding(horizontal = 16.dp)
                         ) {
                             Column {
-                                ItemProduct(product = product)
-                                Spacer(modifier = Modifier.height(8.dp))
-                                ItemProduct(product = product)
+                                orderList?.let { orderList ->
+                                    orderList.detailOrders.forEach { detailOrder ->
+                                        val product = Products(
+                                            _id = detailOrder.product._id,
+                                            image = "",
+                                            name = detailOrder.product.name,
+                                            description = detailOrder.product.description,
+                                            price = detailOrder.product.price,
+                                            popular = detailOrder.product.popular,
+                                            category = detailOrder.product.category,
+                                            avgRating = 0.0
+                                        )
+                                        ItemProduct(product = product, detailOrder.amount)
+                                    }
+                                }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
@@ -580,7 +608,8 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                                         fontFamily = FontFamily(fontPoppinsRegular)
                                     )
                                     Text(
-                                        text = "2.80$",
+                                        text = viewModel.getTotalOrderNotDiscount(orderId = orderList!!.id)
+                                            .toString() + "$",
                                         fontSize = 18.sp,
                                         fontFamily = FontFamily(fontPoppinsSemi)
                                     )
@@ -614,7 +643,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                                         fontFamily = FontFamily(fontPoppinsRegular)
                                     )
                                     Text(
-                                        text = "0$",
+                                        text = "${orderList!!.discount}$",
                                         fontSize = 16.sp,
                                         fontFamily = FontFamily(fontPoppinsSemi)
                                     )
@@ -630,7 +659,8 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                                         fontFamily = FontFamily(fontPoppinsSemi)
                                     )
                                     Text(
-                                        text = "2.80$",
+                                        text = viewModel.getTotalOrderHaveDiscount(orderId = orderList!!.id)
+                                            .toString() + "$",
                                         fontSize = 20.sp,
                                         fontFamily = FontFamily(fontPoppinsSemi),
                                         color = Color(0xFFCC6600)
@@ -657,12 +687,12 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                 else -> {}
             }
         }
-        val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
     }
 }
 
 @Composable
-fun ItemProduct(product: Product) {
+
+fun ItemProduct(product: Products, amount: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -685,32 +715,39 @@ fun ItemProduct(product: Product) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
+                modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = product.title,
+                    text = product.name,
                     maxLines = 1,
                     fontSize = 17.sp,
                     fontFamily = FontFamily(fontPoppinsSemi),
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = product.des,
+                    text = product.description,
                     fontFamily = FontFamily(fontPoppinsRegular),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 12.sp,
                     color = Color.Gray,
                 )
+                Text(
+                    text = "x$amount",
+                    fontFamily = FontFamily(fontPoppinsRegular),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 15.sp,
+                    color = Color.Black,
+                )
             }
             Column(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .fillMaxHeight(),
+                modifier = Modifier.wrapContentWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = product.price,
+                    text = product.price.toString() + "$",
                     fontFamily = FontFamily(fontPoppinsSemi),
                     fontSize = 19.sp,
                     maxLines = 1,

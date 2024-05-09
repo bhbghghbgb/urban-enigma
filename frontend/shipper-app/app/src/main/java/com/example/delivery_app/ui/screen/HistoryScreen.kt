@@ -22,33 +22,72 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.delivery_app.R
+import com.example.delivery_app.data.model.Order
+import com.example.delivery_app.data.viewmodel.HomeViewModel
+import com.example.delivery_app.data.viewmodel.State
+import com.example.delivery_app.ui.LoadingScreen
+import com.example.delivery_app.util.FormatDateTime
+import com.example.learncode.model.PreferenceManager
 
 @Composable
-fun HistoryScreen (navController: NavController) {
-    LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxWidth()) {
-        item { OrderItem(navController = navController) }
-        item { Spacer(modifier = Modifier.height(10.dp)) }
-        item { OrderItem(navController = navController) }
+fun HistoryScreen(navController: NavController, viewModel: HomeViewModel) {
+    val orders by viewModel.orders.observeAsState()
+    val state by viewModel.state.observeAsState()
+    val token: String? = PreferenceManager.getToken(LocalContext.current)
+    LaunchedEffect(Unit) {
+        if (token != null) {
+            viewModel.getOrdersByStaff(token)
+        }
+    }
+    when (state) {
+        State.LOADING -> {
+            LoadingScreen()
+        }
+
+        State.SUCCESS -> {
+            LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxWidth()) {
+                orders?.let { orders ->
+                    orders.forEach { order ->
+                        item { OrderItem(navController = navController, order = order, viewModel = viewModel) }
+                        item { Spacer(modifier = Modifier.height(10.dp)) }
+                    }
+                }
+            }
+        }
+
+        State.ERROR -> {
+            ErrorScreen {
+                if (token != null)
+                    viewModel.getOrdersByStaff(token)
+            }
+        }
+
+        else -> {}
     }
 }
 
 @Composable
-fun OrderItem(navController: NavController) {
+fun OrderItem(navController: NavController, order: Order, viewModel: HomeViewModel) {
+    val formatDateTime = FormatDateTime()
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .clickable {
-                navController.navigate("information")
+                navController.navigate("information/${order.id}")
             },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
@@ -66,10 +105,12 @@ fun OrderItem(navController: NavController) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 7.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 7.dp)
                 ) {
                     Text(
-                        text="Order ID: 6610d75d520537d636970c49",
+                        text = "Order ID: ${order.id}",
                         maxLines = 2,
                         fontSize = 15.sp,
                         overflow = TextOverflow.Ellipsis,
@@ -88,7 +129,7 @@ fun OrderItem(navController: NavController) {
                         color = Color(0xFF009900)
                     )
                     Text(
-                        text = "+2.80$",
+                        text = "+${viewModel.getTotalOrderHaveDiscount(order.id)}$",
                         maxLines = 1,
                         fontSize = 20.sp,
                         overflow = TextOverflow.Ellipsis,
@@ -101,14 +142,14 @@ fun OrderItem(navController: NavController) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "6 Items",
+                        text = "${viewModel.getTotalItem(order.id)} Items",
                         maxLines = 1,
                         fontSize = 16.sp,
                         overflow = TextOverflow.Ellipsis,
                         color = Color.Gray
                     )
                     Text(
-                        text = "12/03/2024 07:07",
+                        text = "${formatDateTime.formattedDateTime(order.orderDateTime)}",
                         maxLines = 1,
                         fontSize = 16.sp,
                         overflow = TextOverflow.Ellipsis,

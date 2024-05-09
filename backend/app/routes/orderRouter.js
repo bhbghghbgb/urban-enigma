@@ -14,6 +14,8 @@ router.get('/delivered', authenticate.authenticate, orderController.getAllOrderB
 router.get('/:id', authenticate.authenticate, orderController.findOrderById);
 // -> lấy những order đã [now, delivering, delivered]
 router.get('/status/:status', orderController.getOrdersOfStatus);
+// -> lấy 1 order bằng id
+router.get('/admin/:id', orderController.findOrderByIdAdmin);
 // -> thêm 1 order
 router.post('/add', orderController.createOrder);
 // -> cập nhật trạng thái của order

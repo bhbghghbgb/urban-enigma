@@ -27,7 +27,7 @@ interface ApiService {
     suspend fun login(@Body request: Account): Response<Token>
 
     @POST("/logout")
-    suspend fun logout(): Response<ResponseBody>
+    suspend fun logout(@Header("Authorization") token: String): Response<ResponseFromServer>
 
     @GET("/authenticate")
     suspend fun authenticate(@Header("Authorization") token: String): Response<AuthResult>

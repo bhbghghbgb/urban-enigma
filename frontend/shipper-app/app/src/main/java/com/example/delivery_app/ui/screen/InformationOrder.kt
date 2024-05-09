@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Button
@@ -36,28 +37,62 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.delivery_app.R
+import com.example.delivery_app.data.model.DetailOrders
+import com.example.delivery_app.data.model.Order
 import com.example.delivery_app.data.model.Product
+import com.example.delivery_app.data.viewmodel.HomeViewModel
+import com.example.delivery_app.data.viewmodel.OrderViewModel
+import com.example.delivery_app.data.viewmodel.State
+import com.example.delivery_app.ui.LoadingScreen
+import com.example.delivery_app.util.FormatDateTime
+import com.example.learncode.model.PreferenceManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InformationOrder(navController: NavController) {
+fun InformationOrder(navController: NavController, id: String, viewModel: OrderViewModel) {
+    val order by viewModel.order.observeAsState()
+    val state by viewModel.state.observeAsState()
+    LaunchedEffect(Unit) {
+        viewModel.getOrderById(id);
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = { TopBarCenterOrderInformation(navController) },
             containerColor = Color.Transparent
         ) { paddingValues ->
-            ContentInformationOrder(paddingValues)
+            when (state) {
+                State.LOADING -> {
+                    LoadingScreen()
+                }
+
+                State.ERROR -> {
+                    ErrorScreen {
+                        viewModel.getOrderById(id)
+                    }
+                }
+
+                State.SUCCESS -> {
+                    ContentInformationOrder(paddingValues, order = order!!, viewModel = viewModel)
+                }
+
+                else -> {}
+            }
         }
     }
 }
@@ -65,34 +100,44 @@ fun InformationOrder(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarCenterOrderInformation(navController: NavController) {
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = Color.White
-        ),
-        title = {
-            Text(
-                "Information",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 20.sp,
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(0.dp),
+                clip = false
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = {
-                navController.popBackStack()
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Localized description"
+    ) {
+        CenterAlignedTopAppBar(
+            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = Color.White
+            ),
+            title = {
+                Text(
+                    "Information",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 20.sp,
                 )
+            },
+            navigationIcon = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        imageVector = Icons.Filled.ArrowBack,
+                        contentDescription = "Localized description"
+                    )
+                }
             }
-        }
-    )
+        )
+    }
 }
 
 @Composable
-fun ContentInformationOrder(paddingValues: PaddingValues) {
-    val product = Product(2, R.drawable.mocha, "Mocha", "with milk", "1.40$", 4.8)
+fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewModel: OrderViewModel) {
+    val formatDateTime = FormatDateTime()
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,7 +145,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
     ) {
         LazyColumn(
             contentPadding = PaddingValues(vertical = 16.dp),
-            modifier = Modifier.background(Color.Transparent)
+            modifier = Modifier.background(Color.White)
         ) {
             item {
                 Row(
@@ -108,7 +153,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = "ID: ", color = Color.Gray, fontSize = 16.sp)
-                    Text(text = "12030001", fontSize = 16.sp)
+                    Text(text = "${order.id}", fontSize = 16.sp)
                 }
             }
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -128,7 +173,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                             .background(Color.White)
                     ) {
                         Column {
-                            Row {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.LocationOn,
                                     contentDescription = "LocationIcon",
@@ -136,13 +181,13 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "ABC number, ABC street, ABC ward, ABC district, ABC city",
+                                    text = "${order.deliveryLocation}",
                                     fontSize = 16.sp,
                                     modifier = Modifier.wrapContentHeight()
                                 )
                             }
                             Spacer(modifier = Modifier.height(5.dp))
-                            Row {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.Person,
                                     contentDescription = "LocationIcon",
@@ -150,13 +195,13 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Tran Van Banh",
+                                    text = "${order.user.commonuser.name}",
                                     fontSize = 16.sp,
                                     modifier = Modifier.wrapContentHeight()
                                 )
                             }
                             Spacer(modifier = Modifier.height(5.dp))
-                            Row {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
                                 Icon(
                                     imageVector = Icons.Default.Call,
                                     contentDescription = "LocationIcon",
@@ -164,7 +209,21 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "0987654321",
+                                    text = "${order.user.commonuser.phone}",
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.wrapContentHeight()
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.DateRange,
+                                    contentDescription = "LocationIcon",
+                                    tint = Color.Gray
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "${formatDateTime.formattedDateTime(order.orderDateTime)}",
                                     fontSize = 16.sp,
                                     modifier = Modifier.wrapContentHeight()
                                 )
@@ -181,10 +240,10 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                         .padding(horizontal = 16.dp)
                 ) {
                     Column {
-                        ItemProduct(product = product)
-                        Spacer(modifier = Modifier.height(8.dp))
-                        ItemProduct(product = product)
-                        Spacer(modifier = Modifier.height(8.dp))
+                        order.detailOrders.forEach { item ->
+                            ItemProduct(detailOrders = item)
+                            Spacer(modifier = Modifier.height(8.dp))
+                        }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -196,7 +255,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                                 color = Color.Gray,
                             )
                             Text(
-                                text = "2.80$",
+                                text = "${viewModel.getTotalOrderNotDiscount(order.id)}$",
                                 fontSize = 18.sp,
                             )
                         }
@@ -226,7 +285,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                                 color = Color.Gray,
                             )
                             Text(
-                                text = "0$",
+                                text = "${order.discount}$",
                                 fontSize = 16.sp,
                             )
                         }
@@ -240,29 +299,31 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
                                 fontSize = 20.sp,
                             )
                             Text(
-                                text = "2.80$",
+                                text = "${viewModel.getTotalOrderHaveDiscount(order.id)}$",
                                 fontSize = 20.sp,
                                 color = Color(0xFFCC6600)
                             )
                         }
                         Spacer(modifier = Modifier.height(5.dp))
-                        Divider(
-                            color = Color(0xFF9c7550),
-                            thickness = 1.dp,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
-                        Button(
-                            onClick = {  },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF9c7550),
-                                contentColor = Color.White
+                        if (order.status != "delivered") {
+                            Divider(
+                                color = Color(0xFF9c7550),
+                                thickness = 1.dp,
+                                modifier = Modifier.fillMaxWidth()
                             )
-                        ) {
-                            Text("Giao hàng", fontSize = 18.sp)
+                            Spacer(modifier = Modifier.height(5.dp))
+                            Button(
+                                onClick = { },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 0.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF9c7550),
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text("Delivery", fontSize = 18.sp)
+                            }
                         }
                     }
                 }
@@ -272,7 +333,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues) {
 }
 
 @Composable
-fun ItemProduct(product: Product) {
+fun ItemProduct(detailOrders: DetailOrders) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -284,7 +345,7 @@ fun ItemProduct(product: Product) {
             modifier = Modifier
                 .size(80.dp)
                 .clip(RoundedCornerShape(10.dp)),
-            painter = painterResource(id = product.image),
+            painter = painterResource(id = R.drawable.mocha),
             contentDescription = null,
             contentScale = ContentScale.FillBounds
         )
@@ -295,20 +356,28 @@ fun ItemProduct(product: Product) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
+                modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = product.title,
+                    text = "${detailOrders.product.name}",
                     maxLines = 1,
                     fontSize = 17.sp,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = product.des,
+                    text = "${detailOrders.product.description}",
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 12.sp,
                     color = Color.Gray,
+                )
+                Text(
+                    text = "x${detailOrders.amount}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    fontSize = 15.sp,
+                    color = Color.Black,
                 )
             }
             Column(
@@ -318,7 +387,7 @@ fun ItemProduct(product: Product) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = product.price,
+                    text = "${detailOrders.product.price * detailOrders.amount}$",
                     fontSize = 19.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,

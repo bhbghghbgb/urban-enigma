@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learncode.model.AuthResult
 import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.ResponseFromServer
 import com.example.learncode.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -19,6 +20,9 @@ class AuthViewModel : ViewModel() {
 
     private val _isValidToken = MutableLiveData<Boolean>()
     val isValidToken: LiveData<Boolean> = _isValidToken
+
+    private val _message = MutableLiveData<ResponseFromServer>()
+    val message: LiveData<ResponseFromServer> = _message
 
     fun setContext(context: Context) {
         _context.value = context
@@ -110,9 +114,19 @@ class AuthViewModel : ViewModel() {
         _passwordError.value = ""
     }
 
-    fun logout() {
+    fun logout(token: String, context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.logout()
+            try {
+                val response = repository.logout(token)
+                if (response.isSuccessful) {
+                    _message.postValue(response.body())
+                } else {
+                    _message.postValue(response.body())
+                }
+                Log.d("AuthViewModel-DATA", _message.value.toString())
+            } finally {
+                PreferenceManager.clearToken(context)
+            }
         }
     }
 }
