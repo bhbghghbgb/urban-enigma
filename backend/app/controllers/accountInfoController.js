@@ -1,13 +1,13 @@
 const AccountInfoVerify = require("../models/accountInfoVerifyModel");
-import { changeEmail, changePhone } from "../service/accountInfoService";
-import { generate6digit as verifyCodeGen } from "../utils/generate6digit";
+const { changeEmail, changePhone } = require("../service/accountInfoService");
+const { generate6digit: verifyCodeGen } = require("../utils/rng");
 exports.getAllRequests = async (req, res) => {
     try {
-        res.json(AccountInfoVerify.find())
+        res.json(AccountInfoVerify.find());
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
-}
+};
 exports.requestChangeAccountEmail = async (req, res) => {
     try {
         const username = req.body.username;
@@ -31,7 +31,7 @@ exports.requestChangeAccountEmail = async (req, res) => {
 exports.requestChangeAccountPhone = async (req, res) => {
     try {
         const username = req.body.username;
-        const phone = req.body.phone
+        const phone = req.body.phone;
         if (!(await checkUserNameExist(username))) {
             return res.status(404).json({ message: "Username is not exist" });
         }
