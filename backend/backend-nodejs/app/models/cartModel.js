@@ -1,18 +1,16 @@
 const mongoose = require("mongoose");
-// const Product = require('./productModel');
 
 const cartSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer",
+        type: mongoose.Schema.ObjectId,
+        ref: "FirebaseUser",
         required: true,
-        trim: true,
     },
     total: { type: Number, required: true },
     products: [
         {
             product: {
-                type: mongoose.Schema.Types.ObjectId,
+                type: mongoose.Schema.ObjectId,
                 ref: "Product",
                 required: true,
             },

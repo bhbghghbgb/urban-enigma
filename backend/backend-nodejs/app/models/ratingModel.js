@@ -2,13 +2,12 @@ const mongoose = require("mongoose");
 
 const ratingSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer",
+        type: mongoose.Schema.ObjectId,
+        ref: "FirebaseUser",
         required: true,
-        trim: true,
     },
     product: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.ObjectId,
         ref: "Product",
         required: true,
     },

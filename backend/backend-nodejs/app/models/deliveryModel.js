@@ -2,16 +2,14 @@ const mongoose = require("mongoose");
 
 const deliverySchema = new mongoose.Schema({
     order: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.ObjectId,
         ref: "Order",
         required: true,
-        trim: true,
     },
     staff: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Staff",
+        type: mongoose.Schema.ObjectId,
+        ref: "FirebaseUser",
         required: true,
-        trim: true,
     },
     locationNow: {
         latitude: { type: Number, required: true },

@@ -1,24 +1,21 @@
 const mongoose = require("mongoose");
 
-// const Product = require('./productModel');
-
 const orderSchema = new mongoose.Schema({
     user: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Customer",
+        type: mongoose.Schema.ObjectId,
+        ref: "FirebaseUser",
         required: true,
-        trim: true,
     },
     orderDateTime: { type: Date, required: true },
     status: { type: String, required: true },
     deliveryLocation: { type: String, required: true },
-    note: { type: String, required: true },
-    discount: { type: Number, required: true },
+    note: { type: String, required: false },
+    discount: { type: Number, required: false },
     paymentMethod: { type: String, required: true },
-    detailOrders: [
+    products: [
         {
             product: {
-                type: mongoose.Schema.Types.ObjectId,
+                type: mongoose.Schema.ObjectId,
                 ref: "Product",
                 required: true,
             },
