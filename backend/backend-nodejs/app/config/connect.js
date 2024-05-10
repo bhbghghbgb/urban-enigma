@@ -59,7 +59,6 @@ function initFirebase(callback) {
         console.info(
             "Failed to connect to Firebase. Auth will not work, server can continue"
         );
-    } finally {
         callback();
     }
 }

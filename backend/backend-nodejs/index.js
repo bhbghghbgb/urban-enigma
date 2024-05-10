@@ -1,8 +1,13 @@
 const { mongodbConnection, initConnection } = require("./app/config/connect");
 
 initConnection(main);
-
+var started = false;
 function main() {
+    if (started) {
+        console.info("Attempted to run main() more than once.");
+        return;
+    }
+    started = true;
     const express = require("express");
     const app = express();
     const cors = require("cors");
@@ -127,7 +132,10 @@ function main() {
                 },
             },
         ];
-        const check = await mongodbConnection.collection("Order").aggregate(myQuery).toArray();
+        const check = await mongodbConnection
+            .collection("Order")
+            .aggregate(myQuery)
+            .toArray();
         res.json(check);
         mongodbConnection.close();
     });

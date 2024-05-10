@@ -1742,10 +1742,10 @@
                 const data = await getData("/category");
                 let container = document.querySelector(".container");
                 var s = "";
-                data.forEach((item, index) => {
+                data.forEach((item) => {
                     s += `
                     <tr>
-                        <td class='td_center td_5'>${++index}</td>
+                        <td class='td_center td_5'>${item._id}</td>
                         <td class='td_30'>${item.name}</td>
                         <td class='td_center td_50'><Button onclick="updateCategory('${
                             item._id
@@ -1805,10 +1805,10 @@
                 let container = document.querySelector(".container");
                 const data = await getData("/user/staff");
                 var s = "";
-                data.forEach((item, index) => {
+                data.forEach((item) => {
                     s += `
                     <tr>
-                        <td class='td_center td_5'>${++index}</td>
+                        <td class='td_center td_5'>${item._id}</td>
                         <td class='td_20'>${item.commonuser.name}</td>
                         <td class='td_15 td_center'>${
                             item.commonuser.gender
@@ -2105,7 +2105,7 @@
                     }
                     s += `
                     <tr>
-                        <td class='td_center td_5'>${index + 1}</td>
+                        <td class='td_center td_5'>${item._id}</td>
                         <td class='td_20'>${item.name}</td>
                         <td class='td_center td_15'>${item.image}
                             <br>

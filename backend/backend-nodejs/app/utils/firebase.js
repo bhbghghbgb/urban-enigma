@@ -1,5 +1,6 @@
 const admin = require("firebase-admin");
 const { FIREBASE_AUTH_USER_TEST_EMAIL } = require("../config/_APP");
+const FirebaseUser = require("../models/firebaseUserModel");
 async function testFirebaseAuth() {
     try {
         const userRecord = await admin
@@ -16,4 +17,15 @@ async function testFirebaseAuth() {
         return false;
     }
 }
-module.exports = { testFirebaseAuth };
+async function checkFirebaseUidExist(firebaseUid) {
+    try {
+        const existingFirebaseUid = await FirebaseUser.countDocuments({
+            firebaseUid,
+        });
+        return existingFirebaseUid > 0;
+    } catch (err) {
+        console.log(err);
+        return false;
+    }
+}
+module.exports = { testFirebaseAuth, checkFirebaseUidExist };
