@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { DATABASE_CONNECTION_URL, DATABASE_NAME } = require("./_APP");
+mongoose.set("debug", true)
 mongoose.connect(DATABASE_CONNECTION_URL, {
     dbName: DATABASE_NAME,
     useNewUrlParser: true,

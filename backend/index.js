@@ -16,24 +16,26 @@ const userRoutes = require("./app/routes/userRouter");
 const authRoutes = require("./app/routes/authRouter");
 const deliveryRoutes = require("./app/routes/deliveryRouter");
 const accountInfoRoutes = require("./app/routes/accountInfoRouter");
-
+const publicFilesRoutes = require("./app/routes/publicFilesRouter");
 // Middleware
 const { authenticate } = require("./app/middleware/authenticate");
 const { ipAccessControl } = require("./app/middleware/ipAccessControl");
-const { error2jsonHandler } = require("./app/middleware/error2jsonHandler");
-const { publicImages } = require("./app/middleware/images");
-app.use(logger("common"));
+const {
+    error2jsonHandler,
+    error2jsonHandler404,
+} = require("./app/middleware/error2jsonHandler");
+const { servePublic } = require("./app/middleware/servePublic");
+const { favicon } = require("./app/middleware/favicon");
+app.use(logger("combined"));
 app.use(ipAccessControl);
-app.use(publicImages);
+app.use(servePublic);
+app.use(favicon);
 
 // Sử dụng body-parser middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
-
-// must add last
-app.use(error2jsonHandler);
 
 app.use("/products", productRoutes);
 app.use("/category", categoryRoutes);
@@ -46,6 +48,7 @@ app.use("", authRoutes);
 app.use("/delivery", deliveryRoutes);
 app.use("/accountinfo", accountInfoRoutes);
 
+app.use("/", publicFilesRoutes);
 app.get("/", function (req, res) {
     res.sendFile(require("path").join(__dirname, "/views/index.html"));
 });
@@ -202,6 +205,11 @@ app.get("/revenue/month/:year/:month", async (req, res) => {
         console.log(err);
     }
 });
+
+
+// must add last to capture errors only
+app.use(error2jsonHandler);
+app.use(error2jsonHandler404);
 
 app.listen(3001, function (req, res) {
     console.log("Hello");
