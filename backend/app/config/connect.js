@@ -5,7 +5,7 @@ const { testFirebaseAuth } = require("../utils/firebase");
 
 // LUU Y phai tu lay service account creds cua project ca nhan tren firebase
 // cai nay ko push len github dc vi se dc auto scan sau do bi disable
-const serviceAccount = require("./doanandroid-banhang-firebase-adminsdk-p80ax-e3465e55dd.json");
+// const serviceAccount = require("./doanandroid-banhang-firebase-adminsdk-p80ax-e3465e55dd.json");
 
 mongoose.set("debug", true);
 
@@ -51,10 +51,16 @@ function initFirebase(callback) {
             })
             .finally(() => callback());
     } catch (err) {
+        if (!(err instanceof ReferenceError)) {
+            console.error(err);
+        } else {
+            console.error("Firebase credentials not given.");
+        }
         console.info(
-            err,
             "Failed to connect to Firebase. Auth will not work, server can continue"
         );
+    } finally {
+        callback();
     }
 }
 module.exports = { mongodbConnection, firebaseApp, initConnection };
