@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
         <meta charset="UTF-8" />
-        <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0"
-        />
-        <title>Firebase auth test</title>
+        <title>Sample FirebaseUI App</title>
+        <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.13.0/firebase-auth-compat.js"></script>
         <script src="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.js"></script>
         <link
             type="text/css"
@@ -14,5 +12,87 @@
             href="https://www.gstatic.com/firebasejs/ui/6.0.1/firebase-ui-auth.css"
         />
     </head>
-    <body></body>
+    <body>
+        <!-- The surrounding HTML is left untouched by FirebaseUI.
+     Your app may use that space for branding, controls and other customizations.-->
+        <h1>Welcome to My Awesome App</h1>
+        <div id="firebaseui-auth-container"></div>
+        <div id="loader">Loading...</div>
+        <script type="text/javascript">
+            var uiConfig = {
+                callbacks: {
+                    signInSuccessWithAuthResult: function (
+                        authResult,
+                        redirectUrl
+                    ) {
+                        // User successfully signed in.
+                        // Get the user's ID token to pass it to your backend via HTTP.
+                        var idToken = authResult.user
+                            .getIdToken()
+                            .then(function (token) {
+                                // Make a GET request to your /current-user endpoint with the ID token.
+                                fetch("/test/current-firebase-user", {
+                                    method: "GET",
+                                    headers: {
+                                        Authorization: "Bearer " + token,
+                                    },
+                                })
+                                    .then(function (response) {
+                                        return response.json();
+                                    })
+                                    .then(function (user) {
+                                        // Display the user's information on the page.
+                                        document.body.innerHTML +=
+                                            "<div>Welcome, " +
+                                            JSON.stringify(user) +
+                                            "</div>";
+                                    })
+                                    .catch(function (error) {
+                                        console.error(
+                                            "Error fetching user data:",
+                                            error
+                                        );
+                                    });
+                            });
+
+                        // Return type determines whether we continue the redirect automatically
+                        // or whether we leave that to developer to handle.
+                        return false;
+                    },
+                    uiShown: function () {
+                        // The widget is rendered.
+                        // Hide the loader.
+                        document.getElementById("loader").style.display =
+                            "none";
+                    },
+                },
+                // Will use popup for IDP Providers sign-in flow instead of the default, redirect.
+                signInFlow: "popup",
+                signInOptions: [
+                    // Leave the lines as is for the providers you want to offer your users.
+                    firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+                    firebase.auth.EmailAuthProvider.PROVIDER_ID,
+                    firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                ],
+            };
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+
+            // Your web app's Firebase configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyAg6ke2txzYQ6K61uTDlQlQEqP6qsDfg0k",
+                authDomain: "doanandroid-banhang.firebaseapp.com",
+                projectId: "doanandroid-banhang",
+                storageBucket: "doanandroid-banhang.appspot.com",
+                messagingSenderId: "409380108060",
+                appId: "1:409380108060:web:ffea00e0f2b9d81275ecd9",
+            };
+
+            // Initialize Firebase
+            const app = firebase.initializeApp(firebaseConfig);
+            // Initialize the FirebaseUI Widget using Firebase.
+            var ui = new firebaseui.auth.AuthUI(firebase.auth());
+            ui.start("#firebaseui-auth-container", uiConfig);
+        </script>
+    </body>
 </html>

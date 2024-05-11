@@ -18,7 +18,10 @@ async function getOrCreateAccountFromIdToken(firebaseIdToken) {
 // tao user moi ma khong co them thong tin gi (do dang nhap bang firebase)
 // neu can sua thong tin thi sua sau
 async function createAccountByClient(firebaseUid) {
-    const user = Account({ firebaseUid, role: "customer" });
+    const user = Account({
+        username: firebaseUid,
+        role: "customer",
+    });
     await user.save();
     return user;
 }

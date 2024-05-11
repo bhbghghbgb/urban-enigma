@@ -5,7 +5,7 @@ const { testFirebaseAuth } = require("../utils/firebase");
 
 // LUU Y phai tu lay service account creds cua project ca nhan tren firebase
 // cai nay ko push len github dc vi se dc auto scan sau do bi disable
-// const serviceAccount = require("./doanandroid-banhang-firebase-adminsdk-p80ax-e3465e55dd.json");
+const serviceAccount = require("./doanandroid-banhang-firebase-adminsdk-p80ax-e3465e55dd.json");
 
 mongoose.set("debug", true);
 

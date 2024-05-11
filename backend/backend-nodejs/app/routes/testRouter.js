@@ -1,5 +1,6 @@
 const express = require("express");
 const { basicAuth } = require("../middleware/basicAuth");
+const { firebaseAuthBearer } = require("../middleware/firebaseAuthPassport");
 const { getUser } = require("../controllers/authController");
 const { productRole } = require("../middleware/connectRoles");
 const router = express.Router();
@@ -20,4 +21,6 @@ router.get(
     productRole.is("nopopular"),
     getUser
 );
+router.get("/current-firebase-user", firebaseAuthBearer, getUser);
+
 module.exports = router;

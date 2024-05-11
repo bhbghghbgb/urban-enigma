@@ -1,13 +1,13 @@
 const passport = require("passport");
 const { Strategy: BearerStrategy } = require("passport-http-bearer");
 const {
-    getOrCreateFirebaseUserFromIdToken,
+    getOrCreateAccountFromIdToken,
 } = require("../service/firebaseAuthService");
 
 // header bearer auth through api for android app
 passport.use(
     new BearerStrategy(function (firebaseIdToken, done) {
-        getOrCreateFirebaseUserFromIdToken(firebaseIdToken)
+        getOrCreateAccountFromIdToken(firebaseIdToken)
             .then((firebaseUser) => {
                 if (firebaseUser) {
                     done(null, firebaseUser, { scope: firebaseUser.role });
