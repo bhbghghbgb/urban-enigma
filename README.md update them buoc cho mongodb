@@ -27,7 +27,7 @@ do an android nang cao sgu app cua hang giao do an
 14. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/eec96f8f-8624-4156-adc1-273d0605a577)
 15. lấy sha1 của variant debug và config debug
 16. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/db356b41-dc2b-4def-a440-a6753f1c1df5)
-17. quay lại firebase console, nhập app package name `com.doansgu.customer` và sha1
+17. quay lại firebase console, nhập app package name `com.doansgu.cafectm` và sha1
 18. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/3d61b7f3-711e-469a-a5cf-d676de6599e8)
 19. tải file `google-services.json` rồi để như hướng dẫn
 20. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/53baff49-e3b5-4b23-90d8-6a800ab4684d)
@@ -47,9 +47,23 @@ do an android nang cao sgu app cua hang giao do an
 34. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/6c91624c-2407-4d7f-9dfc-1a47e5668fcc)
 
 ### Mongodb
-1. mongodb atlas và lấy driver uri connect chắc biết rồi nhỉ
-2. vào `backend/app/config/_APP.js`
-3. tự thay dổi `DATABASE_CONNECTION_URL` và `DATABASE_NAME` theo cài đặt của mình
-4. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/209acc05-9f3e-45a4-b3bc-13cc56af8b0a)
-5. lệnh `npm start` thấy `Connected to MongoDB` là xong
-6. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/6c91624c-2407-4d7f-9dfc-1a47e5668fcc)
+1. mongodb atlas và tạo database + collection, lấy driver uri connect chắc biết rồi nhỉ
+2. vào https://mongodb.com đăng nhập google
+3. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/35bc1cb3-c718-4eee-9721-1a1173729103)
+4. bấm bỏ qua mấy trang khảo sát
+5. ở trang Overview bấm connect, Drivers
+6. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/eb70f95a-c44b-4900-9db2-86412ea04f6f)
+7. copy connection string này, nhưng cần phải thay `<username>:<password>` mới xong
+8. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/db6aa923-21a3-4ccc-9ea6-c5cc0f46e74c)
+9. xem mục security, database access
+10. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/66c63c02-edb6-4513-a800-493424c2bf45)
+11. bấm add new database user, nhập username password
+12. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/7538c9cc-9668-4284-ad5a-04af761d0bb5)
+13. sau khi bấm add user nó quay về thấy hiện user mới tạo ở bảng là được
+14. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/61b7cb27-5f9e-4ee6-a08a-13bd9218af11)
+15. thay đổi phần `<username>:<password>` trong connection string đã copy thành cái mới tạo
+16. vào `backend/app/config/_APP.js`
+17. tự thay dổi `DATABASE_CONNECTION_URL` và `DATABASE_NAME` theo cài đặt của mình
+18. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/209acc05-9f3e-45a4-b3bc-13cc56af8b0a)
+19. lệnh `npm start` thấy `Connected to MongoDB` là xong
+20. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/6c91624c-2407-4d7f-9dfc-1a47e5668fcc)
