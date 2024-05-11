@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.learncode.model.AddToCartRequest
-import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.viewmodel.CartViewModel
@@ -170,7 +170,7 @@ fun ItemViewRow(
     navController: NavController
 ) {
     val viewModel = remember { CartViewModel() }
-    val token: String = PreferenceManager.getToken(LocalContext.current).toString()
+    val token: String = AuthorizationManager.getToken(LocalContext.current).toString()
     val addToCart = AddToCartRequest(_id)
     val isValidAddToCart by viewModel.isValidAddToCart.observeAsState()
     var showToast by remember { mutableStateOf(false) }

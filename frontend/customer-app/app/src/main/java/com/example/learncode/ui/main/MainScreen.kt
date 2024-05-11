@@ -16,7 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
-import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.ui.screen.LogInScreen
 import com.example.learncode.ui.screen.NavigateHomeScreen
 import com.example.learncode.ui.screen.OnboardingScreen
@@ -32,14 +32,14 @@ fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold {
-        val token: String? = PreferenceManager.getToken(LocalContext.current)
+        val token: String? = AuthorizationManager.getToken(LocalContext.current)
         val viewModel = AuthViewModel();
         val isValidToken by viewModel.isValidToken.observeAsState()
         if (token != null) {
             viewModel.authenticate(token)
         }
         if (isValidToken == false && token != null) {
-            PreferenceManager.clearToken(LocalContext.current)
+            AuthorizationManager.clearAuthorization(LocalContext.current)
         }
         val startDestination =
             if (token != null && isValidToken == true) "homescreen" else "onboarding"

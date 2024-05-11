@@ -60,11 +60,10 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.example.learncode.R
 import com.example.learncode.model.AddToCartRequest
-import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.ui.components.CustomToast
 import com.example.learncode.ui.components.IconButtonCustom
 import com.example.learncode.ui.theme.fontPoppinsRegular
@@ -72,7 +71,6 @@ import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.viewmodel.CartViewModel
 import com.example.learncode.viewmodel.DetailViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.max
 import kotlin.math.min
 
@@ -88,7 +86,7 @@ fun DetailScreen(navController: NavController, _id: String) {
         viewModel.fetchData(_id)
     }
     val scollState = rememberLazyListState()
-    val token: String = PreferenceManager.getToken(LocalContext.current).toString()
+    val token: String = AuthorizationManager.getToken(LocalContext.current).toString()
     Box(
         modifier = Modifier.fillMaxSize()
     )

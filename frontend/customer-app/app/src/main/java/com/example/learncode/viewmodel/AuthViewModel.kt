@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.model.ResponseFromServer
 import com.example.learncode.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
@@ -64,7 +64,7 @@ class AuthViewModel : ViewModel() {
                     if (dataResponse != null) {
                         Log.d("Data", dataResponse.token)
                         if (dataResponse.roleOfAccount == "user") {
-                            PreferenceManager.saveToken(dataResponse.token, _context.value!!);
+                            AuthorizationManager.saveToken(dataResponse.token, _context.value!!);
                             _navigateToHome.postValue(true)
                         } else {
                             showInvalidDataDialog()
@@ -124,7 +124,7 @@ class AuthViewModel : ViewModel() {
                 }
                 Log.d("AuthViewModel-DATA", _message.value.toString())
             } finally {
-                PreferenceManager.clearToken(context)
+                AuthorizationManager.clearAuthorization(context)
             }
         }
     }

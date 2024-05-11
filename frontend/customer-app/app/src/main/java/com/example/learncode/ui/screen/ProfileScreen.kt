@@ -54,7 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.learncode.R
-import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.util.generateQRCode
@@ -91,7 +91,7 @@ fun TopBarProfile(navControllerViewModel: NavControllerViewModel) {
     var expanded by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val token = PreferenceManager.getToken(context).toString()
+    val token = AuthorizationManager.getToken(context).toString()
     val navControllerMain by navControllerViewModel.navController.observeAsState()
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -235,7 +235,7 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
 
     val customer by viewModel.userData.observeAsState()
     val state by viewModel.state.observeAsState()
-    val token: String? = PreferenceManager.getToken(LocalContext.current)
+    val token: String? = AuthorizationManager.getToken(LocalContext.current)
 
     LaunchedEffect(true) {
         token?.let { viewModel.getInfoUser(it) }

@@ -73,7 +73,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.learncode.R
 import com.example.learncode.model.NavigationItem
 import com.example.learncode.model.Order
-import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.model.Products
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
@@ -96,7 +96,7 @@ fun TransactionScreen(navController: NavController) {
         tabItems.size
     })
     val scope = rememberCoroutineScope()
-    val token: String = PreferenceManager.getToken(LocalContext.current).toString()
+    val token: String = AuthorizationManager.getToken(LocalContext.current).toString()
     LaunchedEffect(key1 = true) {
         if (token != null) {
             viewModel.getOrdersNotYetDelivered(token = token)
@@ -459,7 +459,7 @@ fun TopBarCenterOrderInformation(navController: NavController) {
 
 @Composable
 fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
-    val token = PreferenceManager.getToken(LocalContext.current).toString();
+    val token = AuthorizationManager.getToken(LocalContext.current).toString();
     val viewModel = remember {
         OrderViewModel()
     }

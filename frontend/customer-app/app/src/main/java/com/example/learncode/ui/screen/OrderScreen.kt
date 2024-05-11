@@ -64,7 +64,7 @@ import androidx.navigation.NavController
 import com.example.learncode.R
 import com.example.learncode.model.AddToCartRequest
 import com.example.learncode.model.Cart
-import com.example.learncode.model.PreferenceManager
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.model.ProductOfCart
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
@@ -140,7 +140,7 @@ fun ContentOrder(
     viewModel: CartViewModel,
     navController: NavController
 ) {
-    val token = PreferenceManager.getToken(LocalContext.current).toString()
+    val token = AuthorizationManager.getToken(LocalContext.current).toString()
     val cart by viewModel.cart.observeAsState()
     var isEditAddressDialogVisible by remember { mutableStateOf(false) }
     var noteText by remember { mutableStateOf("") }
