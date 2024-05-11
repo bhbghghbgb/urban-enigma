@@ -1,14 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
-const middleware = require("../middleware/authenticate");
-
+const { firebaseAuthBearer } = require("../middleware/firebaseAuthPassport");
+const { userRole } = require("../middleware/connectRoles");
 //PASS
 
 // -> lấy danh sách staff
 router.get("/staff", userController.getStaffs);
 // -> lấy danh sách staff
-router.get("", middleware.authenticateStaff, userController.getInfo);
+router.get(
+    "",
+    firebaseAuthBearer,
+    userRole.is("staff"),
+    userController.getInfo
+);
 // -> lấy danh sách customer
 router.get("/customer", userController.getCustomers);
 // -> thêm 1 staff
@@ -24,8 +29,9 @@ router.delete("/delete/:id", userController.deleteStaff);
 // -> lấy thông tin user
 router.get(
     "/infocustomer",
-    middleware.authenticate,
-    userController.getCustomerInfo,
+    firebaseAuthBearer,
+    userRole.is("customer"),
+    userController.getCustomerInfo
 );
 
 module.exports = router;

@@ -12,6 +12,7 @@
     "license": "ISC",
     "dependencies": {
         "body-parser": "^1.20.2",
+        "connect-roles": "^3.1.2",
         "cors": "^2.8.5",
         "express": "^4.19.2",
         "express-fileupload": "^1.5.0",
@@ -23,12 +24,14 @@
         "morgan": "^1.10.0",
         "mysql": "^2.18.1",
         "passport": "^0.7.0",
+        "passport-http": "^0.3.0",
         "passport-http-bearer": "^1.0.1",
         "serve-favicon": "^2.5.0"
     },
     "devDependencies": {
         "@eslint/js": "^9.2.0",
         "@types/passport": "^1.0.16",
+        "@types/passport-http": "^0.3.11",
         "@types/passport-http-bearer": "^1.0.41",
         "eslint": "^9.2.0",
         "globals": "^15.2.0"

@@ -13,6 +13,7 @@ function main() {
     const cors = require("cors");
     const bodyParser = require("body-parser");
     const logger = require("morgan");
+    const passport = require("passport");
 
     // Routes
     const productRoutes = require("./app/routes/productRouter");
@@ -22,13 +23,13 @@ function main() {
     const cartRoutes = require("./app/routes/cartRouter");
     const ratingRoutes = require("./app/routes/ratingRouter");
     const userRoutes = require("./app/routes/userRouter");
-    const authRoutes = require("./app/routes/authRouter");
     const deliveryRoutes = require("./app/routes/deliveryRouter");
     const accountInfoRoutes = require("./app/routes/accountInfoRouter");
     const publicFilesRoutes = require("./app/routes/publicFilesRouter");
 
+    const testRoutes = require("./app/routes/testRouter");
+
     // Middleware
-    const { authenticate } = require("./app/middleware/authenticate");
     const { ipAccessControl } = require("./app/middleware/ipAccessControl");
     const {
         error2jsonHandler,
@@ -36,10 +37,16 @@ function main() {
     } = require("./app/middleware/error2jsonHandler");
     const { servePublic } = require("./app/middleware/servePublic");
     const { favicon } = require("./app/middleware/favicon");
+    const {
+        firebaseAuthBearer,
+    } = require("./app/middleware/firebaseAuthPassport");
+    const { userRole } = require("./app/middleware/connectRoles");
     app.use(logger("combined"));
     app.use(ipAccessControl);
     app.use(servePublic);
     app.use(favicon);
+    app.use(passport.initialize());
+    app.use(userRole.middleware());
 
     // Sử dụng body-parser middleware
     app.use(bodyParser.urlencoded({ extended: true }));
@@ -51,13 +58,13 @@ function main() {
     app.use("/category", categoryRoutes);
     app.use("/account", accountRoutes);
     app.use("/orders", orderRoutes);
-    app.use("/cart", authenticate, cartRoutes);
+    app.use("/cart", firebaseAuthBearer, cartRoutes);
     app.use("/rating", ratingRoutes);
     app.use("/user", userRoutes);
-    app.use("", authRoutes);
     app.use("/delivery", deliveryRoutes);
     app.use("/accountinfo", accountInfoRoutes);
 
+    app.use("/test", testRoutes);
     app.use("/", publicFilesRoutes);
     app.get("/", function (req, res) {
         res.sendFile(require("path").join(__dirname, "/views/index.html"));

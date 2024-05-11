@@ -35,7 +35,7 @@ function initMongodb(callback) {
 function initFirebase(callback) {
     try {
         firebaseApp = admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount),
+            credential: admin.credential.cert(serviceAccount), // eslint-disable-line no-undef
         });
         console.info("Connect Firebase without errors");
         // test get an user

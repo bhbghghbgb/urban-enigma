@@ -1,25 +1,32 @@
 const express = require("express");
 const router = express.Router();
 const orderController = require("../controllers/orderController");
-const authenticate = require("../middleware/authenticate");
-
+const { firebaseAuthBearer } = require("../middleware/firebaseAuthPassport");
+const { userRole } = require("../middleware/connectRoles");
 //Pass
 // -> lấy danh sách orders
 router.get("/", orderController.getAllOrders);
 // -> lấy order của khách hàng chưa được giao
 router.get(
     "/not-yet-delivered",
-    authenticate.authenticate,
-    orderController.getAllOrderByUserNotYetDelivered,
+    firebaseAuthBearer,
+    userRole.is("customer"),
+    orderController.getAllOrderByUserNotYetDelivered
 );
 // -> lấy order của khách hàng đã được giao
 router.get(
     "/delivered",
-    authenticate.authenticate,
-    orderController.getAllOrderByUserDelivered,
+    firebaseAuthBearer,
+    userRole.is("customer"),
+    orderController.getAllOrderByUserDelivered
 );
 // -> lấy 1 order bằng id
-router.get("/:id", authenticate.authenticate, orderController.findOrderById);
+router.get(
+    "/:id",
+    firebaseAuthBearer,
+    userRole.is("customer"),
+    orderController.findOrderById
+);
 // -> lấy những order đã [now, delivering, delivered]
 router.get("/status/:status", orderController.getOrdersOfStatus);
 // -> lấy 1 order bằng id
