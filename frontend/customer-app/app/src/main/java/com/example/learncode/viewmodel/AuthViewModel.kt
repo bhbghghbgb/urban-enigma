@@ -23,10 +23,6 @@ class AuthViewModel : ViewModel() {
     private val _message = MutableLiveData<ResponseFromServer>()
     val message: LiveData<ResponseFromServer> = _message
 
-    fun setContext(context: Context) {
-        _context.value = context
-    }
-
     private val _phoneNumberError = MutableLiveData<String>()
     val phoneNumberError: LiveData<String> = _phoneNumberError
 
@@ -39,10 +35,10 @@ class AuthViewModel : ViewModel() {
     private val _isInvalidDataDialogVisible = MutableLiveData<Boolean>()
     val isInvalidDataDialogVisible: LiveData<Boolean> = _isInvalidDataDialogVisible
 
-    fun authenticate(token: String) {
+    fun authenticate() {
         viewModelScope.launch(Dispatchers.Main) {
             try {
-                val response = repository.authenticate(token)
+                val response = repository.authenticate()
                 Log.d("test", response.body().toString())
                 if (response.isSuccessful) {
                     _isValidToken.postValue(response.body()!!.isValid)
@@ -64,7 +60,7 @@ class AuthViewModel : ViewModel() {
                     if (dataResponse != null) {
                         Log.d("Data", dataResponse.token)
                         if (dataResponse.roleOfAccount == "user") {
-                            AuthorizationManager.saveToken(dataResponse.token, _context.value!!);
+                            AuthorizationManager.authorization = dataResponse.token
                             _navigateToHome.postValue(true)
                         } else {
                             showInvalidDataDialog()
@@ -98,11 +94,11 @@ class AuthViewModel : ViewModel() {
     }
 
     private fun isValidPhoneNumber(phoneNumber: String): Boolean {
-        return phoneNumber.length >= 10
+        return phoneNumber.length == 10
     }
 
     private fun isValidPassword(password: String): Boolean {
-        return password.length >= 0
+        return password.isNotEmpty()
     }
 
     fun clearPhoneNumberError() {
@@ -113,10 +109,10 @@ class AuthViewModel : ViewModel() {
         _passwordError.value = ""
     }
 
-    fun logout(token: String, context: Context) {
+    fun logout() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = repository.logout(token)
+                val response = repository.logout()
                 if (response.isSuccessful) {
                     _message.postValue(response.body())
                 } else {
@@ -124,7 +120,7 @@ class AuthViewModel : ViewModel() {
                 }
                 Log.d("AuthViewModel-DATA", _message.value.toString())
             } finally {
-                AuthorizationManager.clearAuthorization(context)
+                AuthorizationManager.clearAuthorization()
             }
         }
     }

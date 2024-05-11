@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,8 +91,7 @@ fun ProfileScreen(
 fun TopBarProfile(navControllerViewModel: NavControllerViewModel) {
     var expanded by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
-    val token = AuthorizationManager.getToken(context).toString()
+    val token = AuthorizationManager.authorization
     val navControllerMain by navControllerViewModel.navController.observeAsState()
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -151,7 +151,7 @@ fun TopBarProfile(navControllerViewModel: NavControllerViewModel) {
             onConfirm = {
                 if (token != null) {
                     val viewModel = AuthViewModel()
-                    viewModel.logout(token, context)
+                    viewModel.logout()
                     navControllerMain!!.popBackStack("login", true)
                 }
             },
@@ -180,7 +180,7 @@ fun LogoutAlertDialog(
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 AlertDialog(
-                    onDismissRequest = { onDismissRequest },
+                    onDismissRequest = { onDismissRequest() },
                     title = {
                         Text(
                             text = "Log out",
@@ -235,10 +235,10 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
 
     val customer by viewModel.userData.observeAsState()
     val state by viewModel.state.observeAsState()
-    val token: String? = AuthorizationManager.getToken(LocalContext.current)
-
-    LaunchedEffect(true) {
-        token?.let { viewModel.getInfoUser(it) }
+    val token: String? = AuthorizationManager.authorization
+    val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(customer) {
+        token?.let { viewModel.getInfoUser() }
     }
     when (state) {
         StateProfile.LOADING -> {
@@ -250,11 +250,9 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
 
         StateProfile.SUCCESS -> {
             val qrCodeBitmap =
-                generateQRCode("${customer!!.commonuser._id}", 512, LocalContext.current)
+                generateQRCode(customer!!.commonuser._id, 512)
             val timestamp = customer!!.commonuser.dateOfBirth
-
             val date = Date(timestamp.time)
-
             val formattedDateOfBirth = SimpleDateFormat("dd-MM-yyyy").format(date)
             Column(
                 modifier = Modifier
@@ -275,7 +273,7 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
                 }
                 Text(
                     modifier = Modifier.padding(top = 5.dp),
-                    text = "${customer!!.commonuser.name}",
+                    text = customer!!.commonuser.name,
                     fontSize = 30.sp,
                     fontFamily = FontFamily(fontPoppinsSemi)
                 )
@@ -293,17 +291,17 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
                     ItemProfile(
                         image = R.drawable.icongender,
                         title = "Gender",
-                        des = "${customer!!.commonuser.gender}"
+                        des = customer!!.commonuser.gender
                     )
                     ItemProfile(
                         image = R.drawable.iconcalendar,
                         title = "Date of Birth",
-                        des = "${formattedDateOfBirth}"
+                        des = formattedDateOfBirth
                     )
                     ItemProfile(
                         image = R.drawable.iconphone,
                         title = "Mobile Phone",
-                        des = "${customer!!.commonuser.phone}"
+                        des = customer!!.commonuser.phone
                     )
                 }
             }

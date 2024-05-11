@@ -15,10 +15,6 @@ class AccountRepository {
         return accountInfoService.registerAccount(Account(username, password))
     }
 
-    suspend fun getAccount(username: String) {
-        return
-    }
-
     suspend fun requestChangeAccountEmail(
         username: String, email: String
     ): Response<ResponseFromServer> {

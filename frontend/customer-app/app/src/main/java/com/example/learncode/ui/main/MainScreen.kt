@@ -32,18 +32,18 @@ fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold {
-        val token: String? = AuthorizationManager.getToken(LocalContext.current)
+        val authorization: String? = AuthorizationManager.authorization
         val viewModel = AuthViewModel();
         val isValidToken by viewModel.isValidToken.observeAsState()
-        if (token != null) {
-            viewModel.authenticate(token)
+        if (authorization != null) {
+            viewModel.authenticate()
         }
-        if (isValidToken == false && token != null) {
-            AuthorizationManager.clearAuthorization(LocalContext.current)
+        if (isValidToken == false && authorization != null) {
+            AuthorizationManager.clearAuthorization()
         }
         val startDestination =
-            if (token != null && isValidToken == true) "homescreen" else "onboarding"
-        if (token == null || (isValidToken != null && isValidToken == true)) {
+            if (authorization != null && isValidToken == true) "homescreen" else "onboarding"
+        if (authorization == null || (isValidToken != null && isValidToken == true)) {
             NavHost(navController, startDestination = startDestination) {
                 composable(
                     "onboarding",

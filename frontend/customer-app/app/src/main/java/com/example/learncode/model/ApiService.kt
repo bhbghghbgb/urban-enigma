@@ -3,7 +3,6 @@ package com.example.learncode.model
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Header
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -25,38 +24,35 @@ interface ApiService {
     suspend fun login(@Body request: Account): Response<Token>
 
     @POST("/logout")
-    suspend fun logout(@Header("Authorization") token: String): Response<ResponseFromServer>
+    suspend fun logout(): Response<ResponseFromServer>
 
     @GET("/authenticate")
-    suspend fun authenticate(@Header("Authorization") token: String): Response<AuthResult>
+    suspend fun authenticate(): Response<AuthResult>
 
     @GET("/cart")
-    suspend fun getCartOfUser(@Header("Authorization") token: String): Response<Cart>
+    suspend fun getCartOfUser(): Response<Cart>
 
     @POST("/cart/add-to-cart")
     suspend fun addToCart(
-        @Header("Authorization") token: String,
         @Body request: AddToCartRequest
     ): Response<ResponseFromServer>
 
     @PATCH("/cart/delete")
     suspend fun deleteProductOfCart(
-        @Header("Authorization") token: String,
         @Body request: AddToCartRequest
     ): Response<ResponseFromServer>
 
     @GET("/orders/not-yet-delivered")
-    suspend fun getOrdersNotYetDelivered(@Header("Authorization") token: String): Response<List<Order>>
+    suspend fun getOrdersNotYetDelivered(): Response<List<Order>>
 
     @GET("/orders/delivered")
-    suspend fun getOrdersDelivered(@Header("Authorization") token: String): Response<List<Order>>
+    suspend fun getOrdersDelivered(): Response<List<Order>>
 
     @GET("/user/infocustomer")
-    suspend fun getInfoOfCustomer(@Header("Authorization") token: String): Response<UserClass.Customer>
+    suspend fun getInfoOfCustomer(): Response<UserClass.Customer>
 
     @GET("/orders/{id}")
     suspend fun getOrderById(
-        @Header("Authorization") token: String,
         @Path("id") id: String
     ): Response<Order>
 

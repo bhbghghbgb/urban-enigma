@@ -9,21 +9,19 @@ import retrofit2.Response
 class CartRepository {
     private val cartService = RetrofitInstance.apiService
 
-    suspend fun getCartOfUser(token: String): Response<Cart> {
-        return cartService.getCartOfUser(token)
+    suspend fun getCartOfUser(): Response<Cart> {
+        return cartService.getCartOfUser()
     }
 
     suspend fun addToCart(
-        token: String,
         addToCartRequest: AddToCartRequest
     ): Response<ResponseFromServer> {
-        return cartService.addToCart(token, addToCartRequest)
+        return cartService.addToCart(addToCartRequest)
     }
 
     suspend fun deleteProductOfCart(
-        token: String,
         addToCartRequest: AddToCartRequest
     ): Response<ResponseFromServer> {
-        return cartService.deleteProductOfCart(token, addToCartRequest)
+        return cartService.deleteProductOfCart(addToCartRequest)
     }
 }

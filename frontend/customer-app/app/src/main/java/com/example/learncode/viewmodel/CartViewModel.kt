@@ -55,13 +55,12 @@ class CartViewModel : ViewModel() {
         _address.postValue(address)
     }
 
-    fun getCardOfUser(token: String) {
+    fun getCardOfUser() {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = repository.getCartOfUser(token)
+                val response = repository.getCartOfUser()
                 if (response.isSuccessful) {
                     _cart.postValue(response.body())
-                } else {
                 }
             } catch (e: Exception) {
                 Log.d("Data", e.message.toString())
@@ -69,10 +68,10 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun addToCart(token: String, addToCartRequest: AddToCartRequest) {
+    fun addToCart(addToCartRequest: AddToCartRequest) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = repository.addToCart(token, addToCartRequest)
+                val response = repository.addToCart(addToCartRequest)
                 if (response.isSuccessful) {
                     if (response.body()?.message != null) {
                         val message = response.body()?.message // Đây là biến không thay đổi
@@ -115,16 +114,16 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun deleteProduct(token: String, addToCartRequest: AddToCartRequest) {
+    fun deleteProduct(addToCartRequest: AddToCartRequest) {
         viewModelScope.launch {
             try {
-                val response = repository.deleteProductOfCart(token, addToCartRequest)
+                val response = repository.deleteProductOfCart(addToCartRequest)
                 if (response.isSuccessful) {
                     if (response.body()?.message != null) {
                         val message = response.body()?.message
                         if (message == "Product has been removed from the cart") {
                             _isValidDeleteProduct.postValue(true)
-                            getCardOfUser(token)
+                            getCardOfUser()
                         } else {
                             _isValidDeleteProduct.postValue(false)
                         }
@@ -140,7 +139,6 @@ class CartViewModel : ViewModel() {
 
     fun decreaseProductQuantity(
         productId: String,
-        token: String,
         addToCartRequest: AddToCartRequest
     ) {
         _cart.value?.let { cart ->
@@ -151,7 +149,7 @@ class CartViewModel : ViewModel() {
                 val updatedPrice = product.product.price * updatedQuantity
                 val updatedTotal = cart.total - product.product.price
                 if (updatedQuantity == 0) {
-                    deleteProduct(token, addToCartRequest);
+                    deleteProduct(addToCartRequest);
                     if (isValidDeleteProduct.value == true) {
                         mutableProducts.remove(product)
                     }

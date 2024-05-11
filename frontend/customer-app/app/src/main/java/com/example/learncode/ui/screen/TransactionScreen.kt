@@ -61,7 +61,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -71,9 +70,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.learncode.R
+import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.model.NavigationItem
 import com.example.learncode.model.Order
-import com.example.learncode.model.AuthorizationManager
 import com.example.learncode.model.Products
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
@@ -96,11 +95,11 @@ fun TransactionScreen(navController: NavController) {
         tabItems.size
     })
     val scope = rememberCoroutineScope()
-    val token: String = AuthorizationManager.getToken(LocalContext.current).toString()
+    val token: String? = AuthorizationManager.authorization
     LaunchedEffect(key1 = true) {
         if (token != null) {
-            viewModel.getOrdersNotYetDelivered(token = token)
-            viewModel.getOrdersDelivered(token = token)
+            viewModel.getOrdersNotYetDelivered()
+            viewModel.getOrdersDelivered()
         }
     }
 //    InformationOrder()
@@ -195,7 +194,7 @@ fun HistoryScreen(navController: NavController, viewModel: OrderViewModel, token
                         errorMessage = "Failed to load orders.",
                         onRetry = {
                             token?.let {
-                                viewModel.getOrdersNotYetDelivered(it)
+                                viewModel.getOrdersNotYetDelivered()
                             }
                         }
                     )
@@ -239,7 +238,7 @@ fun DeliveredScreen(navController: NavController, viewModel: OrderViewModel, tok
                         errorMessage = "Failed to load orders.",
                         onRetry = {
                             token?.let {
-                                viewModel.getOrdersNotYetDelivered(it)
+                                viewModel.getOrdersNotYetDelivered()
                             }
                         }
                     )
@@ -459,7 +458,7 @@ fun TopBarCenterOrderInformation(navController: NavController) {
 
 @Composable
 fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
-    val token = AuthorizationManager.getToken(LocalContext.current).toString();
+    val token = AuthorizationManager.authorization;
     val viewModel = remember {
         OrderViewModel()
     }
@@ -467,7 +466,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
     val orderList by viewModel.order.observeAsState()
     LaunchedEffect(Unit) {
         if (token != null) {
-            viewModel.getOrderById(token, id)
+            viewModel.getOrderById(id)
         }
     }
     Box(
@@ -675,7 +674,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                             errorMessage = "Failed to load orders.",
                             onRetry = {
                                 token?.let {
-                                    viewModel.getOrdersNotYetDelivered(it)
+                                    viewModel.getOrdersNotYetDelivered()
                                 }
                             }
                         )

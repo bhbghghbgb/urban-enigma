@@ -66,7 +66,7 @@ fun QRCodeScreen() {
         Spacer(modifier = Modifier.height(16.dp))
         Button(
             onClick = {
-                qrCodeBitmap.value = generateQRCode(id, 512, context)
+                qrCodeBitmap.value = generateQRCode(id, 512)
             }
         ) {
             Text("Generate QR Code")

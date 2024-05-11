@@ -14,11 +14,11 @@ class AuthRepository {
         return authService.login(Account(username, password))
     }
 
-    suspend fun logout(token: String): Response<ResponseFromServer> {
-        return authService.logout(token)
+    suspend fun logout(): Response<ResponseFromServer> {
+        return authService.logout()
     }
 
-    suspend fun authenticate(token: String): Response<AuthResult> {
-        return authService.authenticate(token)
+    suspend fun authenticate(): Response<AuthResult> {
+        return authService.authenticate()
     }
 }

@@ -6,15 +6,15 @@ import retrofit2.Response
 
 class OrderRepository {
     private val orderService = RetrofitInstance.apiService
-    suspend fun getOrdersNotYetDelivered(token: String): Response<List<Order>> {
-        return orderService.getOrdersNotYetDelivered(token)
+    suspend fun getOrdersNotYetDelivered(): Response<List<Order>> {
+        return orderService.getOrdersNotYetDelivered()
     }
 
-    suspend fun getOrdersDelivered(token: String): Response<List<Order>> {
-        return orderService.getOrdersDelivered(token)
+    suspend fun getOrdersDelivered(): Response<List<Order>> {
+        return orderService.getOrdersDelivered()
     }
 
-    suspend fun getOrderById(token: String, id: String): Response<Order> {
-        return orderService.getOrderById(token, id)
+    suspend fun getOrderById(id: String): Response<Order> {
+        return orderService.getOrderById(id)
     }
 }

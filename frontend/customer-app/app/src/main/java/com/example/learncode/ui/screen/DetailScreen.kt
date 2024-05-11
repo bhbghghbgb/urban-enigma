@@ -86,7 +86,7 @@ fun DetailScreen(navController: NavController, _id: String) {
         viewModel.fetchData(_id)
     }
     val scollState = rememberLazyListState()
-    val token: String = AuthorizationManager.getToken(LocalContext.current).toString()
+    val authorization: String? = AuthorizationManager.authorization
     Box(
         modifier = Modifier.fillMaxSize()
     )
@@ -114,8 +114,8 @@ fun DetailScreen(navController: NavController, _id: String) {
             Scaffold(bottomBar = {
                 AddtoCart(
                     onClick = {
-                        token?.let { token ->
-                            carViewModel.addToCart(token, AddToCartRequest(_id))
+                        authorization?.let {
+                            carViewModel.addToCart(AddToCartRequest(_id))
                             showToast = true
                         }
                     }

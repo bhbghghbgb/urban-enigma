@@ -55,8 +55,6 @@ fun LogInScreen(navController: NavHostController) {
         navController.navigate("homescreen")
     }
 
-    viewModel.setContext(LocalContext.current)
-
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -23,11 +23,11 @@ class ProfileViewModel : ViewModel() {
 
     private val _state = MutableLiveData<StateProfile>(StateProfile.LOADING)
     val state: LiveData<StateProfile> = _state
-    fun getInfoUser(token: String) {
+    fun getInfoUser() {
         _state.postValue(StateProfile.LOADING)
         viewModelScope.launch(Dispatchers.Main) {
             try {
-                val response = repository.getInfoOfCustomer(token)
+                val response = repository.getInfoOfCustomer()
                 if (response.isSuccessful) {
                     Log.d("abc", response.toString())
                     _userData.postValue(response.body())

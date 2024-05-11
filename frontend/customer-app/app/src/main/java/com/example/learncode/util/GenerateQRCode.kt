@@ -1,6 +1,5 @@
 package com.example.learncode.util
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
 import com.google.zxing.BarcodeFormat
@@ -9,7 +8,8 @@ import com.google.zxing.MultiFormatWriter
 import com.google.zxing.WriterException
 import java.util.Hashtable
 
-fun generateQRCode(id: String, size: Int, context: Context): Bitmap? {
+// nen xai background vi cai nay an nhieu CPU
+fun generateQRCode(id: String, size: Int): Bitmap? /*= withContext(Dispatchers.Default)*/ {
     try {
         val hints = Hashtable<EncodeHintType, Any>()
         hints[EncodeHintType.MARGIN] = 0 // Set margin to 0

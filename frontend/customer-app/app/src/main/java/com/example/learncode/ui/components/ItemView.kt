@@ -170,7 +170,6 @@ fun ItemViewRow(
     navController: NavController
 ) {
     val viewModel = remember { CartViewModel() }
-    val token: String = AuthorizationManager.getToken(LocalContext.current).toString()
     val addToCart = AddToCartRequest(_id)
     val isValidAddToCart by viewModel.isValidAddToCart.observeAsState()
     var showToast by remember { mutableStateOf(false) }
@@ -275,7 +274,7 @@ fun ItemViewRow(
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {
-                        viewModel.addToCart(token, addToCart)
+                        viewModel.addToCart(addToCart)
                         showToast = true
                     }, modifier = Modifier.size(40.dp)) {
                         Icon(

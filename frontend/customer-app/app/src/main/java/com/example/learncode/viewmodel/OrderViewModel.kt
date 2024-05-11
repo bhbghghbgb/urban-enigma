@@ -95,11 +95,11 @@ class OrderViewModel : ViewModel() {
         return total - discount
     }
 
-    fun getOrdersNotYetDelivered(token: String) {
+    fun getOrdersNotYetDelivered() {
         _state.postValue(State.LOADING)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = repository.getOrdersNotYetDelivered(token)
+                val response = repository.getOrdersNotYetDelivered()
                 if (response.isSuccessful) {
                     _orders.postValue(response.body())
                     _state.postValue(State.SUCCESS)
@@ -113,11 +113,11 @@ class OrderViewModel : ViewModel() {
         }
     }
 
-    fun getOrdersDelivered(token: String) {
+    fun getOrdersDelivered() {
         _state.postValue(State.LOADING)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = repository.getOrdersDelivered(token)
+                val response = repository.getOrdersDelivered()
                 if (response.isSuccessful) {
                     _ordersDelivered.postValue(response.body())
                     _state.postValue(State.SUCCESS)
@@ -131,11 +131,11 @@ class OrderViewModel : ViewModel() {
         }
     }
 
-    fun getOrderById(token: String, id: String) {
+    fun getOrderById(id: String) {
         _state.postValue(State.LOADING)
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = repository.getOrderById(token, id)
+                val response = repository.getOrderById(id)
                 if (response.isSuccessful) {
                     _order.postValue(response.body())
                     _state.postValue(State.SUCCESS)

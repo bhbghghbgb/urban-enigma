@@ -7,7 +7,7 @@ import retrofit2.Response
 class ProfileRepository {
     private val profileService = RetrofitInstance.apiService
 
-    suspend fun getInfoOfCustomer(token: String): Response<UserClass.Customer> {
-        return profileService.getInfoOfCustomer(token)
+    suspend fun getInfoOfCustomer(): Response<UserClass.Customer> {
+        return profileService.getInfoOfCustomer()
     }
 }

@@ -1,6 +1,5 @@
 package com.example.learncode.ui.screen
 
-import android.content.Context
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -53,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -63,8 +61,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.learncode.R
 import com.example.learncode.model.AddToCartRequest
-import com.example.learncode.model.Cart
 import com.example.learncode.model.AuthorizationManager
+import com.example.learncode.model.Cart
 import com.example.learncode.model.ProductOfCart
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
@@ -127,12 +125,6 @@ fun TopBarCenter(navController: NavController) {
     )
 }
 
-fun getCurrentLocation() {
-
-}
-
-val requestCode = 1
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentOrder(
@@ -140,15 +132,14 @@ fun ContentOrder(
     viewModel: CartViewModel,
     navController: NavController
 ) {
-    val token = AuthorizationManager.getToken(LocalContext.current).toString()
+    val authorization = AuthorizationManager.authorization
     val cart by viewModel.cart.observeAsState()
     var isEditAddressDialogVisible by remember { mutableStateOf(false) }
     var noteText by remember { mutableStateOf("") }
     val deliveryAddress by viewModel.address.observeAsState("")
     var selectedPaymentMethod by remember { mutableStateOf("Cash") }
-    val context: Context = LocalContext.current
     LaunchedEffect(Unit) {
-        token?.let { token -> viewModel.getCardOfUser(token) }
+        authorization?.let { viewModel.getCardOfUser() }
     }
     Box(
         modifier = Modifier
@@ -261,9 +252,8 @@ fun ContentOrder(
                             ItemOrder(product = item,
                                 onDeleteClicked = {
                                     val addToCart = AddToCartRequest(item.product._id)
-                                    token?.let { token ->
+                                    authorization?.let {
                                         viewModel.deleteProduct(
-                                            token,
                                             addToCart
                                         )
                                     }
@@ -273,10 +263,9 @@ fun ContentOrder(
                                 },
                                 onDecreaseClicked = {
                                     val addToCart = AddToCartRequest(item.product._id)
-                                    token?.let { token ->
+                                    authorization?.let { token ->
                                         viewModel.decreaseProductQuantity(
                                             item.product._id,
-                                            token,
                                             addToCart
                                         )
                                     }
