@@ -4,7 +4,6 @@ import com.example.learncode.model.AddToCartRequest
 import com.example.learncode.model.Cart
 import com.example.learncode.model.ResponseFromServer
 import com.example.learncode.model.RetrofitInstance
-import okhttp3.ResponseBody
 import retrofit2.Response
 
 class CartRepository {

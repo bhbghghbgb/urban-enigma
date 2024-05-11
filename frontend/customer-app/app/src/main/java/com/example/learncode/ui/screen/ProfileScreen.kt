@@ -53,7 +53,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.learncode.R
 import com.example.learncode.model.PreferenceManager
 import com.example.learncode.ui.theme.fontPoppinsRegular
@@ -67,7 +66,11 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
-fun ProfileScreen(navController: NavController, viewModel: ProfileViewModel, navControllerViewModel: NavControllerViewModel) {
+fun ProfileScreen(
+    navController: NavController,
+    viewModel: ProfileViewModel,
+    navControllerViewModel: NavControllerViewModel
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {

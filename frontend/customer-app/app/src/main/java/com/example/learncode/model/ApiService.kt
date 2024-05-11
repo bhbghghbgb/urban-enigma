@@ -1,6 +1,5 @@
 package com.example.learncode.model
 
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -59,11 +58,6 @@ interface ApiService {
     suspend fun getOrderById(
         @Header("Authorization") token: String,
         @Path("id") id: String
-    ): Response<Order>
-
-    @GET("/orders/{id}")
-    suspend fun getOrderById(
-        @Header("Authorization") token: String, @Path("id") id: String
     ): Response<Order>
 
     // dang ki

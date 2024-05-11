@@ -5,7 +5,6 @@ import com.example.learncode.model.AuthResult
 import com.example.learncode.model.ResponseFromServer
 import com.example.learncode.model.RetrofitInstance
 import com.example.learncode.model.Token
-import okhttp3.ResponseBody
 import retrofit2.Response
 
 class AuthRepository {

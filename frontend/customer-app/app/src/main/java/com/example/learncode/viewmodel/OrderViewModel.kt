@@ -76,6 +76,7 @@ class OrderViewModel : ViewModel() {
 
         return total
     }
+
     fun getTotalOrderHaveDiscount(orderId: String): Double {
         var discount = 0.0
         var total = 0.0

@@ -25,9 +25,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.example.learncode.ui.main.MainScreen
-import com.example.learncode.ui.screen.MenuProducts
 import com.example.learncode.ui.theme.LearnCodeTheme
 import com.example.learncode.util.generateQRCode
 

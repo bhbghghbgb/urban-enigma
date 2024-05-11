@@ -15,6 +15,7 @@ enum class StateProfile {
     ERROR,
     SUCCESS
 }
+
 class ProfileViewModel : ViewModel() {
     private val repository = ProfileRepository()
     private val _userData = MutableLiveData<UserClass.Customer>()
@@ -27,16 +28,16 @@ class ProfileViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.Main) {
             try {
                 val response = repository.getInfoOfCustomer(token)
-                if(response.isSuccessful) {
-                    Log.d("abc",response.toString())
+                if (response.isSuccessful) {
+                    Log.d("abc", response.toString())
                     _userData.postValue(response.body())
                     _state.postValue(StateProfile.SUCCESS)
                 } else {
-                    Log.d("abc",response.toString())
+                    Log.d("abc", response.toString())
                     _state.postValue(StateProfile.ERROR)
                 }
             } catch (ex: Exception) {
-                Log.d("abc",ex.toString())
+                Log.d("abc", ex.toString())
                 _state.postValue(StateProfile.ERROR)
             }
         }

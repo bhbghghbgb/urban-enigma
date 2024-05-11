@@ -48,13 +48,23 @@ import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.viewmodel.SearchViewModel
 
 @Composable
-fun MenuProducts(navController: NavController, focusRequester: FocusRequester, viewModel: SearchViewModel) {
+fun MenuProducts(
+    navController: NavController,
+    focusRequester: FocusRequester,
+    viewModel: SearchViewModel
+) {
     val isNavigated by rememberSaveable { mutableStateOf(false) }
     Box {
         Scaffold(
             topBar = { TopBar(navController, viewModel) }, containerColor = Color.Transparent
         ) { paddingValues ->
-            Content(paddingValues = paddingValues, navController, focusRequester, isNavigated, viewModel)
+            Content(
+                paddingValues = paddingValues,
+                navController,
+                focusRequester,
+                isNavigated,
+                viewModel
+            )
         }
     }
 }
@@ -181,7 +191,7 @@ fun RenderProductList(
                 focusRequester
             )
         }
-        item{ CategorySection() }
+        item { CategorySection() }
         if (productLists.isNotEmpty()) {
             item { Spacer(modifier = Modifier.height(2.dp)) }
             productLists.forEach { product ->

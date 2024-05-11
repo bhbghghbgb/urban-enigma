@@ -1,9 +1,6 @@
 package com.example.learncode.ui.screen
 
-import android.app.Activity
 import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Looper
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,8 +22,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
@@ -65,7 +60,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import com.example.learncode.R
 import com.example.learncode.model.AddToCartRequest
@@ -75,11 +69,6 @@ import com.example.learncode.model.ProductOfCart
 import com.example.learncode.ui.theme.fontPoppinsRegular
 import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.viewmodel.CartViewModel
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
 
 val TIMEOUT_THRESHOLD = 5000 // 5 giây (đơn vị: millisecond)
 val CHECK_INTERVAL = 5000 // 1 phút (đơn vị: millisecond)
@@ -209,52 +198,7 @@ fun ContentOrder(
                         }
                         Spacer(modifier = Modifier.width(10.dp))
                         Button(
-                            onClick = {
-                                val activity = context as? Activity
-                                val fusedLocationClient: FusedLocationProviderClient =
-                                    LocationServices.getFusedLocationProviderClient(activity)
-                                if (activity != null) {
-                                    if (ActivityCompat.checkSelfPermission(
-                                            context,
-                                            android.Manifest.permission.ACCESS_FINE_LOCATION
-                                        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                                            context,
-                                            android.Manifest.permission.ACCESS_COARSE_LOCATION
-                                        ) != PackageManager.PERMISSION_GRANTED
-                                    ) {
-                                        ActivityCompat.requestPermissions(
-                                            activity,
-                                            arrayOf(
-                                                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                                                android.Manifest.permission.ACCESS_COARSE_LOCATION
-                                            ),
-                                            requestCode
-                                        )
-                                    } else {
-                                        fusedLocationClient.requestLocationUpdates(
-                                            LocationRequest.create(),
-                                            object : LocationCallback() {
-                                                override fun onLocationResult(locationResult: LocationResult?) {
-                                                    locationResult ?: return
-                                                    for (location in locationResult.locations) {
-                                                        val latitude = location.latitude
-                                                        val longitude = location.longitude
-                                                        viewModel.reverseGeocode(
-                                                            context = context,
-                                                            latitude = latitude,
-                                                            longitude = longitude
-                                                        )
-                                                        fusedLocationClient.removeLocationUpdates(
-                                                            this
-                                                        )
-                                                    }
-                                                }
-                                            },
-                                            Looper.getMainLooper()
-                                        )
-                                    }
-                                }
-                            },
+                            onClick = { /* location services deleted*/ },
                             modifier = Modifier
                                 .clip(RoundedCornerShape(20.dp)),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White),

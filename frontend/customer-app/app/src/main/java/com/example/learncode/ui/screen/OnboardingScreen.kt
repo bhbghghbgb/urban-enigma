@@ -85,10 +85,12 @@ fun OnboardingScreen(navController: NavHostController) {
                 )
             }
         }
-        Row(verticalAlignment = Alignment.CenterVertically,
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(bottom = 5.dp, end = 10.dp)) {
+                .padding(bottom = 5.dp, end = 10.dp)
+        ) {
             val scope = rememberCoroutineScope()
             if (buttonState.value[0].isNotEmpty()) {
                 NewTextButton(

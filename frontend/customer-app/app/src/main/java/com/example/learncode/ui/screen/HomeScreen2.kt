@@ -41,12 +41,17 @@ import com.example.learncode.ui.theme.fontPoppinsSemi
 import com.example.learncode.viewmodel.HomeScreen2ViewModel
 
 @Composable
-fun HomeScreen2(navController: NavHostController, viewModel: HomeScreen2ViewModel, bottom: @Composable () -> Unit) {
+fun HomeScreen2(
+    navController: NavHostController,
+    viewModel: HomeScreen2ViewModel,
+    bottom: @Composable () -> Unit
+) {
     Scaffold(
         topBar = {
             TopBarHome()
         },
-        bottomBar = bottom    ) { paddingValues ->
+        bottomBar = bottom
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()

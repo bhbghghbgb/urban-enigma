@@ -10,12 +10,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.learncode.model.AddToCartRequest
 import com.example.learncode.model.Cart
-import com.example.learncode.model.Product
 import com.example.learncode.repository.CartRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.io.IOException
 import java.util.Locale
 
 class CartViewModel : ViewModel() {
@@ -53,6 +50,7 @@ class CartViewModel : ViewModel() {
             }
         }
     }
+
     fun setAddress(address: String) {
         _address.postValue(address)
     }
