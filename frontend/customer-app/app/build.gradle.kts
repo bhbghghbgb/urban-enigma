@@ -2,14 +2,15 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     kotlin("plugin.serialization")
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.learncode"
+    namespace = "com.doansgu.cafectm"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.learncode"
+        applicationId = "com.doansgu.cafectm"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -65,6 +66,8 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+    implementation("com.google.firebase:firebase-auth:23.0.0")
+    implementation("com.google.firebase:firebase-messaging:24.0.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
