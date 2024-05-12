@@ -67,6 +67,7 @@ function main() {
 
     app.use("/auth", authRoutes);
     app.use("/test", testRoutes);
+    app.use("/helloworld", (req, res) => res.json("Hello world"))
     app.use("/", publicFilesRoutes);
     app.get("/", function (req, res) {
         res.sendFile(require("path").join(__dirname, "/views/index.html"));

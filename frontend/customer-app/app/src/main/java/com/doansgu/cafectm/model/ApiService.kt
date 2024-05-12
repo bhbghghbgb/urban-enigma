@@ -1,5 +1,6 @@
 package com.doansgu.cafectm.model
 
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -8,6 +9,9 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface ApiService {
+    @GET("/helloworld")
+    suspend fun helloBackend(): Response<ResponseBody>
+
     @GET("/products/lists/popular")
     suspend fun getProductList(): Response<List<Products>>
 
@@ -20,14 +24,8 @@ interface ApiService {
     @GET("/products/{id}")
     suspend fun getProduct(@Path("id") id: String): Response<Products>
 
-    @POST("/login")
-    suspend fun login(@Body request: Account): Response<Token>
-
-    @POST("/logout")
-    suspend fun logout(): Response<ResponseFromServer>
-
-    @GET("/authenticate")
-    suspend fun authenticate(): Response<AuthResult>
+    @GET("/auth/customer")
+    suspend fun testAuthorization(): Response<ResponseBody>
 
     @GET("/cart")
     suspend fun getCartOfUser(): Response<Cart>

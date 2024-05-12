@@ -31,9 +31,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.doansgu.cafectm.model.OnboardingSheet
 import com.doansgu.cafectm.ui.components.NewTextButton
 import com.doansgu.cafectm.ui.components.NewsButton
@@ -41,13 +43,31 @@ import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import kotlinx.coroutines.launch
 
+@Preview
+@Composable
+fun OnboardingScreenPreview0() {
+    OnboardingScreen(navController = rememberNavController(), 0)
+}
+
+@Preview
+@Composable
+fun OnboardingScreenPreview1() {
+    OnboardingScreen(navController = rememberNavController(), 1)
+}
+
+@Preview
+@Composable
+fun OnboardingScreenPreview2() {
+    OnboardingScreen(navController = rememberNavController(), 2)
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnboardingScreen(navController: NavHostController) {
+fun OnboardingScreen(navController: NavHostController, initialPage: Int = 0) {
     val pages = listOf(
         OnboardingSheet.Page1, OnboardingSheet.Page2, OnboardingSheet.Page3
     )
-    val pageState = rememberPagerState(initialPage = 0) {
+    val pageState = rememberPagerState(initialPage = initialPage) {
         pages.size
     }
     val buttonState = remember {

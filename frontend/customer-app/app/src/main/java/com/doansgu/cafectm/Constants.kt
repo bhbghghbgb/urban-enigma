@@ -1,6 +1,6 @@
 package com.doansgu.cafectm
 
-const val BACKEND_BASE_URL = "http://:3001"
+const val BACKEND_BASE_URL = "http://10.0.2.2:3001"
 const val AUTHORIZATION_HEADER = "Authorization"
 const val AUTHORIZATION_SCHEME = "Bearer"
 

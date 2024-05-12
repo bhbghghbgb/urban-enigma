@@ -26,16 +26,35 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 
+@Preview
+@Composable
+fun CustomTextFieldPreview() {
+    CustomTextField(
+        placeholder = "Input your password",
+        isPassword = true,
+    )
+}
+
+@Preview
+@Composable
+fun CustomTextFieldNumberPreview() {
+    CustomTextField(
+        placeholder = "Input your phone number",
+        isPassword = false,
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomTextFieldNumber(
     placeholder: String,
-    onValueChanged: (String) -> Unit,
+    onValueChanged: (String) -> Unit = {},
     errorText: String = ""
 ) {
     var text by rememberSaveable { mutableStateOf("") }
@@ -84,8 +103,8 @@ fun CustomTextFieldNumber(
 @Composable
 fun CustomTextField(
     placeholder: String,
-    isPassword: Boolean,
-    onValueChanged: (String) -> Unit,
+    isPassword: Boolean = false,
+    onValueChanged: (String) -> Unit = {},
     errorText: String = ""
 ) {
     var text by rememberSaveable { mutableStateOf("") }

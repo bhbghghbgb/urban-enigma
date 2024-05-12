@@ -5,4 +5,5 @@ plugins {
     kotlin("jvm") version "1.9.22"
     kotlin("plugin.serialization") version "1.9.22"
     id("com.google.gms.google-services") version "4.4.1" apply false
+    id("com.autonomousapps.dependency-analysis") version "1.31.0"
 }

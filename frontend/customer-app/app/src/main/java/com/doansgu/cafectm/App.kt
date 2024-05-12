@@ -6,16 +6,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
 
 private const val PREFS_NAME = "MyPrefsAppCoffee"
+
 class App : Application() {
     override fun onCreate() {
         super.onCreate()
         mContext = applicationContext
+        firebaseAuth.setLanguageCode("vi")
+        firebaseAuth.firebaseAuthSettings.forceRecaptchaFlowForTesting(true)
     }
 
     companion object {

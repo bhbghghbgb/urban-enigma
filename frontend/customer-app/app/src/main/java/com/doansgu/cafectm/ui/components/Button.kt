@@ -27,7 +27,7 @@ import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 fun FilledButtonExample(onClick: () -> Unit, text: String, backgroundColor: ButtonColors) {
     Button(
         onClick = { onClick() },
-        modifier = Modifier.fillMaxWidth(),
+//        modifier = Modifier.fillMaxWidth(),
         colors = backgroundColor
     ) {
         Text(

@@ -28,9 +28,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.ui.components.CustomTextField
 import com.doansgu.cafectm.ui.components.CustomTextFieldNumber
@@ -39,11 +42,22 @@ import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import com.doansgu.cafectm.viewmodel.AuthViewModel
 
+@Preview
 @Composable
-fun LogInScreen(navController: NavHostController) {
-    val viewModel = remember { AuthViewModel() }
+fun LoginScreenPreview() {
+    LoginScreen(navController = rememberNavController())
+}
+
+@Preview
+@Composable
+fun LoadingScreenPreview() {
+    LoadingScreen()
+}
+
+@Composable
+fun LoginScreen(navController: NavHostController, viewModel: AuthViewModel = viewModel()) {
     var phoneNumber by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var code by remember { mutableStateOf("") }
 
     val phoneNumberError by viewModel.phoneNumberError.observeAsState("")
     val passwordError by viewModel.passwordError.observeAsState("")
@@ -99,39 +113,42 @@ fun LogInScreen(navController: NavHostController) {
             fontSize = 14.sp
         )
         CustomTextFieldNumber(
-            placeholder = "Enter Phone number",
-            onValueChanged = {
+            placeholder = "Enter Phone number", onValueChanged = {
                 phoneNumber = it
                 viewModel.clearPhoneNumberError()
-            },
-            errorText = phoneNumberError
+            }, errorText = phoneNumberError
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Password",
+            text = "Code",
             fontFamily = FontFamily(fontPoppinsSemi),
             color = Color(0xFF8A8A8A),
             fontSize = 14.sp
         )
         CustomTextField(
-            placeholder = "Enter Password",
-            isPassword = true,
-            onValueChanged = {
-                password = it
+            placeholder = "Enter Code", isPassword = true, onValueChanged = {
+                code = it
                 viewModel.clearPasswordError()
-            },
-            errorText = passwordError
+            }, errorText = passwordError
         )
         Spacer(modifier = Modifier.height(20.dp))
-        FilledButtonExample(
-            onClick = {
-                viewModel.login(phoneNumber, password)
-            },
-            text = "LOGIN",
-            backgroundColor = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF04764E)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            FilledButtonExample(
+                onClick = {
+                    viewModel.sendCode(phoneNumber)
+                }, text = "Send code", backgroundColor = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFEDE0CF)
+                )
             )
-        )
+            FilledButtonExample(
+                onClick = {
+                    viewModel.login(phoneNumber, code)
+                }, text = "Login", backgroundColor = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF04764E)
+                )
+            )
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             text = "Don't have account",
@@ -142,7 +159,7 @@ fun LogInScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(20.dp))
         FilledButtonExample(
             onClick = { navController.navigate("register") },
-            text = "CREATE ACCOUNT",
+            text = "Create Account",
             backgroundColor = ButtonDefaults.buttonColors(
                 containerColor = Color(0xFFEDE0CF)
             )
@@ -162,35 +179,27 @@ fun CustomAlert(viewModel: AuthViewModel) {
         contentColor = Color.Transparent,
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            AlertDialog(
-                onDismissRequest = { viewModel.dismissInvalidDataDialog() },
-                title = {
+            AlertDialog(onDismissRequest = { viewModel.dismissInvalidDataDialog() }, title = {
+                Text(
+                    text = "Invalid Data", fontFamily = FontFamily(fontPoppinsSemi)
+                )
+            }, text = {
+                Text(
+                    text = "Please enter a valid phone number and password.",
+                    color = Color.Black,
+                    fontFamily = FontFamily(fontPoppinsRegular)
+                )
+            }, confirmButton = {
+                Button(
+                    onClick = { viewModel.dismissInvalidDataDialog() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
+                    modifier = Modifier.padding(vertical = 8.dp)
+                ) {
                     Text(
-                        text = "Invalid Data",
-                        fontFamily = FontFamily(fontPoppinsSemi)
+                        text = "OK", color = Color.White
                     )
-                },
-                text = {
-                    Text(
-                        text = "Please enter a valid phone number and password.",
-                        color = Color.Black,
-                        fontFamily = FontFamily(fontPoppinsRegular)
-                    )
-                },
-                confirmButton = {
-                    Button(
-                        onClick = { viewModel.dismissInvalidDataDialog() },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
-                        modifier = Modifier.padding(vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "OK",
-                            color = Color.White
-                        )
-                    }
-                },
-                containerColor = Color.White,
-                textContentColor = Color.Transparent
+                }
+            }, containerColor = Color.White, textContentColor = Color.Transparent
             )
         }
     }
