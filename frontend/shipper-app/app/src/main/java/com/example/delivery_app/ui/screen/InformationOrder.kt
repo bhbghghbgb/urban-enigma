@@ -46,7 +46,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -55,13 +54,10 @@ import androidx.navigation.NavController
 import com.example.delivery_app.R
 import com.example.delivery_app.data.model.DetailOrders
 import com.example.delivery_app.data.model.Order
-import com.example.delivery_app.data.model.Product
-import com.example.delivery_app.data.viewmodel.HomeViewModel
 import com.example.delivery_app.data.viewmodel.OrderViewModel
 import com.example.delivery_app.data.viewmodel.State
 import com.example.delivery_app.ui.LoadingScreen
 import com.example.delivery_app.util.FormatDateTime
-import com.example.learncode.model.PreferenceManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

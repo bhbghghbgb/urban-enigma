@@ -1,6 +1,5 @@
 package com.example.delivery_app.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,31 +25,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.delivery_app.data.model.AuthorizationManager
 import com.example.delivery_app.data.viewmodel.AuthViewModel
 import com.example.delivery_app.data.viewmodel.ProfileViewModel
 import com.example.delivery_app.data.viewmodel.State
 import com.example.delivery_app.ui.LoadingScreen
-import com.example.learncode.model.PreferenceManager
 import java.text.SimpleDateFormat
 import java.util.Date
 
 @Composable
 fun ProfileScreen(
-    navControllerMain: NavController,
-    navController: NavController,
-    viewModel: ProfileViewModel
+    navControllerMain: NavController, navController: NavController, viewModel: ProfileViewModel
 ) {
     val staff by viewModel.userData.observeAsState()
     val state by viewModel.state.observeAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    val token: String? = PreferenceManager.getToken(LocalContext.current)
+    val token: String? = AuthorizationManager.authorization
     LaunchedEffect(true) {
-        token?.let { viewModel.getInfoUser(it) }
+        token?.let { viewModel.getInfoUser() }
     }
     when (state) {
         State.LOADING -> {
@@ -59,8 +55,7 @@ fun ProfileScreen(
 
         State.ERROR -> {
             ErrorScreen {
-                if (token != null)
-                    viewModel.getInfoUser(token)
+                if (token != null) viewModel.getInfoUser()
             }
         }
 
@@ -149,14 +144,13 @@ fun ProfileScreen(
         else -> {}
     }
     if (showLogoutDialog) {
-        val context = LocalContext.current
-        val token: String = PreferenceManager.getToken(context).toString()
+        val token: String? = AuthorizationManager.authorization
         LogoutAlertDialog(
             showDialog = remember { mutableStateOf(showLogoutDialog) },
             onConfirm = {
                 if (token != null) {
                     val viewModel = AuthViewModel()
-                    viewModel.logout(token, context)
+                    viewModel.logout()
                     navControllerMain.popBackStack("login", false)
                 }
             },
@@ -184,49 +178,39 @@ fun LogoutAlertDialog(
             contentColor = Color.Transparent,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                AlertDialog(
-                    onDismissRequest = { onDismissRequest },
-                    title = {
+                AlertDialog(onDismissRequest = { onDismissRequest }, title = {
+                    Text(
+                        text = "Log out", color = Color.Black
+                    )
+                }, text = {
+                    Text(
+                        text = "Are you sure you want to log out?",
+                        color = Color.Black,
+                    )
+                }, confirmButton = {
+                    Button(
+                        onClick = {
+                            showDialog.value = false
+                            onConfirm()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
                         Text(
-                            text = "Log out",
-                            color = Color.Black
+                            text = "Yes", color = Color.White
                         )
-                    },
-                    text = {
+                    }
+                }, dismissButton = {
+                    Button(
+                        onClick = { onDismiss() },
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                    ) {
                         Text(
-                            text = "Are you sure you want to log out?",
-                            color = Color.Black,
+                            text = "No", color = Color.White
                         )
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                showDialog.value = false
-                                onConfirm()
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = "Yes",
-                                color = Color.White
-                            )
-                        }
-                    },
-                    dismissButton = {
-                        Button(
-                            onClick = { onDismiss() },
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                        ) {
-                            Text(
-                                text = "No",
-                                color = Color.White
-                            )
-                        }
-                    },
-                    containerColor = Color.White,
-                    textContentColor = Color.Black
+                    }
+                }, containerColor = Color.White, textContentColor = Color.Black
                 )
             }
         }
@@ -242,8 +226,7 @@ fun ErrorScreen(onRetry: () -> Unit) {
     ) {
         Text("An error occurred, please try again", fontSize = 20.sp)
         Button(
-            onClick = { onRetry() },
-            modifier = Modifier.padding(16.dp)
+            onClick = { onRetry() }, modifier = Modifier.padding(16.dp)
         ) {
             Text("Retry")
         }

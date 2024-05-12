@@ -1,13 +1,21 @@
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -17,20 +25,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.delivery_app.R
 import com.example.delivery_app.data.viewmodel.AuthViewModel
+
+@Preview
+@Composable
+fun LoginScreenPreview() {
+    LoginScreen(navController = rememberNavController(), viewModel = viewModel())
+}
 
 @Composable
 fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
@@ -43,7 +59,6 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
     if (navigation) {
         navController.navigate("home")
     }
-    viewModel.setContext(LocalContext.current)
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -69,8 +84,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 modifier = Modifier.padding(bottom = 16.dp),
                 fontWeight = FontWeight(600),
             )
-            TextField(
-                value = username,
+            TextField(value = username,
                 onValueChange = {
                     username = it
                     viewModel.clearPhoneNumberError()
@@ -98,11 +112,9 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                             tint = Color.Red
                         )
                     }
-                }
-            )
+                })
 
-            TextField(
-                value = password,
+            TextField(value = password,
                 onValueChange = {
                     password = it
                     viewModel.clearPhoneNumberError()
@@ -131,26 +143,41 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                             tint = Color.Red
                         )
                     }
-                }
-            )
+                })
 
-            Button(
-                onClick = {
-                    viewModel.login(username, password)
-                },
-                modifier = Modifier
-                    .padding(vertical = 2.dp)
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .background(Color.Blue, RoundedCornerShape(8.dp)),
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C7055)),
-                contentPadding = PaddingValues(8.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Login",
-                    color = Color.White,
-                    fontSize = 18.sp
-                )
+                Button(
+                    onClick = {
+                        viewModel.login(username, password)
+                    },
+                    modifier = Modifier
+                        .padding(vertical = 2.dp)
+                        .height(48.dp)
+                        .background(Color.Blue, RoundedCornerShape(8.dp)),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C7055)),
+                    contentPadding = PaddingValues(8.dp)
+                ) {
+                    Text(
+                        text = "Send code", color = Color.White, fontSize = 18.sp
+                    )
+                }
+                Button(
+                    onClick = {
+                        viewModel.login(username, password)
+                    },
+                    modifier = Modifier
+                        .padding(vertical = 2.dp)
+                        .height(48.dp)
+                        .background(Color.Blue, RoundedCornerShape(8.dp)),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C7055)),
+                    contentPadding = PaddingValues(8.dp)
+                ) {
+                    Text(
+                        text = "Login", color = Color.White, fontSize = 18.sp
+                    )
+                }
             }
         }
     }

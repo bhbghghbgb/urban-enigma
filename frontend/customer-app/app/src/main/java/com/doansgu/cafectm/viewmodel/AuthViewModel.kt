@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit
 
 class AuthViewModel : ViewModel() {
     private val _isValidToken = MutableLiveData<Boolean>()
-    val isValidToken: LiveData<Boolean> = _isValidToken
 
     private val _phoneNumberError = MutableLiveData<String>()
     val phoneNumberError: LiveData<String> = _phoneNumberError

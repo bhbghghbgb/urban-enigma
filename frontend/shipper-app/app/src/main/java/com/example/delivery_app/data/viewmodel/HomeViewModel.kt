@@ -6,7 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.delivery_app.data.model.Order
-import com.example.delivery_app.data.repository.AuthRepository
 import com.example.delivery_app.data.repository.DeliveryRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,11 +21,11 @@ class HomeViewModel : ViewModel() {
 
     private val _state = MutableLiveData<State>(State.LOADING)
     val state: LiveData<State> = _state
-    fun getOrderByStaff(token: String) {
+    fun getOrderByStaff() {
         viewModelScope.launch(Dispatchers.Main) {
             _state.postValue(State.LOADING)
             try {
-                val response = repository.getOrderByStaff(token)
+                val response = repository.getOrderByStaff()
                 if (response.isSuccessful) {
                     _state.postValue(State.SUCCESS);
                     _order.postValue(response.body())
@@ -40,11 +39,11 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun getOrdersByStaff(token: String) {
+    fun getOrdersByStaff() {
         viewModelScope.launch(Dispatchers.Main) {
             _state.postValue(State.LOADING)
             try {
-                val response = repository.getOrdersByStaff(token)
+                val response = repository.getOrdersByStaff()
                 if (response.isSuccessful) {
                     _state.postValue(State.SUCCESS);
                     _orders.postValue(response.body())
@@ -63,7 +62,7 @@ class HomeViewModel : ViewModel() {
         var discount = 0.0
         var total = 0.0
         _orders.value?.let { orders ->
-            orders.forEach{ order ->
+            orders.forEach { order ->
                 if (order.id == orderId) {
                     order.detailOrders.forEach { item ->
                         val product = item.product
@@ -82,7 +81,7 @@ class HomeViewModel : ViewModel() {
     fun getTotalItem(orderId: String): Int {
         var total = 0
         _orders.value?.let { orders ->
-            orders.forEach{ order ->
+            orders.forEach { order ->
                 if (order.id == orderId) {
                     order.detailOrders.forEach { item ->
                         val product = item.product

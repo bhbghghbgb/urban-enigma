@@ -3,7 +3,6 @@ package com.example.delivery_app.ui.screen
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -94,7 +93,10 @@ fun QRCodeScreen() {
                 .background(Color.Blue)
         ) {
             // Hiển thị hình ảnh của mã QR hoặc bất kỳ hình ảnh nào bạn muốn
-            Image(painter = painterResource(id = R.drawable.qr_code_scan), contentDescription = null)
+            Image(
+                painter = painterResource(id = R.drawable.qr_code_scan),
+                contentDescription = null
+            )
         }
     }
 }
@@ -103,7 +105,6 @@ private fun openQRScanner(context: Context) {
     val intent = Intent(context, QRScanActivity::class.java)
     context.startActivity(intent)
 }
-
 
 
 //@OptIn(ExperimentalPermissionsApi::class)

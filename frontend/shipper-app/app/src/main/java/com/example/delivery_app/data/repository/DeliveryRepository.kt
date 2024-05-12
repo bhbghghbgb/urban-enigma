@@ -6,10 +6,11 @@ import retrofit2.Response
 
 class DeliveryRepository {
     private val deliveryService = RetrofitInstance.apiService
-    suspend fun getOrderByStaff(token: String): Response<Order> {
-        return deliveryService.getOrderByStaff(token)
+    suspend fun getOrderByStaff(): Response<Order> {
+        return deliveryService.getOrderByStaff()
     }
-    suspend fun getOrdersByStaff(token: String): Response<List<Order>> {
-        return deliveryService.getOrdersByStaff(token)
+
+    suspend fun getOrdersByStaff(): Response<List<Order>> {
+        return deliveryService.getOrdersByStaff()
     }
 }

@@ -10,7 +10,7 @@ async function getOrCreateAccountFromIdToken(firebaseIdToken) {
         return null;
     }
     const account = await Account.findOne({
-        firebaseUid,
+        username: firebaseUid,
     });
     // client yeu cau tao user moi
     return !account ? createAccountByClient(firebaseUid) : null;

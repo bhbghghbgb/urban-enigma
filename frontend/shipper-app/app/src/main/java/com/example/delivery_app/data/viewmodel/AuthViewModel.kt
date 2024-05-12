@@ -1,28 +1,25 @@
 package com.example.delivery_app.data.viewmodel
 
-import android.content.Context
+import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.delivery_app.data.model.ResponseFromServer
+import com.example.delivery_app.App
+import com.example.delivery_app.data.model.AuthorizationManager
 import com.example.delivery_app.data.repository.AuthRepository
-import com.example.learncode.model.PreferenceManager
-import kotlinx.coroutines.Dispatchers
+import com.google.firebase.FirebaseException
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 
 class AuthViewModel : ViewModel() {
-    private val repository = AuthRepository()
-
-    private val _context = MutableLiveData<Context>()
-
     private val _isValidToken = MutableLiveData<Boolean>()
-    val isValidToken: LiveData<Boolean> = _isValidToken
-
-    fun setContext(context: Context) {
-        _context.value = context
-    }
 
     private val _phoneNumberError = MutableLiveData<String>()
     val phoneNumberError: LiveData<String> = _phoneNumberError
@@ -36,75 +33,109 @@ class AuthViewModel : ViewModel() {
     private val _isInvalidDataDialogVisible = MutableLiveData<Boolean>()
     val isInvalidDataDialogVisible: LiveData<Boolean> = _isInvalidDataDialogVisible
 
-    private val _message = MutableLiveData<ResponseFromServer>()
-    val message: LiveData<ResponseFromServer> = _message
-    fun logout(token: String, context: Context) {
-        viewModelScope.launch(Dispatchers.IO) {
+    private val _requestSendCode = Channel<String>()
+    val requestSendCode = _requestSendCode.receiveAsFlow()
+
+    private var verifyingPhoneNumber: String? = null
+    private var phoneVerificationId: String? = null
+    private var forceResendingToken: PhoneAuthProvider.ForceResendingToken? = null
+    private fun testAuthorization() {
+        viewModelScope.launch {
             try {
-                val response = repository.logout(token)
-                if (response.isSuccessful) {
-                    _message.postValue(response.body())
-                } else {
-                    _message.postValue(response.body())
-                }
-                Log.d("AuthViewModel-DATA", _message.value.toString())
-            } finally {
-                PreferenceManager.clearToken(context)
-            }
-        }
-    }
-    fun authenticate(token: String) {
-        viewModelScope.launch(Dispatchers.Main) {
-            try {
-                val response = repository.authenticate(token)
-                Log.d("test", response.body().toString())
-                if (response.isSuccessful) {
-                    _isValidToken.postValue(response.body()!!.isValid)
-                } else {
-                    _isValidToken.postValue(false)
-                }
+                Log.d("Auth", "Testing Authorization: ${AuthorizationManager.authorization}")
+                val authorized = AuthRepository.testAuthorization()
+                Log.d("Auth", "Authorized: $authorized")
+                _isValidToken.postValue(authorized)
             } catch (e: Exception) {
                 _isValidToken.postValue(false)
             }
         }
     }
 
-    fun login(phoneNumber: String, password: String) {
-        if (isValidPhoneNumber(phoneNumber) && isValidPassword(password)) {
-            viewModelScope.launch(Dispatchers.Main) {
-                try {
-                    val loginResult = repository.login(phoneNumber, password)
-                    if (loginResult.isSuccessful) {
-                        val dataResponse = loginResult.body()
-                        if (dataResponse != null) {
-                            Log.d("Data", dataResponse.token)
-                            if (dataResponse.roleOfAccount == "staff") {
-                                PreferenceManager.saveToken(dataResponse.token, _context.value!!);
-                                _navigateToHome.postValue(true)
-                            } else {
-                                showInvalidDataDialog()
-                            }
-                        }
-                    } else {
-                        showInvalidDataDialog()
-                        val errorBody = loginResult.errorBody()?.string()
-                        if (errorBody != null) {
-                            Log.e("Login Error", errorBody)
-                        }
+    // this method only send an event to the requestSendCode Channel
+    // an activity must subscribe to the event
+    // then call sendCode(vietnamPhoneNumber, activity)
+    // to continue with PhoneAuthProvider.verifyPhoneNumber
+    fun sendCode(vietnamPhoneNumber: String) {
+        viewModelScope.launch {
+            _requestSendCode.send(vietnamPhoneNumber)
+        }
+    }
+
+    // this method must be called from activity because of reCaptcha verification requirement
+    // see https://firebase.google.com/docs/auth/android/phone-auth#recaptcha-verification
+    fun sendCode(vietnamPhoneNumber: String, activity: Activity) {
+        val internationalPhoneNumber = getInternationalPhoneNumber(vietnamPhoneNumber)
+        Log.d("Auth", "Send Code: $internationalPhoneNumber, $activity")
+        if (internationalPhoneNumber === null) {
+            showInvalidDataDialog()
+            return
+        }
+        PhoneAuthProvider.verifyPhoneNumber(
+            PhoneAuthOptions.newBuilder(App.firebaseAuth).setPhoneNumber(internationalPhoneNumber)
+                .setTimeout(0, TimeUnit.SECONDS).setActivity(activity)
+                .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                    override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                        tryLogin(credential)
                     }
-                } catch (ex: Exception) {
-                    Log.e("Login Error a", ex.toString())
+
+                    override fun onVerificationFailed(p0: FirebaseException) {
+                        Log.e("Auth", p0.message.toString())
+                    }
+
+                    override fun onCodeSent(
+                        p0: String, p1: PhoneAuthProvider.ForceResendingToken
+                    ) {
+                        phoneVerificationId = p0
+                        forceResendingToken = p1
+                        verifyingPhoneNumber = internationalPhoneNumber
+                        Log.d("Auth", "Code Sent, $p0, $p1, $internationalPhoneNumber")
+                    }
+                }).build()
+        )
+    }
+
+    fun login(vietnamPhoneNumber: String, code: String) {
+        val internationalPhoneNumber = getInternationalPhoneNumber(vietnamPhoneNumber)
+        val phoneVerificationId = phoneVerificationId
+        Log.d(
+            "Auth",
+            "Login: $internationalPhoneNumber, $code, $phoneVerificationId, $verifyingPhoneNumber"
+        )
+        if (internationalPhoneNumber === null || !isValidCode(code)) {
+            showInvalidDataDialog()
+            return
+        }
+        if (internationalPhoneNumber != verifyingPhoneNumber || phoneVerificationId === null) {
+            Log.w(
+                "Auth",
+                "Mismatch previous/current phone number or no Sent Code attempt yet, $internationalPhoneNumber, $verifyingPhoneNumber, $phoneVerificationId"
+            )
+            return
+        }
+        tryLogin(PhoneAuthProvider.getCredential(phoneVerificationId, code))
+    }
+
+    private fun getInternationalPhoneNumber(vietnamPhoneNumber: String): String? =
+        if (isValidVietnamPhoneNumber(vietnamPhoneNumber)) "+84${vietnamPhoneNumber.substring(1)}" else null
+
+    fun tryLogin(credential: PhoneAuthCredential): Boolean {
+        Log.d("Auth", "Try Login")
+        App.firebaseAuth.signInWithCredential(credential).addOnCompleteListener { signInTask ->
+            if (signInTask.isSuccessful) {
+                Log.d("Auth", "Phone Login Success")
+                signInTask.result?.user?.getIdToken(false)?.addOnCompleteListener { getTokenTask ->
+                    getTokenTask.result?.token?.let { token ->
+                        Log.d("Auth", "Token: $token")
+                        AuthorizationManager.authorization = token
+                        testAuthorization()
+//                        _navigateToHome.postValue(true)
+                        return@let
+                    }
                 }
             }
-        } else {
-            if (!isValidPhoneNumber(phoneNumber)) {
-                _phoneNumberError.postValue("Invalid phone number")
-            }
-            if (!isValidPassword(password)) {
-                _passwordError.postValue("Invalid password")
-            }
-            showInvalidDataDialog()
         }
+        return false
     }
 
     fun showInvalidDataDialog() {
@@ -115,12 +146,16 @@ class AuthViewModel : ViewModel() {
         _isInvalidDataDialogVisible.value = false
     }
 
-    private fun isValidPhoneNumber(phoneNumber: String): Boolean {
-        return phoneNumber.isNotEmpty()
+    private fun isValidVietnamPhoneNumber(phoneNumber: String): Boolean {
+        return phoneNumber.startsWith("0") && phoneNumber.length == 10
     }
 
     private fun isValidPassword(password: String): Boolean {
         return password.isNotEmpty()
+    }
+
+    private fun isValidCode(code: String): Boolean {
+        return code.length == 6 && code.all { char -> char.isDigit() }
     }
 
     fun clearPhoneNumberError() {
@@ -129,5 +164,9 @@ class AuthViewModel : ViewModel() {
 
     fun clearPasswordError() {
         _passwordError.value = ""
+    }
+
+    fun logout() {
+        AuthorizationManager.clearAuthorization()
     }
 }

@@ -34,13 +34,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,17 +46,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.delivery_app.R
+import com.example.delivery_app.data.model.AuthorizationManager
 import com.example.delivery_app.data.model.Order
 import com.example.delivery_app.data.viewmodel.HomeViewModel
 import com.example.delivery_app.data.viewmodel.ProfileViewModel
 import com.example.delivery_app.data.viewmodel.State
 import com.example.delivery_app.ui.LoadingScreen
 import com.example.delivery_app.util.FormatDateTime
-import com.example.learncode.model.PreferenceManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -185,10 +181,10 @@ fun HomeView(
 fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
     val order by viewModel.order.observeAsState()
     val state by viewModel.state.observeAsState()
-    val token: String? = PreferenceManager.getToken(LocalContext.current)
+    val token: String? = AuthorizationManager.authorization
     LaunchedEffect(Unit) {
         if (token != null) {
-            viewModel.getOrderByStaff(token)
+            viewModel.getOrderByStaff()
         }
     }
     when (state) {
@@ -221,7 +217,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
         State.ERROR -> {
             ErrorScreen {
                 if (token != null)
-                    viewModel.getOrderByStaff(token)
+                    viewModel.getOrderByStaff()
             }
         }
 

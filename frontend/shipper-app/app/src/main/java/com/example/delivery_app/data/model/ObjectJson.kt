@@ -10,7 +10,7 @@ data class Account(
 
 data class AuthResult(
     val message: String,
-    val isValid:Boolean
+    val isValid: Boolean
 )
 
 data class Token(
