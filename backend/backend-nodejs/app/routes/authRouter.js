@@ -8,12 +8,12 @@ router.get(
     "/customer",
     firebaseAuthBearer,
     userRole.is("customer"),
-    testAuthorization
+    testAuthorization,
 );
 router.get(
     "/staff",
     firebaseAuthBearer,
     userRole.is("staff"),
-    testAuthorization
+    testAuthorization,
 );
-module.exports = router
+module.exports = router;

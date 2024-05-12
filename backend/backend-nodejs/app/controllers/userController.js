@@ -1,6 +1,6 @@
 const { Staff, Customer } = require("../models/userModel");
 const { ObjectId } = require("mongoose").Types;
-
+const { account2staff } = require("../service/account2shits");
 exports.getStaffs = async (req, res) => {
     try {
         const staffs = await Staff.find().populate("commonuser.account");
@@ -13,7 +13,7 @@ exports.getStaffs = async (req, res) => {
 
 exports.getInfo = async (req, res) => {
     try {
-        const user = await Staff.findOne({ _id: req.user }).populate(
+        const user = (await account2staff(req.user)).populate(
             "commonuser.account",
         );
         if (!user) {

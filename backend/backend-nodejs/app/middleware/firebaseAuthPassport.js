@@ -16,7 +16,7 @@ passport.use(
                 }
             })
             .catch((err) => done(err));
-    })
+    }),
 );
 
 module.exports = {

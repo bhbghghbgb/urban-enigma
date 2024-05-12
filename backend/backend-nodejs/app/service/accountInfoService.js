@@ -11,7 +11,7 @@ exports.changeEmail = async (username, newEmail) => {
                 email: newEmail,
                 emailVerified: true,
             },
-        }
+        },
     );
 };
 
@@ -26,6 +26,6 @@ exports.changePhone = async (username, newPhone) => {
                 phone: newPhone,
                 phoneVerified: true,
             },
-        }
+        },
     );
 };

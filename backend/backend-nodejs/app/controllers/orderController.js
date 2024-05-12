@@ -1,5 +1,5 @@
 const Order = require("../models/orderModel");
-const { Customer } = require("../models/userModel");
+const { account2customer } = require("../service/account2shits");
 
 exports.getAllOrders = async (req, res) => {
     try {
@@ -13,7 +13,7 @@ exports.getAllOrders = async (req, res) => {
 
 exports.getAllOrderByUserNotYetDelivered = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -40,7 +40,7 @@ exports.getAllOrderByUserNotYetDelivered = async (req, res) => {
 
 exports.getAllOrderByUserDelivered = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -64,7 +64,7 @@ exports.getAllOrderByUserDelivered = async (req, res) => {
 
 exports.findOrderById = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User not found" });
             return;

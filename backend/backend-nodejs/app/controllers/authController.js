@@ -10,7 +10,7 @@ async function getUser(req, res) {
 }
 async function testAuthorization(req, res) {
     return res.sendStatus(
-        req.user ? StatusCodes.NO_CONTENT : StatusCodes.UNAUTHORIZED
+        req.user ? StatusCodes.NO_CONTENT : StatusCodes.UNAUTHORIZED,
     );
 }
 module.exports = { getUser, testAuthorization };

@@ -1,15 +1,16 @@
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 const { Customer } = require("../models/userModel");
+const { account2customer } = require("../service/account2shits");
 
 exports.getCartOfUser = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        const carts = await Cart.findOne({ user: req.user }).populate({
+        const carts = await Cart.findOne({ user: customer._id }).populate({
             path: "products.product",
             populate: {
                 path: "category",
@@ -24,7 +25,7 @@ exports.getCartOfUser = async (req, res) => {
 
 exports.addToCart = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -79,7 +80,7 @@ exports.addToCart = async (req, res) => {
 
 exports.deleteProductOfCart = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User is not found" });
             return;
@@ -89,7 +90,7 @@ exports.deleteProductOfCart = async (req, res) => {
             res.status(404).json({ message: "Product is not found" });
             return;
         }
-        const cart = await Cart.findOne({ user: req.user }).populate({
+        const cart = await Cart.findOne({ user: customer._id }).populate({
             path: "products.product",
             populate: {
                 path: "category",
@@ -117,12 +118,12 @@ exports.deleteProductOfCart = async (req, res) => {
 
 exports.increaseProductOfCart = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User not found" });
             return;
         }
-        const user = req.user;
+        const user = customer._id;
         let cart = await Cart.findOne({ user: user }).populate({
             path: "products.product",
             populate: {
@@ -179,7 +180,7 @@ exports.decreaseProductOfCart = async (req, res) => {
 
 exports.resetCart = async (req, res) => {
     try {
-        const customer = await Customer.findOne({ _id: req.user });
+        const customer = await account2customer(req.user);
         if (!customer) {
             res.status(404).json({ message: "User not found" });
             return;

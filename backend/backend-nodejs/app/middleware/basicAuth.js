@@ -22,7 +22,7 @@ passport.use(
             console.info("Auth fail: error ", err);
             return done(err);
         }
-    })
+    }),
 );
 
 module.exports = {

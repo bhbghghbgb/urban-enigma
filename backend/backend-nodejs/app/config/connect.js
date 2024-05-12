@@ -46,7 +46,7 @@ function initFirebase(callback) {
                     return;
                 }
                 console.error(
-                    "Firebase connection test failed. Auth will not work, server can continue."
+                    "Firebase connection test failed. Auth will not work, server can continue.",
                 );
             })
             .finally(() => callback());
@@ -57,7 +57,7 @@ function initFirebase(callback) {
             console.error("Firebase credentials not given.");
         }
         console.info(
-            "Failed to connect to Firebase. Auth will not work, server can continue"
+            "Failed to connect to Firebase. Auth will not work, server can continue",
         );
         callback();
     }

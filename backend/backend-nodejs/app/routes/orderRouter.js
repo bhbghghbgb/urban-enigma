@@ -11,21 +11,21 @@ router.get(
     "/not-yet-delivered",
     firebaseAuthBearer,
     userRole.is("customer"),
-    orderController.getAllOrderByUserNotYetDelivered
+    orderController.getAllOrderByUserNotYetDelivered,
 );
 // -> lấy order của khách hàng đã được giao
 router.get(
     "/delivered",
     firebaseAuthBearer,
     userRole.is("customer"),
-    orderController.getAllOrderByUserDelivered
+    orderController.getAllOrderByUserDelivered,
 );
 // -> lấy 1 order bằng id
 router.get(
     "/:id",
     firebaseAuthBearer,
     userRole.is("customer"),
-    orderController.findOrderById
+    orderController.findOrderById,
 );
 // -> lấy những order đã [now, delivering, delivered]
 router.get("/status/:status", orderController.getOrdersOfStatus);

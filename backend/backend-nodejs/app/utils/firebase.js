@@ -8,8 +8,8 @@ async function testFirebaseAuth() {
             .getUserByEmail(FIREBASE_AUTH_USER_TEST_EMAIL);
         console.info(
             `Successfully test firebase auth fetched user data: ${JSON.stringify(
-                userRecord.toJSON()
-            )}`
+                userRecord.toJSON(),
+            )}`,
         );
         return true;
     } catch (error) {

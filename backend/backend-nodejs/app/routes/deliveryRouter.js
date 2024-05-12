@@ -11,7 +11,7 @@ router.get(
     "/order",
     firebaseAuthBearer,
     userRole.is("staff"),
-    deliveryController.getOrdersByStaff
+    deliveryController.getOrdersByStaff,
 );
 
 // -> lấy danh sách đơn hàng đã giao
@@ -19,7 +19,7 @@ router.get(
     "/order/delivered",
     firebaseAuthBearer,
     userRole.is("staff"),
-    deliveryController.findOrderOfStaff
+    deliveryController.findOrderOfStaff,
 );
 
 // -> thêm 1 order

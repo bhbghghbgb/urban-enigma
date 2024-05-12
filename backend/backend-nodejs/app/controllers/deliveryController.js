@@ -1,7 +1,7 @@
 const Delivery = require("../models/deliveryModel");
 const { Staff } = require("../models/userModel");
 const Order = require("../models/orderModel");
-
+const { account2staff } = require("../service/account2shits");
 exports.createNewDelivery = async (req, res) => {
     try {
         const { orderId, staffId } = req.body;
@@ -65,7 +65,7 @@ exports.findAvailableStaff = async (req, res) => {
 
 exports.getOrdersByStaff = async (req, res) => {
     try {
-        const staff = await Staff.findOne({ _id: req.user }).populate(
+        const staff = (await account2staff(req.user)).populate(
             "commonuser.account",
         );
         if (!staff) {
@@ -106,7 +106,7 @@ exports.getOrdersByStaff = async (req, res) => {
 
 exports.findOrderOfStaff = async (req, res) => {
     try {
-        const staff = await Staff.findOne({ _id: req.user }).populate(
+        const staff = (await account2staff(req.user)).populate(
             "commonuser.account",
         );
         if (!staff) {

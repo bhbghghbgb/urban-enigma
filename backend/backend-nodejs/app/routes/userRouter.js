@@ -12,7 +12,7 @@ router.get(
     "",
     firebaseAuthBearer,
     userRole.is("staff"),
-    userController.getInfo
+    userController.getInfo,
 );
 // -> lấy danh sách customer
 router.get("/customer", userController.getCustomers);
@@ -31,7 +31,7 @@ router.get(
     "/infocustomer",
     firebaseAuthBearer,
     userRole.is("customer"),
-    userController.getCustomerInfo
+    userController.getCustomerInfo,
 );
 
 module.exports = router;
