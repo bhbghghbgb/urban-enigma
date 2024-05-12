@@ -11,8 +11,8 @@ data class Product2(
     @SerialName("price") val price: Double? = null,
     @SerialName("popular") val popular: Boolean? = null,
     @SerialName("image") val image: String? = null,
-    @SerialName("rating") val rating: Double? = null,
-    @SerialName("comment_count") val commentCount: Int? = null,
-    @SerialName("rating_count") val ratingCount: Int? = null,
+//    @SerialName("rating") val rating: Double? = null,
+//    @SerialName("comment_count") val commentCount: Int? = null,
+//    @SerialName("rating_count") val ratingCount: Int? = null,
     @SerialName("category") val category: Category2? = null,
 )

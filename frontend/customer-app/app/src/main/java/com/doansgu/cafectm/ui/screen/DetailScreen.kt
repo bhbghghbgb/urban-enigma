@@ -88,8 +88,7 @@ fun DetailScreen(navController: NavController, _id: String) {
     val authorization: String? = AuthorizationManager.authorization
     Box(
         modifier = Modifier.fillMaxSize()
-    )
-    {
+    ) {
         if (product == null) {
             LazyColumn(
                 contentPadding = PaddingValues(top = 420.dp),
@@ -111,18 +110,16 @@ fun DetailScreen(navController: NavController, _id: String) {
             }
         } else {
             Scaffold(bottomBar = {
-                AddtoCart(
-                    onClick = {
-                        authorization?.let {
-                            carViewModel.addToCart(AddToCartRequest(_id))
-                            showToast = true
-                        }
+                AddtoCart(onClick = {
+                    authorization?.let {
+                        carViewModel.addToCart(AddToCartRequest(_id))
+                        showToast = true
                     }
-                )
+                })
             }) {
                 Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {
-                    Content(scollState, product!!.description, product!!.avgRating, product!!.price)
-                    TopBarDetail(scollState, navController, product!!.name)
+                    Content(scollState, product?.description, null, product?.price)
+                    TopBarDetail(scollState, navController, product?.name)
 
                     if (showToast) {
                         LaunchedEffect(showToast) {
@@ -138,7 +135,7 @@ fun DetailScreen(navController: NavController, _id: String) {
 }
 
 @Composable
-fun TopBarDetail(scrollState: LazyListState, navController: NavController, name: String) {
+fun TopBarDetail(scrollState: LazyListState, navController: NavController, name: String?) {
     val imageHeight = 350.dp
 //    val screenHeight = LocalConfiguration.current.screenHeightDp
 
@@ -189,7 +186,7 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController, name:
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = name,
+                    text = if (name !== null) name else "null",
                     fontSize = 25.sp,
                     fontFamily = FontFamily(fontPoppinsSemi),
                     modifier = Modifier
@@ -239,7 +236,7 @@ fun CircularButton(
 }
 
 @Composable
-fun Content(scrollState: LazyListState, description: String, star: Double, price: Double) {
+fun Content(scrollState: LazyListState, description: String?, star: Double?, price: Double?) {
     LazyColumn(
         contentPadding = PaddingValues(top = 420.dp),
         modifier = Modifier.background(White),
@@ -248,19 +245,6 @@ fun Content(scrollState: LazyListState, description: String, star: Double, price
         item {
             StarReport(star, price)
             DescriptionProduct(des = description)
-//            TextTitle()
-//            SizeChoose()
-//            TextTitle()
-//            PriceQuantity()
-//            TextTitle()
-//            SizeChoose()
-//            TextTitle()
-//            PriceQuantity()
-//            TextTitle()
-//            SizeChoose()
-//            TextTitle()
-//            PriceQuantity()
-//            AddtoCard()
         }
     }
 }
@@ -319,7 +303,7 @@ fun AddtoCart(onClick: () -> Unit) {
 }
 
 @Composable
-fun StarReport(star: Double, price: Double) {
+fun StarReport(star: Double?, price: Double?) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -402,9 +386,9 @@ fun TextTitle() {
 }
 
 @Composable
-fun DescriptionProduct(des: String) {
+fun DescriptionProduct(des: String?) {
     Text(
-        text = des,
+        text = if (des !== null) des else "null",
         fontFamily = FontFamily(fontPoppinsRegular),
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
     )
@@ -445,25 +429,21 @@ fun TabButton(text: String, active: Boolean, modifier: Modifier) {
 
 @Composable
 fun RatingBar(
-    rating: Int,
-    onRatingChanged: (Int) -> Unit
+    rating: Int, onRatingChanged: (Int) -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
     ) {
         (1..5).forEach { star ->
             IconButton(
-                onClick = { onRatingChanged(star) },
-                modifier = Modifier.size(48.dp)
+                onClick = { onRatingChanged(star) }, modifier = Modifier.size(48.dp)
             ) {
                 Icon(
                     imageVector = if (star <= rating) {
                         Icons.Outlined.Star
                     } else {
                         Icons.Filled.Star
-                    },
-                    contentDescription = null
+                    }, contentDescription = null
                 )
             }
         }

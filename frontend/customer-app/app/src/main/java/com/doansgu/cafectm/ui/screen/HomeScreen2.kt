@@ -22,23 +22,34 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.doansgu.cafectm.R
 import com.doansgu.cafectm.ui.components.ImageSliderWithIndicator
 import com.doansgu.cafectm.ui.components.ItemView2
 import com.doansgu.cafectm.ui.components.ItemViewRow2
 import com.doansgu.cafectm.ui.components.SearchView
+import com.doansgu.cafectm.ui.components.TopBarHome
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import com.doansgu.cafectm.viewmodel.HomeScreen2ViewModel
+
+@Preview
+@Composable
+fun HomeScreen2Preview() {
+    HomeScreen2(navController = rememberNavController(), viewModel = viewModel(), bottom = {})
+}
 
 @Composable
 fun HomeScreen2(
@@ -49,8 +60,7 @@ fun HomeScreen2(
     Scaffold(
         topBar = {
             TopBarHome()
-        },
-        bottomBar = bottom
+        }, bottomBar = bottom
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -88,7 +98,11 @@ fun HomeScreen2(
                         .padding(top = 5.dp)
                         .padding(horizontal = 16.dp)
                 ) {
-                    ImageSliderWithIndicator(imageList = listPoster)
+                    ImageSliderWithIndicator(
+                        imageList = listOf(
+                            R.drawable.poster4, R.drawable.poster5, R.drawable.postercoffee3
+                        )
+                    )
                 }
                 Box(
                     modifier = Modifier.padding(horizontal = 16.dp)
@@ -121,19 +135,18 @@ fun HomeScreen2(
                         }
                     }
                 }
-                val productList by viewModel.threeProductList.collectAsState()
+                val productList by viewModel.productList.observeAsState(emptyList())
                 LazyRow(
                     contentPadding = PaddingValues(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     item {
-                        productList.bestSellers?.forEach {
+                        productList.forEach {
                             ItemView2(
                                 name = it.name,
                                 image = it.image,
                                 description = it.description,
                                 price = it.price,
-                                rating = it.rating,
                                 navController = navController,
                             )
                         }
@@ -175,13 +188,12 @@ fun HomeScreen2(
                     modifier = Modifier.padding(horizontal = 16.dp)
                 ) {
                     item {
-                        productList.forYou?.forEach {
+                        productList.forEach {
                             ItemViewRow2(
                                 name = it.name,
                                 image = it.image,
                                 description = it.description,
                                 price = it.price,
-                                rating = it.rating,
                                 navController = navController,
                             )
                         }

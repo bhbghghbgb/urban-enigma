@@ -9,7 +9,6 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,11 +29,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.doansgu.cafectm.model.NavigationItem
 import com.doansgu.cafectm.viewmodel.CartViewModel
+import com.doansgu.cafectm.viewmodel.HomeScreen2ViewModel
 import com.doansgu.cafectm.viewmodel.NavControllerViewModel
 import com.doansgu.cafectm.viewmodel.ProfileViewModel
 import com.doansgu.cafectm.viewmodel.SearchViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NavigateHomeScreen(navControllerViewModel: NavControllerViewModel) {
@@ -42,25 +41,25 @@ fun NavigateHomeScreen(navControllerViewModel: NavControllerViewModel) {
     val showBottomBar = remember { mutableStateOf(true) }
     val profileViewModel = remember { ProfileViewModel() }
     val cartViewModel = remember { CartViewModel() }
+    val homeScreen2ViewModel = remember { HomeScreen2ViewModel() }
     navController.addOnDestinationChangedListener { _, destination, _ ->
         showBottomBar.value = when (destination.route) {
             "menuproduct", "detail/{_id}", "information/{_id}", "login" -> false
             else -> true
         }
     }
-    Scaffold(
-        bottomBar = {
-            if (showBottomBar.value) {
-                // Your BottomBar goes here
-                BottomBar(navController = navController)
-            }
+    Scaffold(bottomBar = {
+        if (showBottomBar.value) {
+            // Your BottomBar goes here
+            BottomBar(navController = navController)
         }
-    ) {
+    }) {
         BottomNavGraph(
             navController = navController,
             { BottomBar(navController = navController) },
             profileViewModel,
             cartViewModel,
+            homeScreen2ViewModel,
             navControllerViewModel
         )
     }
@@ -97,6 +96,7 @@ fun BottomNavGraph(
     bottom: @Composable () -> Unit,
     profileViewModel: ProfileViewModel,
     cartViewModel: CartViewModel,
+    homeScreen2ViewModel: HomeScreen2ViewModel,
     navControllerViewModel: NavControllerViewModel
 ) {
 
@@ -105,7 +105,7 @@ fun BottomNavGraph(
     }
     NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
         composable(route = NavigationItem.Home.route) {
-            HomeScreen(navController = navController, bottom)
+            HomeScreen2(navController = navController, homeScreen2ViewModel, bottom)
         }
         composable(route = NavigationItem.Order.route) {
             OrderScreen(navController = navController, bottom, cartViewModel)
@@ -131,8 +131,7 @@ fun BottomNavGraph(
         }
         composable("information/{_id}") {
             InformationOrder(
-                navController = navController,
-                it.arguments?.getString("_id").toString()
+                navController = navController, it.arguments?.getString("_id").toString()
             )
         }
     }
@@ -141,14 +140,11 @@ fun BottomNavGraph(
 
 @Composable
 fun RowScope.AddItem(
-    screen: NavigationItem,
-    currentDestination: NavDestination?,
-    navController: NavHostController
+    screen: NavigationItem, currentDestination: NavDestination?, navController: NavHostController
 ) {
-    BottomNavigationItem(
-        label = {
-            Text(text = screen.title, fontSize = 10.sp)
-        },
+    BottomNavigationItem(label = {
+        Text(text = screen.title, fontSize = 10.sp)
+    },
         icon = {
             Icon(imageVector = screen.icon, contentDescription = null)
         },
@@ -162,6 +158,5 @@ fun RowScope.AddItem(
                 popUpTo(navController.graph.findStartDestination().id)
                 launchSingleTop = true
             }
-        }
-    )
+        })
 }

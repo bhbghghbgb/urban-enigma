@@ -40,7 +40,7 @@ fun MainScreen(authViewModel: AuthViewModel = viewModel()) {
 //        val startDestination =
 //            if (authorization != null && isValidToken == true) "homescreen" else "onboarding"
 //        if (authorization == null || (isValidToken != null && isValidToken == true)) {
-        val startDestination = "login"
+        val startDestination = "homescreen"
         NavHost(navController, startDestination = startDestination) {
             composable(
                 "onboarding",

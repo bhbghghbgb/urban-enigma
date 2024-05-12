@@ -30,22 +30,48 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.doansgu.cafectm.R
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
+import com.doansgu.cafectm.util.BackendImageRoute.backendImageRoute
+
+@Preview
+@Composable
+fun ItemView2Preview() {
+    ItemView2(
+        name = "Tra sua",
+        image = null,
+        description = "Tra sua khong duong",
+        price = 6996.0,
+        navController = rememberNavController()
+    )
+}
+
+@Preview
+@Composable
+fun ItemViewRow2Preview() {
+    ItemViewRow2(
+        name = "Tra sua",
+        image = null,
+        description = "Tra sua khong duong",
+        price = 6996.0,
+        navController = rememberNavController()
+    )
+}
 
 @Composable
 fun ItemView2(
-    name: String?,
-    image: String?,
-    description: String?,
-    price: Double?,
-    rating: Double?,
+    name: String?, image: String?, description: String?, price: Double?,
+//    rating: Double?,
     navController: NavController
 ) {
     ElevatedCard(
@@ -71,7 +97,9 @@ fun ItemView2(
         ) {
             Box {
                 AsyncImage(
-                    model = image,
+                    model = backendImageRoute(image),
+                    placeholder = painterResource(id = R.drawable.ic_img_loading),
+                    error = painterResource(id = R.drawable.img_404_not_found),
                     modifier = Modifier
                         .fillMaxWidth()
                         .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
@@ -96,7 +124,7 @@ fun ItemView2(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(Modifier.width(5.dp))
-                        Text(text = rating.toString(), fontSize = 14.sp, color = Color.White)
+//                        Text(text = rating.toString(), fontSize = 14.sp, color = Color.White)
                     }
                 }
             }
@@ -149,11 +177,8 @@ fun ItemView2(
 
 @Composable
 fun ItemViewRow2(
-    name: String?,
-    image: String?,
-    description: String?,
-    price: Double?,
-    rating: Double?,
+    name: String?, image: String?, description: String?, price: Double?,
+//    rating: Double?,
     navController: NavController
 ) {
     ElevatedCard(
@@ -162,9 +187,7 @@ fun ItemViewRow2(
             .fillMaxHeight()
             .clickable {
                 navController.navigate("detail")
-            },
-        shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(
+            }, shape = RoundedCornerShape(10.dp), colors = CardDefaults.cardColors(
             containerColor = Color.White
         ), elevation = CardDefaults.cardElevation(
             defaultElevation = 5.dp
@@ -178,7 +201,9 @@ fun ItemViewRow2(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             AsyncImage(
-                model = image,
+                model = backendImageRoute(image),
+                placeholder = painterResource(id = R.drawable.ic_img_loading),
+                error = painterResource(id = R.drawable.img_404_not_found),
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(10.dp)),
@@ -237,7 +262,7 @@ fun ItemViewRow2(
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.width(5.dp))
-                        Text(text = rating.toString(), fontSize = 16.sp, color = Color.Black)
+//                        Text(text = rating.toString(), fontSize = 16.sp, color = Color.Black)
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {}, modifier = Modifier.size(40.dp)) {

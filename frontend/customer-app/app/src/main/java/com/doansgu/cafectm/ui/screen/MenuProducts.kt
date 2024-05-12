@@ -1,6 +1,5 @@
 package com.doansgu.cafectm.ui.screen
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,19 +38,16 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.doansgu.cafectm.R
-import com.doansgu.cafectm.model.Products
+import com.doansgu.cafectm.model.Product2
 import com.doansgu.cafectm.ui.components.FilterChipShow
-import com.doansgu.cafectm.ui.components.ItemViewRow
+import com.doansgu.cafectm.ui.components.ItemViewRow2
 import com.doansgu.cafectm.ui.components.SearchView
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import com.doansgu.cafectm.viewmodel.SearchViewModel
 
 @Composable
 fun MenuProducts(
-    navController: NavController,
-    focusRequester: FocusRequester,
-    viewModel: SearchViewModel
+    navController: NavController, focusRequester: FocusRequester, viewModel: SearchViewModel
 ) {
     val isNavigated by rememberSaveable { mutableStateOf(false) }
     Box {
@@ -59,11 +55,7 @@ fun MenuProducts(
             topBar = { TopBar(navController, viewModel) }, containerColor = Color.Transparent
         ) { paddingValues ->
             Content(
-                paddingValues = paddingValues,
-                navController,
-                focusRequester,
-                isNavigated,
-                viewModel
+                paddingValues = paddingValues, navController, focusRequester, isNavigated, viewModel
             )
         }
     }
@@ -162,11 +154,10 @@ fun CategorySection() {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RenderProductList(
     navController: NavController,
-    productLists: List<Products>,
+    productLists: List<Product2>,
     focusRequester: FocusRequester,
     isNavigated: Boolean,
     viewModel: SearchViewModel
@@ -179,16 +170,11 @@ fun RenderProductList(
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         item {
-            SearchView(
-                navController,
-                isNavigated,
-                {
-                    viewModel.fetchData(searchText)
-                },
-                { text ->
-                    searchText = text
-                },
-                focusRequester
+            SearchView(navController, isNavigated, {
+                viewModel.fetchData(searchText)
+            }, { text ->
+                searchText = text
+            }, focusRequester
             )
         }
         item { CategorySection() }
@@ -197,13 +183,11 @@ fun RenderProductList(
             productLists.forEach { product ->
                 item {
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        ItemViewRow(
-                            _id = product._id,
-                            title = product.name,
-                            image = R.drawable.mocha,
-                            des = product.description,
+                        ItemViewRow2(
+                            name = product.name,
+                            image = /*R.drawable.mocha,*/ null,
+                            description = product.description,
                             price = product.price,
-                            star = product.avgRating,
                             navController = navController
                         )
                     }

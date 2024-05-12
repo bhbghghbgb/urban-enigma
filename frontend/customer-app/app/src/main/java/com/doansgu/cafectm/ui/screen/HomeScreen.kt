@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -36,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -46,15 +44,14 @@ import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.Product
 import com.doansgu.cafectm.ui.components.ImageSliderWithIndicator
 import com.doansgu.cafectm.ui.components.ItemView
-import com.doansgu.cafectm.ui.components.ItemViewRow
+import com.doansgu.cafectm.ui.components.ItemViewRow2
 import com.doansgu.cafectm.ui.components.SearchView
+import com.doansgu.cafectm.ui.components.TopBarHome
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import com.doansgu.cafectm.viewmodel.HomeViewModel
 
 val listPoster = listOf(
-    R.drawable.poster4,
-    R.drawable.poster5,
-    R.drawable.postercoffee3
+    R.drawable.poster4, R.drawable.poster5, R.drawable.postercoffee3
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -68,9 +65,7 @@ fun HomeScreen(navController: NavController, bottom: @Composable () -> Unit) {
     Scaffold(
         topBar = {
             TopBarHome()
-        },
-        containerColor = Color.Transparent,
-        bottomBar = bottom
+        }, containerColor = Color.Transparent, bottomBar = bottom
     ) { paddingValues ->
         ContentHome(paddingValues, navController)
     }
@@ -78,55 +73,8 @@ fun HomeScreen(navController: NavController, bottom: @Composable () -> Unit) {
 }
 
 @Composable
-fun TopBarHome() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFF9C7055))
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp)
-                .padding(start = 10.dp, end = 10.dp)
-                .background(Color(0xFF9C7055)),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(width = 40.dp, height = 40.dp),
-                    painter = painterResource(id = R.drawable.iconcoffee),
-                    contentDescription = null,
-                    tint = Color.White
-                )
-                Text(
-                    modifier = Modifier.padding(start = 5.dp),
-                    text = "NewLands",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight(1000),
-                    fontFamily = FontFamily(fontPoppinsSemi),
-                    color = Color.White
-                )
-            }
-            Icon(
-                modifier = Modifier
-                    .size(width = 30.dp, height = 30.dp)
-                    .align(Alignment.CenterVertically),
-                painter = painterResource(id = R.drawable.iconbell),
-                contentDescription = null,
-                tint = Color.White
-            )
-        }
-    }
-}
-
-@Composable
 fun ContentHome(
-    paddingValues: PaddingValues,
-    navController: NavController
+    paddingValues: PaddingValues, navController: NavController
 ) {
     val viewModel = remember { HomeViewModel() }
 
@@ -206,8 +154,7 @@ fun ContentHome(
                         Row() {
                             TextButton(onClick = { /*TODO*/ }) {
                                 Text(
-                                    text = "View All",
-                                    color = Color(0xFF9C7055)
+                                    text = "View All", color = Color(0xFF9C7055)
                                 )
                                 Icon(
                                     imageVector = Icons.Default.KeyboardArrowRight,
@@ -276,8 +223,7 @@ fun ContentHome(
                                     viewModel.fetchFullData()
                                 }) {
                                     Text(
-                                        text = "View All",
-                                        color = Color(0xFF9C7055)
+                                        text = "View All", color = Color(0xFF9C7055)
                                     )
                                     Icon(
                                         imageVector = Icons.Default.KeyboardArrowRight,
@@ -308,13 +254,11 @@ fun ContentHome(
                         }
                     } else {
                         productLists.forEach { product ->
-                            ItemViewRow(
-                                _id = product._id,
-                                title = product.name,
-                                image = R.drawable.mocha,
-                                des = product.description,
+                            ItemViewRow2(
+                                name = product.name,
+                                image = /*R.drawable.mocha*/ null,
+                                description = product.description,
                                 price = product.price,
-                                star = product.avgRating,
                                 navController = navController
                             )
                             Spacer(modifier = Modifier.height(10.dp))
