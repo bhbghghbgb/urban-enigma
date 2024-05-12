@@ -5,6 +5,10 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 private const val PREFS_NAME = "MyPrefsAppCoffee"
@@ -21,5 +25,7 @@ class App : Application() {
             get() = mContext!!.resources
         val sharedPreferences: SharedPreferences
             get() = mContext!!.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val firebaseAuth: FirebaseAuth
+            get() = Firebase.auth
     }
 }

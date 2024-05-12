@@ -1,3 +1,4 @@
+const { StatusCodes } = require("http-status-codes");
 const { getFirebaseUserFromUid } = require("../service/firebaseUserService");
 async function getUser(req, res) {
     const user = req.user;
@@ -7,4 +8,9 @@ async function getUser(req, res) {
         firebaseUser: await getFirebaseUserFromUid(user.username),
     });
 }
-module.exports = { getUser };
+async function testAuthorization(req, res) {
+    return res.sendStatus(
+        req.user ? StatusCodes.NO_CONTENT : StatusCodes.UNAUTHORIZED
+    );
+}
+module.exports = { getUser, testAuthorization };

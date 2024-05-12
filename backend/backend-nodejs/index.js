@@ -25,8 +25,9 @@ function main() {
     const userRoutes = require("./app/routes/userRouter");
     const deliveryRoutes = require("./app/routes/deliveryRouter");
     const accountInfoRoutes = require("./app/routes/accountInfoRouter");
-    const publicFilesRoutes = require("./app/routes/publicFilesRouter");
 
+    const publicFilesRoutes = require("./app/routes/publicFilesRouter");
+    const authRoutes = require("./app/routes/authRouter");
     const testRoutes = require("./app/routes/testRouter");
 
     // Middleware
@@ -64,6 +65,7 @@ function main() {
     app.use("/delivery", deliveryRoutes);
     app.use("/accountinfo", accountInfoRoutes);
 
+    app.use("/auth", authRoutes);
     app.use("/test", testRoutes);
     app.use("/", publicFilesRoutes);
     app.get("/", function (req, res) {
