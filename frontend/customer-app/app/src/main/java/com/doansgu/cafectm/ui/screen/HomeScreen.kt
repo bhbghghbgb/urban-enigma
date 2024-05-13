@@ -259,6 +259,7 @@ fun ContentHome(
                                 image = /*R.drawable.mocha*/ null,
                                 description = product.description,
                                 price = product.price,
+                                rating = product.rating,
                                 navController = navController
                             )
                             Spacer(modifier = Modifier.height(10.dp))

@@ -52,6 +52,7 @@ fun ItemView2Preview() {
         image = null,
         description = "Tra sua khong duong",
         price = 6996.0,
+        rating = 0.0,
         navController = rememberNavController()
     )
 }
@@ -64,6 +65,7 @@ fun ItemViewRow2Preview() {
         image = null,
         description = "Tra sua khong duong",
         price = 6996.0,
+        rating = 0.0,
         navController = rememberNavController()
     )
 }
@@ -71,7 +73,7 @@ fun ItemViewRow2Preview() {
 @Composable
 fun ItemView2(
     name: String?, image: String?, description: String?, price: Double?,
-//    rating: Double?,
+    rating: Double?,
     navController: NavController
 ) {
     ElevatedCard(
@@ -124,7 +126,7 @@ fun ItemView2(
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(Modifier.width(5.dp))
-//                        Text(text = rating.toString(), fontSize = 14.sp, color = Color.White)
+                        Text(text = rating.toString(), fontSize = 14.sp, color = Color.White)
                     }
                 }
             }
@@ -178,7 +180,7 @@ fun ItemView2(
 @Composable
 fun ItemViewRow2(
     name: String?, image: String?, description: String?, price: Double?,
-//    rating: Double?,
+    rating: Double?,
     navController: NavController
 ) {
     ElevatedCard(
@@ -262,7 +264,7 @@ fun ItemViewRow2(
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.width(5.dp))
-//                        Text(text = rating.toString(), fontSize = 16.sp, color = Color.Black)
+                        Text(text = rating.toString(), fontSize = 16.sp, color = Color.Black)
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     IconButton(onClick = {}, modifier = Modifier.size(40.dp)) {

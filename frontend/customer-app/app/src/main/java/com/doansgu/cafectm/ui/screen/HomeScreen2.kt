@@ -147,6 +147,7 @@ fun HomeScreen2(
                                 image = it.image,
                                 description = it.description,
                                 price = it.price,
+                                rating = it.rating,
                                 navController = navController,
                             )
                         }
@@ -194,6 +195,7 @@ fun HomeScreen2(
                                 image = it.image,
                                 description = it.description,
                                 price = it.price,
+                                rating = it.rating,
                                 navController = navController,
                             )
                         }
