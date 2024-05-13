@@ -39,7 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.doansgu.cafectm.model.Product2
+import com.doansgu.cafectm.model.Products
 import com.doansgu.cafectm.ui.components.FilterChipShow
+import com.doansgu.cafectm.ui.components.ItemViewRow
 import com.doansgu.cafectm.ui.components.ItemViewRow2
 import com.doansgu.cafectm.ui.components.SearchView
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
@@ -157,7 +159,7 @@ fun CategorySection() {
 @Composable
 fun RenderProductList(
     navController: NavController,
-    productLists: List<Product2>,
+    productLists: List<Products>,
     focusRequester: FocusRequester,
     isNavigated: Boolean,
     viewModel: SearchViewModel
@@ -183,11 +185,13 @@ fun RenderProductList(
             productLists.forEach { product ->
                 item {
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {
-                        ItemViewRow2(
-                            name = product.name,
-                            image = /*R.drawable.mocha,*/ null,
-                            description = product.description,
+                        ItemViewRow(
+                            _id = product._id,
+                            title = product.name,
+                            image = product.image,
+                            des = product.description,
                             price = product.price,
+                            star = product.avgRating,
                             navController = navController
                         )
                     }

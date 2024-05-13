@@ -129,7 +129,7 @@ class AuthViewModel : ViewModel() {
                         Log.d("Auth", "Token: $token")
                         AuthorizationManager.authorization = token
                         testAuthorization()
-//                        _navigateToHome.postValue(true)
+                        _navigateToHome.postValue(true)
                         return@let
                     }
                 }

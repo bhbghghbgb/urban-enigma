@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.model.AuthorizationManager
@@ -67,6 +68,7 @@ import com.doansgu.cafectm.ui.components.CustomToast
 import com.doansgu.cafectm.ui.components.IconButtonCustom
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
+import com.doansgu.cafectm.util.BackendImageRoute
 import com.doansgu.cafectm.viewmodel.CartViewModel
 import com.doansgu.cafectm.viewmodel.DetailViewModel
 import kotlinx.coroutines.delay
@@ -81,9 +83,8 @@ fun DetailScreen(navController: NavController, _id: String) {
     val product by viewModel.product.observeAsState()
     var showToast by remember { mutableStateOf(false) }
 
-    LaunchedEffect(_id) {
-        viewModel.fetchData(_id)
-    }
+    viewModel.fetchData(_id)
+
     val scollState = rememberLazyListState()
     val authorization: String? = AuthorizationManager.authorization
     Box(
@@ -118,8 +119,8 @@ fun DetailScreen(navController: NavController, _id: String) {
                 })
             }) {
                 Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {
-                    Content(scollState, product?.description, null, product?.price)
-                    TopBarDetail(scollState, navController, product?.name)
+                    Content(scollState, product?.description, product?.avgRating, product?.price)
+                    TopBarDetail(scollState, navController, product?.name, product?.image)
 
                     if (showToast) {
                         LaunchedEffect(showToast) {
@@ -135,7 +136,7 @@ fun DetailScreen(navController: NavController, _id: String) {
 }
 
 @Composable
-fun TopBarDetail(scrollState: LazyListState, navController: NavController, name: String?) {
+fun TopBarDetail(scrollState: LazyListState, navController: NavController, name: String?, image: String?) {
     val imageHeight = 350.dp
 //    val screenHeight = LocalConfiguration.current.screenHeightDp
 
@@ -160,11 +161,13 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController, name:
                     .graphicsLayer {
                         alpha = 1f - offsetProgress
                     }) {
-                Image(
-                    painter = painterResource(id = R.drawable.mocha),
+                AsyncImage(
+                    model = BackendImageRoute.backendImageRoute(image),
+                    placeholder = painterResource(id = R.drawable.ic_img_loading),
+                    error = painterResource(id = R.drawable.img_404_not_found),
+                    modifier = Modifier.fillMaxSize(),
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    contentScale = ContentScale.Crop
                 )
                 Box(
                     modifier = Modifier

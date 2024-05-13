@@ -6,14 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.doansgu.cafectm.model.Product2
+import com.doansgu.cafectm.model.Products
 import com.doansgu.cafectm.model.RetrofitInstance
 import kotlinx.coroutines.launch
 
 class SearchViewModel : ViewModel() {
     private val apiService = RetrofitInstance.apiService
-    private var _productListLiveData = MutableLiveData<List<Product2>>()
+    private var _productListLiveData = MutableLiveData<List<Products>>()
 
-    val productList: LiveData<List<Product2>> get() = _productListLiveData
+    val productList: LiveData<List<Products>> get() = _productListLiveData
 
     init {
         val name = ""

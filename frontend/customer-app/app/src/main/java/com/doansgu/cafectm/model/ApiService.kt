@@ -13,19 +13,19 @@ interface ApiService {
     suspend fun helloBackend(): Response<ResponseBody>
 
     @GET("/products")
-    suspend fun getAllProducts(): Response<List<Product2>>
+    suspend fun getAllProducts(): Response<List<Products>>
 
     @GET("/products/lists/popular")
-    suspend fun getProductList(): Response<List<Product2>>
+    suspend fun getProductList(): Response<List<Products>>
 
     @GET("/products/lists/popular/limit")
-    suspend fun getProductListLimit(): Response<List<Product2>>
+    suspend fun getProductListLimit(): Response<List<Products>>
 
     @GET("/products/search/{name}")
-    suspend fun searchProductByName(@Path("name") name: String): Response<List<Product2>>
+    suspend fun searchProductByName(@Path("name") name: String): Response<List<Products>>
 
     @GET("/products/{id}")
-    suspend fun getProduct(@Path("id") id: String): Response<Product2>
+    suspend fun getProduct(@Path("id") id: String): Response<Products>
 
     @GET("/auth/customer")
     suspend fun testAuthorization(): Response<ResponseBody>

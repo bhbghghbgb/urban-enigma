@@ -44,6 +44,7 @@ import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.Product
 import com.doansgu.cafectm.ui.components.ImageSliderWithIndicator
 import com.doansgu.cafectm.ui.components.ItemView
+import com.doansgu.cafectm.ui.components.ItemViewRow
 import com.doansgu.cafectm.ui.components.ItemViewRow2
 import com.doansgu.cafectm.ui.components.SearchView
 import com.doansgu.cafectm.ui.components.TopBarHome
@@ -254,11 +255,13 @@ fun ContentHome(
                         }
                     } else {
                         productLists.forEach { product ->
-                            ItemViewRow2(
-                                name = product.name,
-                                image = /*R.drawable.mocha*/ null,
-                                description = product.description,
+                            ItemViewRow(
+                                _id = product._id,
+                                title = product.name,
+                                image = product.image,
+                                des = product.description,
                                 price = product.price,
+                                star = product.avgRating,
                                 navController = navController
                             )
                             Spacer(modifier = Modifier.height(10.dp))

@@ -43,9 +43,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
+import com.doansgu.cafectm.util.BackendImageRoute
 import com.doansgu.cafectm.viewmodel.CartViewModel
 import kotlinx.coroutines.delay
 
@@ -161,7 +164,7 @@ fun ItemView(
 fun ItemViewRow(
     _id: String,
     title: String,
-    image: Int,
+    image: String,
     des: String,
     price: Double,
     star: Double,
@@ -206,11 +209,13 @@ fun ItemViewRow(
                 .padding(10.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Image(
+            AsyncImage(
+                model = BackendImageRoute.backendImageRoute(image),
+                placeholder = painterResource(id = R.drawable.ic_img_loading),
+                error = painterResource(id = R.drawable.img_404_not_found),
                 modifier = Modifier
                     .size(80.dp)
                     .clip(RoundedCornerShape(10.dp)),
-                painter = painterResource(id = image),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds
             )

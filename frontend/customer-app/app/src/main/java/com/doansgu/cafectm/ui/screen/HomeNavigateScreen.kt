@@ -105,7 +105,7 @@ fun BottomNavGraph(
     }
     NavHost(navController = navController, startDestination = NavigationItem.Home.route) {
         composable(route = NavigationItem.Home.route) {
-            HomeScreen2(navController = navController, homeScreen2ViewModel, bottom)
+            HomeScreen(navController = navController, bottom)
         }
         composable(route = NavigationItem.Order.route) {
             OrderScreen(navController = navController, bottom, cartViewModel)

@@ -6,14 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.doansgu.cafectm.model.Product2
+import com.doansgu.cafectm.model.Products
 import com.doansgu.cafectm.model.RetrofitInstance
 import kotlinx.coroutines.launch
 
 class HomeScreen2ViewModel : ViewModel() {
     //    private val _threeProductList = MutableStateFlow(HomeScreen2())
 //    val threeProductList = _threeProductList.asStateFlow()
-    private var _productListLiveData = MutableLiveData<List<Product2>>()
-    val productList: LiveData<List<Product2>> get() = _productListLiveData
+    private var _productListLiveData = MutableLiveData<List<Products>>()
+    val productList: LiveData<List<Products>> get() = _productListLiveData
     private val _stateCallFullPopular = MutableLiveData<Boolean>(false)
     val stateCallFullPopular: LiveData<Boolean> get() = _stateCallFullPopular
 

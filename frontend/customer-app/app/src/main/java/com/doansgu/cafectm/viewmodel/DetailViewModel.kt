@@ -6,13 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.doansgu.cafectm.model.Product2
+import com.doansgu.cafectm.model.Products
 import com.doansgu.cafectm.model.RetrofitInstance
 import kotlinx.coroutines.launch
 
 class DetailViewModel : ViewModel() {
     private val apiService = RetrofitInstance.apiService
-    private var _product: MutableLiveData<Product2> = MutableLiveData<Product2>()
-    val product: LiveData<Product2> get() = _product
+    private var _product: MutableLiveData<Products> = MutableLiveData<Products>()
+    val product: LiveData<Products> get() = _product
 
     fun fetchData(id: String) {
         viewModelScope.launch {
