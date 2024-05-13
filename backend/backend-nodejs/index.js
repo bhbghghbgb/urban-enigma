@@ -59,7 +59,7 @@ function main() {
     app.use("/category", categoryRoutes);
     app.use("/account", accountRoutes);
     app.use("/orders", orderRoutes);
-    app.use("/cart", firebaseAuthBearer, cartRoutes);
+    app.use("/cart", firebaseAuthBearer, userRole.is("customer"), cartRoutes);
     app.use("/rating", ratingRoutes);
     app.use("/user", userRoutes);
     app.use("/delivery", deliveryRoutes);

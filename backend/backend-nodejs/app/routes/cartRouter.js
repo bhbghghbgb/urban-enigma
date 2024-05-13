@@ -12,11 +12,13 @@ router.patch("/increase/:productId", cartController.increaseProductOfCart);
 // -> giảm số lượng 1 product trong cart
 router.patch(
     "/add-to-cart/decrease/:user",
-    cartController.decreaseProductOfCart,
+    cartController.decreaseProductOfCart
 );
 // -> xóa hết giỏ hàng
 router.patch("/reset", cartController.resetCart);
 // -> xoá sản phẩm trong giỏ hàng
 router.patch("/delete", cartController.deleteProductOfCart);
 
+// Hung
+router.post("", cartController.updateCart);
 module.exports = router;

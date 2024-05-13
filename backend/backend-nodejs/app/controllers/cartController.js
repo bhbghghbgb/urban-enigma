@@ -2,7 +2,7 @@ const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
 const { Customer } = require("../models/userModel");
 const { account2customer } = require("../service/account2shits");
-
+const { s_updateCart } = require("../service/cartService");
 exports.getCartOfUser = async (req, res) => {
     try {
         const customer = await account2customer(req.user);
@@ -54,7 +54,7 @@ exports.addToCart = async (req, res) => {
             return;
         } else {
             const existingProduct = cart.products.find(
-                (p) => p.product._id == req.body.productId,
+                (p) => p.product._id == req.body.productId
             );
             if (existingProduct) {
                 existingProduct.amount += 1;
@@ -97,7 +97,7 @@ exports.deleteProductOfCart = async (req, res) => {
             },
         });
         var isProductInCart = cart.products.find(
-            (product) => product.product._id.toString() == req.body.productId,
+            (product) => product.product._id.toString() == req.body.productId
         );
         if (!isProductInCart) {
             res.status(404).json({ message: "Product is not in cart" });
@@ -131,7 +131,7 @@ exports.increaseProductOfCart = async (req, res) => {
             },
         });
         const product = cart.products.find(
-            (p) => p.product._id.toString() === req.params.productId,
+            (p) => p.product._id.toString() === req.params.productId
         );
         if (!product) {
             res.status(404).json({ message: "Product not found in cart" });
@@ -157,10 +157,10 @@ exports.decreaseProductOfCart = async (req, res) => {
         }
         const user = req.params.user;
         let cart = await Cart.findOne({ user: user }).populate(
-            "products.product",
+            "products.product"
         );
         const productIndex = cart.products.findIndex(
-            (p) => p.product._id.toString() === req.body.product,
+            (p) => p.product._id.toString() === req.body.product
         );
         cart.total -= cart.products[productIndex].price;
         cart.products[productIndex].amount -= 1;
@@ -187,11 +187,32 @@ exports.resetCart = async (req, res) => {
         }
         await Cart.updateOne(
             { user: customer },
-            { $set: { total: 0, products: [] } },
+            { $set: { total: 0, products: [] } }
         );
         res.status(201).json({ message: "Reset successfully" });
         return;
     } catch (err) {
         res.status(500).json({ message: err.message });
+    }
+};
+
+exports.updateCart = async function (req, res) {
+    try {
+        const customer = await account2customer(req.user);
+        console.log("[P]:::Update Status");
+        const products = req.body.products.map((item) => {
+            return {
+                product: item.product,
+                amount: item.amount,
+            };
+        });
+
+        const cart = await s_updateCart(customer._id, req.body.total, products);
+        res.status(200).json({
+            message: "Update cart successfully!",
+            metadata: cart,
+        });
+    } catch (error) {
+        res.status(error.statusCode | 500).json({ message: error.message });
     }
 };
