@@ -30,6 +30,7 @@
                         var idToken = authResult.user
                             .getIdToken()
                             .then(function (token) {
+                                document.body.innerHTML += `<div>Your token, ${token}</div>`;
                                 // Make a GET request to your /current-user endpoint with the ID token.
                                 fetch("/test/current-firebase-user", {
                                     method: "GET",
@@ -42,10 +43,9 @@
                                     })
                                     .then(function (user) {
                                         // Display the user's information on the page.
-                                        document.body.innerHTML +=
-                                            "<div>Welcome, " +
-                                            JSON.stringify(user) +
-                                            "</div>";
+                                        document.body.innerHTML += `<div>Welcome, ${JSON.stringify(
+                                            user
+                                        )}</div>`;
                                     })
                                     .catch(function (error) {
                                         console.error(

@@ -65,9 +65,9 @@ exports.findAvailableStaff = async (req, res) => {
 
 exports.getOrdersByStaff = async (req, res) => {
     try {
-        const staff = (await account2staff(req.user)).populate(
-            "commonuser.account",
-        );
+        const staff = await (
+            await account2staff(req.user)
+        ).populate("commonuser.account");
         if (!staff) {
             res.status(404).json({ message: "User not found" });
             return;
@@ -106,9 +106,9 @@ exports.getOrdersByStaff = async (req, res) => {
 
 exports.findOrderOfStaff = async (req, res) => {
     try {
-        const staff = (await account2staff(req.user)).populate(
-            "commonuser.account",
-        );
+        const staff = await (
+            await account2staff(req.user)
+        ).populate("commonuser.account");
         if (!staff) {
             res.status(404).json({ message: "User not found" });
             return;

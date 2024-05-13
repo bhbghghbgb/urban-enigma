@@ -13,8 +13,8 @@ async function getOrCreateAccountFromIdToken(firebaseIdToken) {
     const account = await Account.findOne({
         username: firebaseUid,
     });
-    // client yeu cau tao user moi
-    return !account ? createAccountByClient(firebaseUid) : null;
+    // neu ko co account nghia la client yeu cau tao user moi
+    return account || createAccountByClient(firebaseUid);
 }
 // tao user moi ma khong co them thong tin gi (do dang nhap bang firebase)
 // neu can sua thong tin thi sua sau
@@ -54,26 +54,28 @@ const default_customer = (accountOid, username) =>
     Customer({
         qrCode: `doansgu/customer/${username}`,
         membershipPoint: 0,
-        commonuser: {
-            phone: "",
-            name: username,
-            gender: "",
-            dateOfBirth: "",
-            account: accountOid,
-        },
+        commonuser: default_commonuser(accountOid, username),
     });
 const default_staff = (accountOid, username) =>
     Staff({
-        address: "",
-        position: "",
-        commonuser: {
-            phone: "",
-            name: username,
-            gender: "",
-            dateOfBirth: "",
-            account: accountOid,
-        },
+        address: "Somewhere in Vietnam",
+        position: "unspecified",
+        commonuser: default_commonuser(accountOid, username),
     });
+const default_commonuser = (accountOid, username) => {
+    return {
+        phone: "+84.",
+        name: username,
+        gender: "unspecified",
+        dateOfBirth: preDates20Years().toISOString(),
+        account: accountOid,
+    };
+};
+function preDates20Years() {
+    const currentDate = new Date();
+    currentDate.setFullYear(currentDate.getFullYear() - 20);
+    return currentDate;
+}
 module.exports = {
     getOrCreateAccountFromIdToken,
     createAccountByClient,
