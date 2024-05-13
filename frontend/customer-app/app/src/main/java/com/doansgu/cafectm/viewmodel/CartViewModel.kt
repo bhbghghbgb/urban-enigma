@@ -1,5 +1,6 @@
 package com.doansgu.cafectm.viewmodel
 
+import android.app.Activity
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
@@ -10,9 +11,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.model.Cart
+import com.doansgu.cafectm.model.PaymentState
 import com.doansgu.cafectm.repository.CartRepository
+import com.doansgu.cafectm.util.Zalopay.Api.CreateOrder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.json.JSONObject
+import vn.zalopay.sdk.ZaloPayError
+import vn.zalopay.sdk.ZaloPaySDK
+import vn.zalopay.sdk.listeners.PayOrderListener
 import java.util.Locale
 
 class CartViewModel : ViewModel() {
@@ -29,6 +38,10 @@ class CartViewModel : ViewModel() {
 
     private val _address = MutableLiveData<String>()
     val address: LiveData<String> = _address
+
+    private val _paymentState = MutableStateFlow<PaymentState?>(null)
+    val paymentState: StateFlow<PaymentState?> = _paymentState
+
     fun reverseGeocode(context: Context, latitude: Double, longitude: Double) {
         viewModelScope.launch(Dispatchers.IO) {
             val geocoder = Geocoder(context, Locale.getDefault())
@@ -169,4 +182,64 @@ class CartViewModel : ViewModel() {
             }
         }
     }
+
+    fun updateCart() {
+        viewModelScope.launch {
+            try {
+                val response = repository.updateCart(
+                    _cart.value!!)
+                if (!response.isSuccessful) {
+                    Log.e("Update cart", "Error updating cart")
+                }
+            } catch (e: Exception) {
+                // Xử lý ngoại lệ
+                e.printStackTrace()
+            }
+        }
+    }
+
+    fun pay(activity: Activity) {
+        viewModelScope.launch {
+            val token = createOrder()
+            if (token.isNotEmpty()) {
+                ZaloPaySDK.getInstance().payOrder(activity, token, "demozpdk://app", object: PayOrderListener {
+                    override fun onPaymentSucceeded(transactionId: String?, transToken: String?, appId: String?) {
+//                        TODO("Cập nhật giá trị của susses")
+                        _paymentState.value!!.onSusses = true;
+                    }
+
+                    override fun onPaymentCanceled(p0: String?, p1: String?) {
+//                        TODO("Cập nhật giá trị on canceled")
+                        _paymentState.value!!.onCancel = true;
+
+                    }
+
+                    override fun onPaymentError(p0: ZaloPayError?, p1: String?, p2: String?) {
+//                        TODO("Cập nhật giá trị on failed")
+                        _paymentState.value!!.onFailed = true;
+                    }
+
+                })
+            }
+        }
+    }
+
+    fun createOrder(): String {
+        val orderAPI: CreateOrder = CreateOrder()
+        try {
+            val totalString = String.format("%.0f", _cart.value!!.total)
+            val data: JSONObject = orderAPI.createOrder(totalString)
+            Log.d("Test Total", totalString)
+            val code = data.getString("return_code")
+            if (code == "1") {
+                return data.getString("zp_trans_token")
+            }
+
+        } catch (e: Exception){
+            e.printStackTrace()
+        }
+        return ""
+    }
+
+
 }
