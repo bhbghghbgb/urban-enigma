@@ -1,4 +1,4 @@
-package com.example.delivery_app.data.model
+package com.example.delivery_app.model
 
 import com.google.gson.annotations.SerializedName
 import java.sql.Timestamp

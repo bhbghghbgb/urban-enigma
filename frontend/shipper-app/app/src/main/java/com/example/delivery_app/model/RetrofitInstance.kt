@@ -1,4 +1,4 @@
-package com.example.delivery_app.data.model
+package com.example.delivery_app.model
 
 import com.example.delivery_app.AUTHORIZATION_HEADER
 import com.example.delivery_app.AUTHORIZATION_SCHEME

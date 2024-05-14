@@ -1,12 +1,12 @@
-package com.example.delivery_app.data.viewmodel
+package com.example.delivery_app.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.delivery_app.data.model.Staff
-import com.example.delivery_app.data.repository.ProfileRepository
+import com.example.delivery_app.model.Staff
+import com.example.delivery_app.repository.ProfileRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

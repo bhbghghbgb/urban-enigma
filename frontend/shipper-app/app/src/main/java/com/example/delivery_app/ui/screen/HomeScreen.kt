@@ -48,12 +48,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.delivery_app.R
-import com.example.delivery_app.data.model.AuthorizationManager
-import com.example.delivery_app.data.model.Order
-import com.example.delivery_app.data.viewmodel.HomeViewModel
-import com.example.delivery_app.data.viewmodel.ProfileViewModel
-import com.example.delivery_app.data.viewmodel.State
-import com.example.delivery_app.ui.LoadingScreen
+import com.example.delivery_app.model.AuthorizationManager
+import com.example.delivery_app.model.Order
+import com.example.delivery_app.viewmodel.HomeViewModel
+import com.example.delivery_app.viewmodel.ProfileViewModel
+import com.example.delivery_app.viewmodel.State
 import com.example.delivery_app.util.FormatDateTime
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -26,11 +26,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.delivery_app.data.model.AuthorizationManager
-import com.example.delivery_app.data.model.Order
-import com.example.delivery_app.data.viewmodel.HomeViewModel
-import com.example.delivery_app.data.viewmodel.State
-import com.example.delivery_app.ui.LoadingScreen
+import com.example.delivery_app.model.AuthorizationManager
+import com.example.delivery_app.model.Order
+import com.example.delivery_app.viewmodel.HomeViewModel
+import com.example.delivery_app.viewmodel.State
 import com.example.delivery_app.util.FormatDateTime
 
 @Composable

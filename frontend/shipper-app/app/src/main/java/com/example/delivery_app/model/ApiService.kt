@@ -1,4 +1,4 @@
-package com.example.delivery_app.data.model
+package com.example.delivery_app.model
 
 import okhttp3.ResponseBody
 import retrofit2.Response

@@ -28,11 +28,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.delivery_app.data.model.AuthorizationManager
-import com.example.delivery_app.data.viewmodel.AuthViewModel
-import com.example.delivery_app.data.viewmodel.ProfileViewModel
-import com.example.delivery_app.data.viewmodel.State
-import com.example.delivery_app.ui.LoadingScreen
+import com.example.delivery_app.model.AuthorizationManager
+import com.example.delivery_app.viewmodel.AuthViewModel
+import com.example.delivery_app.viewmodel.ProfileViewModel
+import com.example.delivery_app.viewmodel.State
 import java.text.SimpleDateFormat
 import java.util.Date
 

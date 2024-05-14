@@ -1,7 +1,7 @@
-package com.example.delivery_app.data.repository
+package com.example.delivery_app.repository
 
-import com.example.delivery_app.data.model.RetrofitInstance
-import com.example.delivery_app.data.model.Staff
+import com.example.delivery_app.model.RetrofitInstance
+import com.example.delivery_app.model.Staff
 import retrofit2.Response
 
 class ProfileRepository {

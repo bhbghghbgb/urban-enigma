@@ -1,3 +1,5 @@
+package com.example.delivery_app.ui.screen
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +42,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.delivery_app.R
-import com.example.delivery_app.data.viewmodel.AuthViewModel
+import com.example.delivery_app.viewmodel.AuthViewModel
 
 @Preview
 @Composable

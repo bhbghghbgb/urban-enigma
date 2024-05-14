@@ -1,12 +1,12 @@
-package com.example.delivery_app.data.viewmodel
+package com.example.delivery_app.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.delivery_app.data.model.Order
-import com.example.delivery_app.data.repository.DeliveryRepository
+import com.example.delivery_app.model.Order
+import com.example.delivery_app.repository.DeliveryRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 

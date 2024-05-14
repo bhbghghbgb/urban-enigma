@@ -1,4 +1,4 @@
-package com.example.delivery_app.data.viewmodel
+package com.example.delivery_app.viewmodel
 
 import android.app.Activity
 import android.util.Log
@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.delivery_app.App
-import com.example.delivery_app.data.model.AuthorizationManager
-import com.example.delivery_app.data.repository.AuthRepository
+import com.example.delivery_app.model.AuthorizationManager
+import com.example.delivery_app.repository.AuthRepository
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions

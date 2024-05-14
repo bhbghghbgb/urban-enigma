@@ -1,16 +1,16 @@
-package com.example.delivery_app.navigation
+package com.example.delivery_app.ui.navigation
 
-import LoginScreen
+import com.example.delivery_app.ui.screen.LoginScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.delivery_app.data.model.AuthorizationManager
-import com.example.delivery_app.data.viewmodel.AuthViewModel
-import com.example.delivery_app.data.viewmodel.HomeViewModel
-import com.example.delivery_app.data.viewmodel.OrderViewModel
-import com.example.delivery_app.data.viewmodel.ProfileViewModel
+import com.example.delivery_app.model.AuthorizationManager
+import com.example.delivery_app.viewmodel.AuthViewModel
+import com.example.delivery_app.viewmodel.HomeViewModel
+import com.example.delivery_app.viewmodel.OrderViewModel
+import com.example.delivery_app.viewmodel.ProfileViewModel
 import com.example.delivery_app.ui.screen.HomeView
 import com.example.delivery_app.ui.screen.InformationOrder
 
