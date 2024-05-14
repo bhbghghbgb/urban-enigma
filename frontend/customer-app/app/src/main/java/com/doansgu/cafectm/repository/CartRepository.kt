@@ -24,4 +24,10 @@ class CartRepository {
     ): Response<ResponseFromServer> {
         return cartService.deleteProductOfCart(addToCartRequest)
     }
+
+    suspend fun updateCart(
+        updateCartRequest: Cart
+    ): Response<ResponseFromServer> {
+        return cartService.updateCart(updateCartRequest)
+    }
 }

@@ -1,0 +1,4 @@
+{
+    "DATABASE_CONNECTION_URL": "mongodb+srv://bao:X7SAqxNSN9Edo7rX@atlascluster.zwg6rvy.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster",
+    "DATABASE_NAME": "do-an-android"
+}

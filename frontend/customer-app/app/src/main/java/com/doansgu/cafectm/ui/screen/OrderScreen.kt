@@ -1,5 +1,7 @@
 package com.doansgu.cafectm.ui.screen
 
+import android.app.Activity
+import android.os.StrictMode
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,11 +39,13 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +56,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -138,6 +143,7 @@ fun ContentOrder(
     var noteText by remember { mutableStateOf("") }
     val deliveryAddress by viewModel.address.observeAsState("")
     var selectedPaymentMethod by remember { mutableStateOf("Cash") }
+    val activity = LocalContext.current as? Activity
     LaunchedEffect(Unit) {
         authorization?.let { viewModel.getCardOfUser() }
     }
@@ -389,7 +395,11 @@ fun ContentOrder(
             }
             item { Spacer(modifier = Modifier.height(10.dp)) }
             item {
-                cart?.let { cart -> BottomCheckOut(cart = cart) }
+                cart?.let { cart ->
+                    if (activity != null) {
+                        BottomCheckOut(cart = cart, viewModel, activity)
+                    }
+                }
             }
         }
     }
@@ -537,7 +547,7 @@ fun EditAddressDialog(
 
 
 @Composable
-fun BottomCheckOut(cart: Cart) {
+fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
     if (cart.products.isNotEmpty()) {
         Box(
             modifier = Modifier
@@ -565,8 +575,16 @@ fun BottomCheckOut(cart: Cart) {
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
+                val paymentState by viewModel.paymentState.collectAsState()
+                var showDialog by remember { mutableStateOf(false) }
+
                 Button(
-                    onClick = {},
+                    onClick = {
+                        viewModel.updateCart()
+                        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+                        StrictMode.setThreadPolicy(policy)
+                        viewModel.pay(activity)
+                              },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C7055))
                 ) {
@@ -576,9 +594,68 @@ fun BottomCheckOut(cart: Cart) {
                         fontFamily = FontFamily(fontPoppinsSemi)
                     )
                 }
+                if (showDialog) {
+                    when {
+                        paymentState?.onSusses == true -> {
+                            ShowPaymentSuccessDialog(
+                                title = "Payment Success",
+                                message = "Thanh toán thành công",
+                                onDismissRequest = { showDialog = false }
+                            )
+                        }
+                        paymentState?.onCancel == true -> {
+                            ShowPaymentSuccessDialog(
+                                title = "Payment Canceled",
+                                message = "Thanh toán bị hủy",
+                                onDismissRequest = { showDialog = false }
+                            )
+                        }
+                        paymentState?.onFailed == true -> {
+                            ShowPaymentSuccessDialog(
+                                title = "Payment Error",
+                                message = "Thanh toán không thành công",
+                                onDismissRequest = { showDialog = false }
+                            )
+                        }
+                    }
+                }
+
             }
         }
     }
+}
+
+@Composable
+fun ShowPaymentSuccessDialog(
+    title: String,
+    message: String,
+    onDismissRequest: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = {
+            Text(text = title)
+        },
+        text = {
+            Text(
+                text = message
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onDismissRequest
+            ) {
+                Text(text = "OK")
+            }
+        },
+        dismissButton = {
+            TextButton(
+                onClick = onDismissRequest
+            ) {
+                Text(text = "Cancel")
+            }
+        }
+    )
 }
 
 @Composable
@@ -662,3 +739,5 @@ fun ItemOrder(
         }
     }
 }
+
+

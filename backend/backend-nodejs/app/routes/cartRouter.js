@@ -20,5 +20,5 @@ router.patch("/reset", cartController.resetCart);
 router.patch("/delete", cartController.deleteProductOfCart);
 
 // Hung
-router.post("", cartController.updateCart);
+router.post("/update", cartController.updateCart);
 module.exports = router;
