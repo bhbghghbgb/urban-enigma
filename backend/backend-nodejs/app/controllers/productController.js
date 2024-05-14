@@ -15,7 +15,7 @@ exports.getAllProducts = async (req, res) => {
 exports.getAllProductsPopular = async (req, res) => {
     try {
         const products = await Product.find({ popular: true }).populate(
-            "category",
+            "category"
         );
         const productRatings = await Rating.aggregate([
             {
@@ -28,7 +28,7 @@ exports.getAllProductsPopular = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString(),
+                (rating) => rating._id.toString() === product._id.toString()
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -56,7 +56,7 @@ exports.getAllProductsPopularLimit = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString(),
+                (rating) => rating._id.toString() === product._id.toString()
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -81,7 +81,7 @@ exports.getAllProductsOfCategory = async (req, res) => {
 exports.findProductById = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id).populate(
-            "category",
+            "category"
         );
         if (product) {
             res.status(200).json(product);
@@ -111,7 +111,7 @@ exports.findProductByName = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString(),
+                (rating) => rating._id.toString() === product._id.toString()
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -190,7 +190,7 @@ exports.getFullProducts = async (req, res) => {
 
         const productsWithRatings = products.map((product) => {
             const avgRatingObj = productRatings.find(
-                (rating) => rating._id.toString() === product._id.toString(),
+                (rating) => rating._id.toString() === product._id.toString()
             );
             const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
             return { ...product.toObject(), avgRating };
@@ -200,4 +200,15 @@ exports.getFullProducts = async (req, res) => {
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
+};
+
+exports.getHomeScreenProducts = async function (req, res) {
+    // 3 product tren banner, 5 best seller, 5 for you
+    const random = await Product.aggregate().sample(13).exec();
+    console.log(random)
+    return res.json({
+        banner: random.slice(0, 3),
+        bestSeller: random.slice(3, 8),
+        forYou: random.slice(8, 13),
+    });
 };

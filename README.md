@@ -76,7 +76,7 @@ do an android nang cao sgu app cua hang giao do an
 15. thay đổi phần `<username>:<password>` trong connection string đã copy thành cái mới tạo
 16. vào `backend/app/config/_APP.js`
 17. tự thay dổi `DATABASE_CONNECTION_URL` và `DATABASE_NAME` theo cài đặt của mình
-18. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/209acc05-9f3e-45a4-b3bc-13cc56af8b0a)
+18. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/ae94c6e1-595a-491a-8e57-144b77506f7e)
 19. lệnh `npm start` thấy `Connected to MongoDB` là xong
 20. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/6c91624c-2407-4d7f-9dfc-1a47e5668fcc)
 
@@ -106,7 +106,7 @@ do an android nang cao sgu app cua hang giao do an
 7. mở thêm 1 terminal, cái để chạy server, cái để chạy `npx ngrok http 3001`. **CHÚ Ý** port server mặc định `3001`, nếu muốn đổi server mở port khác thì ghi port đó vào
 8. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/b7ecd510-6fb6-4814-a0c8-a8132e8be6ac)
 9. lấy link `Forwarding` đã được ngrok mở cho
-10. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/4e24d661-9685-4e95-9847-0bdabf5f008d)
+10. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/c0b012c8-cb76-4c21-bc08-b847e410485a)
 11. visit site
 12. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/69951c8a-fa68-4035-95d8-55a951f4cc20)
 13. hãy xem kết nối được

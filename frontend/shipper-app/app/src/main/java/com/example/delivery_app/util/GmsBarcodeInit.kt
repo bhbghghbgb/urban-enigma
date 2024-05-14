@@ -1,6 +1,7 @@
 package com.example.delivery_app.util
 
 import android.app.Activity
+import android.util.Log
 import com.google.android.gms.common.moduleinstall.ModuleInstall
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -22,6 +23,7 @@ class GmsBarcodeInit {
             ModuleInstallRequest.newBuilder().addApi(GmsBarcodeScanning.getClient(activity)).build()
         ).addOnSuccessListener {
             if (it.areModulesAlreadyInstalled()) {
+                Log.d("QRScanner", "Modules already installed")
                 installed = true
                 onSuccess()
             }
@@ -57,6 +59,7 @@ class GmsBarcodeInit {
         onCancelled: () -> Unit = {},
         onFailure: (Exception) -> Unit = {}
     ) {
+        Log.d("QRScanner", "Opening scanner")
         GmsBarcodeScanning.getClient(activity, options).startScan().addOnSuccessListener(onSuccess)
             .addOnCanceledListener(onCancelled).addOnFailureListener(onFailure)
     }

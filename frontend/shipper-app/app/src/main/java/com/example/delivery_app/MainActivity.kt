@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
-//                Log.d("HelloBackend", "onCreate: ${HelloRepository.helloBackend()}")
+                Log.d("HelloBackend", "onCreate: ${HelloRepository.helloBackend()}")
                 launch {
                     qrCodeViewModel.openScanner.collect {
                         Log.d("QRScanner", "Collected an event")

@@ -5,6 +5,7 @@ const { getUser } = require("../controllers/authController");
 const { productRole } = require("../middleware/connectRoles");
 const { account2customer } = require("../service/account2shits");
 const Account = require("../models/accountModel");
+const productController = require("../controllers/productController")
 const router = express.Router();
 router.use(productRole.middleware());
 // test basic auth and connect-roles
@@ -24,6 +25,9 @@ router.get(
     getUser,
 );
 router.get("/current-firebase-user", firebaseAuthBearer, getUser);
+
+// lay 3 list product de hien len Banner, Best Seller va For You tren man hinh Home
+router.get("/homescreen", productController.getHomeScreenProducts)
 
 // account2shits
 router.get(
