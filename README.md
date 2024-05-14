@@ -1,6 +1,10 @@
 # urban-enigma
 do an android nang cao sgu app cua hang giao do an
 
+## Chu y
+1. ⚠ xem update mới ngày `Tue May 14 2024 22:27:42 GMT+0700 (Indochina Time)`: [nhập thêm app shipper vào firebase](#add-app-shipper-to-firebase)
+2. ⚠ xem update mới ngày `Wed May 15 2024 00:42:23 GMT+0700 (Indochina Time)`: [kết nối qua internet](#connecting-over-the-internet)
+
 ## thông tin setup để chạy local
 
 ### Backend
@@ -30,9 +34,9 @@ do an android nang cao sgu app cua hang giao do an
 17. gõ `gradle signingReport`
 18. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/eec96f8f-8624-4156-adc1-273d0605a577)
 19. lấy sha1 của variant debug và config debug
-20. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/db356b41-dc2b-4def-a440-a6753f1c1df5)
+20. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/e0a766d5-1f99-4138-b853-5de2c5ad10a9)
 21. quay lại firebase console, nhập app package name `com.doansgu.cafectm` và sha1
-22. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/3d61b7f3-711e-469a-a5cf-d676de6599e8)
+22. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/ecbda996-dc45-4359-8630-0ba48802677f)
 23. tải file `google-services.json` rồi để như hướng dẫn
 24. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/53baff49-e3b5-4b23-90d8-6a800ab4684d)
 25. bấm tiếp tục bước 3 và 4 (**không bấm tắt** cũng **không làm theo**)
@@ -49,10 +53,14 @@ do an android nang cao sgu app cua hang giao do an
 36. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/92fa8e1c-3824-43b6-81b7-6c17461a2e95)
 37. lệnh `npm start` lên thấy `Connect Firebase without errors` và `Firebase connection test success` là xong
 38. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/6c91624c-2407-4d7f-9dfc-1a47e5668fcc)
+###### Add app shipper to firebase
+39. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/39cef46c-d5fe-4efb-abe1-4deb5a5ba34c)
+40. add thêm 1 app với package name `com.example.delivery_app` vào, sha1 nhập như của app customer đã nhập
+41. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/10a0709a-dfde-4e1d-a6d4-595215a47e5f)
 
 ### Mongodb
 1. mongodb atlas và tạo database + collection, lấy driver uri connect chắc biết rồi nhỉ
-2. vào https://mongodb.com đăng nhập google
+2. vào https://account.mongodb.com/account/login đăng nhập google
 3. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/35bc1cb3-c718-4eee-9721-1a1173729103)
 4. bấm bỏ qua mấy trang khảo sát
 5. ở trang Overview bấm connect, Drivers
@@ -71,3 +79,39 @@ do an android nang cao sgu app cua hang giao do an
 18. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/209acc05-9f3e-45a4-b3bc-13cc56af8b0a)
 19. lệnh `npm start` thấy `Connected to MongoDB` là xong
 20. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/6c91624c-2407-4d7f-9dfc-1a47e5668fcc)
+
+## connecting over the internet
+
+### CHÚ Ý
+1. chỉ dùng cho **thiết bị thật** kết nối khi **lên báo cáo**
+2. nên thực hiện xong [thông tin setup để chạy local](#backend) trước khi tiếp tục
+3. bước [whitelist ip cho backend](#whitelist-ip-on-backend) phải **thực hiện lại** khi **đổi ip**.
+4. Tránh commit file config tránh để bị lộ IP nếu không thích.
+5. ℹ️ các ip có ghi sẵn như `["127.0.0.1", "localhost", "::1", "10.0.2.2", "10.0.3.2"]` là các ip loopback và loopback cho host của android studio emulator
+###### whitelist ip on backend
+6. nếu kết nối local (test bằng GET `/helloworld`) cũng bị `403 Forbidden, this client IP is not whitelisted.`, hoặc muốn add ip qua mạng này vào danh sách
+7. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/a62fd88c-ef95-4761-a3d5-68cfb08d13ed)
+8. đọc log của server, ví dụ thấy `::1 denied` bị chặn mà đó là của mình, thì thêm vào `WHITELIST_IPS` trong `/backend/app/config/_APP.js`
+9. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/ab4a4d79-2483-45cc-9e96-aaf11e0e35d2)
+10. **restart server**, bảo đảm đã GET `/helloworld` được, log show `_ accessed`
+11. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/06a3ab83-5408-4613-88d3-e787760998e3)
+
+### Ngrok
+1. vào https://dashboard.ngrok.com/login đăng nhập google
+2. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/34ad64b9-0b7e-4ba2-b1f1-ef7bb45b7d4e)
+3. đăng ký xong, vào Your authtoken copy dòng lệnh `ngrok config add-authtoken` được chỉ dẫn
+4. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/67c1f446-0c98-4bb1-9865-760d4a554f34)
+5. chạy `npx <lệnh đã copy>` trong terminal của backend (đã được install bằng npm)
+6. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/7d9432c7-a28c-4f43-b810-327e14c49dd8)
+7. mở thêm 1 terminal, cái để chạy server, cái để chạy `npx ngrok http 3001`. **CHÚ Ý** port server mặc định `3001`, nếu muốn đổi server mở port khác thì ghi port đó vào
+8. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/b7ecd510-6fb6-4814-a0c8-a8132e8be6ac)
+9. lấy link `Forwarding` đã được ngrok mở cho
+10. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/4e24d661-9685-4e95-9847-0bdabf5f008d)
+11. visit site
+12. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/69951c8a-fa68-4035-95d8-55a951f4cc20)
+13. hãy xem kết nối được
+14. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/373afa28-498c-468a-ab7d-8d3451bc3b2c)
+15. **như vầy là server chưa chạy hoặc sai port hoặc abcxyz**
+16. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/9c23ba69-da7b-4131-ba8d-dee1e8d463f4)
+17. **như vầy là sai link ngrok**
+18. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/584bf072-2dcf-41d2-a4d3-288a742ec191)
