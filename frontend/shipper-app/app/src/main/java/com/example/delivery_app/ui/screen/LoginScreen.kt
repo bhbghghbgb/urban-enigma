@@ -12,13 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -99,8 +100,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 textStyle = TextStyle(color = Color.Black),
                 singleLine = true,
                 isError = usernameError.isNotBlank(),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
+                colors = TextFieldDefaults.colors().copy(
                     focusedLabelColor = Color(0xFF9C7055),
                     focusedIndicatorColor = Color(0xFF9C7055),
                     errorCursorColor = Color.Red,
@@ -129,8 +129,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 textStyle = TextStyle(color = Color.Black),
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = Color.White,
+                colors = TextFieldDefaults.colors().copy(
                     focusedLabelColor = Color(0xFF9C7055),
                     focusedIndicatorColor = Color(0xFF9C7055),
                     errorCursorColor = Color.Red,
@@ -152,13 +151,13 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
             ) {
                 Button(
                     onClick = {
-                        viewModel.login(username, password)
+                        viewModel.sendCode(username)
                     },
                     modifier = Modifier
                         .padding(vertical = 2.dp)
                         .height(48.dp)
                         .background(Color.Blue, RoundedCornerShape(8.dp)),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C7055)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C7055)),
                     contentPadding = PaddingValues(8.dp)
                 ) {
                     Text(
@@ -173,7 +172,7 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                         .padding(vertical = 2.dp)
                         .height(48.dp)
                         .background(Color.Blue, RoundedCornerShape(8.dp)),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFF9C7055)),
+                    colors = ButtonDefaults.buttonColors().copy(containerColor = Color(0xFF9C7055)),
                     contentPadding = PaddingValues(8.dp)
                 ) {
                     Text(
@@ -182,5 +181,8 @@ fun LoginScreen(navController: NavController, viewModel: AuthViewModel) {
                 }
             }
         }
+    }
+    LaunchedEffect(Unit) {
+        viewModel.testAuthorization()
     }
 }

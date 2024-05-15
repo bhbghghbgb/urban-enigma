@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.delivery_app.App
+import com.example.delivery_app.DEBUG_FORCE_LOGIN
 import com.example.delivery_app.model.AuthorizationManager
-import com.example.delivery_app.repository.AuthRepository
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
@@ -39,13 +39,21 @@ class AuthViewModel : ViewModel() {
     private var verifyingPhoneNumber: String? = null
     private var phoneVerificationId: String? = null
     private var forceResendingToken: PhoneAuthProvider.ForceResendingToken? = null
-    private fun testAuthorization() {
+
+    init {
+        if (DEBUG_FORCE_LOGIN) {
+            Log.d("Auth", "DEBUG Force Login")
+            AuthorizationManager.clearAuthorization()
+        }
+    }
+
+    fun testAuthorization() {
         viewModelScope.launch {
             try {
-                Log.d("Auth", "Testing Authorization: ${AuthorizationManager.authorization}")
-                val authorized = AuthRepository.testAuthorization()
-                Log.d("Auth", "Authorized: $authorized")
-                _isValidToken.postValue(authorized)
+                if (AuthorizationManager.testAuthorization()) {
+                    _isValidToken.postValue(AuthorizationManager.testAuthorization())
+                    _navigateToHome.postValue(true)
+                }
             } catch (e: Exception) {
                 _isValidToken.postValue(false)
             }
@@ -58,6 +66,7 @@ class AuthViewModel : ViewModel() {
     // to continue with PhoneAuthProvider.verifyPhoneNumber
     fun sendCode(vietnamPhoneNumber: String) {
         viewModelScope.launch {
+            Log.d("Auth", "Sent an event")
             _requestSendCode.send(vietnamPhoneNumber)
         }
     }
@@ -119,24 +128,14 @@ class AuthViewModel : ViewModel() {
     private fun getInternationalPhoneNumber(vietnamPhoneNumber: String): String? =
         if (isValidVietnamPhoneNumber(vietnamPhoneNumber)) "+84${vietnamPhoneNumber.substring(1)}" else null
 
-    fun tryLogin(credential: PhoneAuthCredential): Boolean {
+    fun tryLogin(credential: PhoneAuthCredential) = viewModelScope.launch {
         Log.d("Auth", "Try Login")
-        App.firebaseAuth.signInWithCredential(credential).addOnCompleteListener { signInTask ->
-            if (signInTask.isSuccessful) {
-                Log.d("Auth", "Phone Login Success")
-                signInTask.result?.user?.getIdToken(false)?.addOnCompleteListener { getTokenTask ->
-                    getTokenTask.result?.token?.let { token ->
-                        Log.d("Auth", "Token: $token")
-                        AuthorizationManager.authorization = token
-                        testAuthorization()
-//                        _navigateToHome.postValue(true)
-                        return@let
-                    }
-                }
-            }
-        }
-        return false
+        AuthorizationManager.setAuthorization(credential)
+        Log.d("Auth", "Phone Login Success, token: ${AuthorizationManager.getAuthorization()}")
+        testAuthorization()
+        _navigateToHome.postValue(true)
     }
+
 
     fun showInvalidDataDialog() {
         _isInvalidDataDialogVisible.value = true

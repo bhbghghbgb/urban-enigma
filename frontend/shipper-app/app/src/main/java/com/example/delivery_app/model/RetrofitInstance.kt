@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 object RetrofitInstance {
     private val retrofit by lazy {
         Retrofit.Builder().client(OkHttpClient.Builder().addInterceptor { chain ->
-            val authorization = AuthorizationManager.authorization
+            val authorization = AuthorizationManager.getAuthorization()
             chain.proceed(
                 if (authorization === null) chain.request() else chain.request().newBuilder()
                     .addHeader(

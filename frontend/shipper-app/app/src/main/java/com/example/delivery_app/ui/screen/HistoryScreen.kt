@@ -17,7 +17,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -26,22 +25,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.delivery_app.model.AuthorizationManager
 import com.example.delivery_app.model.Order
+import com.example.delivery_app.util.FormatDateTime
 import com.example.delivery_app.viewmodel.HomeViewModel
 import com.example.delivery_app.viewmodel.State
-import com.example.delivery_app.util.FormatDateTime
 
 @Composable
 fun HistoryScreen(navController: NavController, viewModel: HomeViewModel) {
     val orders by viewModel.orders.observeAsState()
     val state by viewModel.state.observeAsState()
-    val token: String? = AuthorizationManager.authorization
-    LaunchedEffect(Unit) {
-        if (token != null) {
-            viewModel.getOrdersByStaff()
-        }
-    }
     when (state) {
         State.LOADING -> {
             LoadingScreen()
@@ -64,7 +56,7 @@ fun HistoryScreen(navController: NavController, viewModel: HomeViewModel) {
 
         State.ERROR -> {
             ErrorScreen {
-                if (token != null) viewModel.getOrdersByStaff()
+                viewModel.getOrdersByStaff()
             }
         }
 

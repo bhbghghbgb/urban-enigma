@@ -9,13 +9,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Surface
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.delivery_app.model.AuthorizationManager
-import com.example.delivery_app.viewmodel.AuthViewModel
 import com.example.delivery_app.viewmodel.ProfileViewModel
 import com.example.delivery_app.viewmodel.State
 import java.text.SimpleDateFormat
@@ -37,16 +35,11 @@ import java.util.Date
 
 @Composable
 fun ProfileScreen(
-    navControllerMain: NavController, navController: NavController, viewModel: ProfileViewModel
+    navControllerMain: NavController, viewModel: ProfileViewModel
 ) {
     val staff by viewModel.userData.observeAsState()
     val state by viewModel.state.observeAsState()
     var showLogoutDialog by remember { mutableStateOf(false) }
-
-    val token: String? = AuthorizationManager.authorization
-    LaunchedEffect(true) {
-        token?.let { viewModel.getInfoUser() }
-    }
     when (state) {
         State.LOADING -> {
             LoadingScreen()
@@ -54,7 +47,7 @@ fun ProfileScreen(
 
         State.ERROR -> {
             ErrorScreen {
-                if (token != null) viewModel.getInfoUser()
+                viewModel.getInfoUser()
             }
         }
 
@@ -143,15 +136,11 @@ fun ProfileScreen(
         else -> {}
     }
     if (showLogoutDialog) {
-        val token: String? = AuthorizationManager.authorization
         LogoutAlertDialog(
             showDialog = remember { mutableStateOf(showLogoutDialog) },
             onConfirm = {
-                if (token != null) {
-                    val viewModel = AuthViewModel()
-                    viewModel.logout()
-                    navControllerMain.popBackStack("login", false)
-                }
+                AuthorizationManager.clearAuthorization()
+                navControllerMain.popBackStack("login", false)
             },
             onDismiss = {
                 showLogoutDialog = false
@@ -177,7 +166,7 @@ fun LogoutAlertDialog(
             contentColor = Color.Transparent,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                AlertDialog(onDismissRequest = { onDismissRequest }, title = {
+                AlertDialog(onDismissRequest = { onDismissRequest() }, title = {
                     Text(
                         text = "Log out", color = Color.Black
                     )
