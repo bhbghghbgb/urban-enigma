@@ -39,12 +39,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -58,7 +57,6 @@ import com.doansgu.cafectm.model.AuthorizationManager
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import com.doansgu.cafectm.util.generateQRCode
-import com.doansgu.cafectm.viewmodel.AuthViewModel
 import com.doansgu.cafectm.viewmodel.NavControllerViewModel
 import com.doansgu.cafectm.viewmodel.ProfileViewModel
 import com.doansgu.cafectm.viewmodel.StateProfile
@@ -90,7 +88,6 @@ fun ProfileScreen(
 fun TopBarProfile(navControllerViewModel: NavControllerViewModel) {
     var expanded by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
-    val token = AuthorizationManager.authorization
     val navControllerMain by navControllerViewModel.navController.observeAsState()
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -118,9 +115,7 @@ fun TopBarProfile(navControllerViewModel: NavControllerViewModel) {
                 onDismissRequest = { expanded = false },
                 modifier = Modifier.background(Color.White)
             ) {
-                DropdownMenuItem(
-                    onClick = {}
-                ) {
+                DropdownMenuItem(onClick = {}) {
                     Text(
                         "Update Profile",
                         fontSize = 16.sp,
@@ -148,11 +143,8 @@ fun TopBarProfile(navControllerViewModel: NavControllerViewModel) {
         LogoutAlertDialog(
             showDialog = remember { mutableStateOf(showLogoutDialog) },
             onConfirm = {
-                if (token != null) {
-                    val viewModel = AuthViewModel()
-                    viewModel.logout()
-                    navControllerMain!!.popBackStack("login", true)
-                }
+                AuthorizationManager.clearAuthorization()
+                navControllerMain!!.popBackStack("login", true)
             },
             onDismiss = {
                 showLogoutDialog = false
@@ -178,51 +170,42 @@ fun LogoutAlertDialog(
             contentColor = Color.Transparent,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                AlertDialog(
-                    onDismissRequest = { onDismissRequest() },
-                    title = {
+                AlertDialog(onDismissRequest = { onDismissRequest() }, title = {
+                    Text(
+                        text = "Log out",
+                        fontFamily = FontFamily(fontPoppinsSemi),
+                        color = Color.Black
+                    )
+                }, text = {
+                    Text(
+                        text = "Are you sure you want to log out?",
+                        color = Color.Black,
+                        fontFamily = FontFamily(fontPoppinsRegular)
+                    )
+                }, confirmButton = {
+                    Button(
+                        onClick = {
+                            showDialog.value = false
+                            onConfirm()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
                         Text(
-                            text = "Log out",
-                            fontFamily = FontFamily(fontPoppinsSemi),
-                            color = Color.Black
+                            text = "Yes", color = Color.White
                         )
-                    },
-                    text = {
+                    }
+                }, dismissButton = {
+                    Button(
+                        onClick = { onDismiss() },
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                    ) {
                         Text(
-                            text = "Are you sure you want to log out?",
-                            color = Color.Black,
-                            fontFamily = FontFamily(fontPoppinsRegular)
+                            text = "No", color = Color.White
                         )
-                    },
-                    confirmButton = {
-                        Button(
-                            onClick = {
-                                showDialog.value = false
-                                onConfirm()
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9c7055)),
-                            modifier = Modifier.padding(vertical = 8.dp)
-                        ) {
-                            Text(
-                                text = "Yes",
-                                color = Color.White
-                            )
-                        }
-                    },
-                    dismissButton = {
-                        Button(
-                            onClick = { onDismiss() },
-                            modifier = Modifier.padding(vertical = 8.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                        ) {
-                            Text(
-                                text = "No",
-                                color = Color.White
-                            )
-                        }
-                    },
-                    containerColor = Color.White,
-                    textContentColor = Color.Black
+                    }
+                }, containerColor = Color.White, textContentColor = Color.Black
                 )
             }
         }
@@ -231,13 +214,11 @@ fun LogoutAlertDialog(
 
 @Composable
 fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
-
     val customer by viewModel.userData.observeAsState()
     val state by viewModel.state.observeAsState()
-    val token: String? = AuthorizationManager.authorization
-    val coroutineScope = rememberCoroutineScope()
+    val qrCode = remember { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(customer) {
-        token?.let { viewModel.getInfoUser() }
+        AuthorizationManager.getAuthorization()?.let { viewModel.getInfoUser() }
     }
     when (state) {
         StateProfile.LOADING -> {
@@ -248,11 +229,12 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
         }
 
         StateProfile.SUCCESS -> {
-            val qrCodeBitmap =
-                generateQRCode(customer!!.commonuser._id, 512)
             val timestamp = customer!!.commonuser.dateOfBirth
             val date = Date(timestamp.time)
             val formattedDateOfBirth = SimpleDateFormat("dd-MM-yyyy").format(date)
+            LaunchedEffect(customer) {
+                qrCode.value = generateQRCode(customer!!.qrCode)
+            }
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -261,12 +243,11 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.height(15.dp))
-                if (qrCodeBitmap != null) {
+                qrCode.value?.let {
                     Image(
-                        bitmap = qrCodeBitmap.asImageBitmap(),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(height = 120.dp, width = 120.dp),
+                        bitmap = it,
+                        contentDescription = "Customer QR Code",
+                        modifier = Modifier.size(height = 120.dp, width = 120.dp),
                         contentScale = ContentScale.Crop,
                     )
                 }
@@ -320,8 +301,7 @@ fun ItemProfile(image: Int, title: String, des: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         ElevatedCard(
-            modifier = Modifier
-                .size(width = 50.dp, height = 50.dp),
+            modifier = Modifier.size(width = 50.dp, height = 50.dp),
             shape = CircleShape,
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
@@ -332,8 +312,7 @@ fun ItemProfile(image: Int, title: String, des: String) {
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Icon(
-                    modifier = Modifier
-                        .size(width = 30.dp, height = 30.dp),
+                    modifier = Modifier.size(width = 30.dp, height = 30.dp),
                     painter = painterResource(id = image),
                     contentDescription = "",
                     tint = Color(0xFF9C7055)

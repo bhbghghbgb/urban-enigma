@@ -133,7 +133,6 @@ class AuthViewModel : ViewModel() {
         AuthorizationManager.setAuthorization(credential)
         Log.d("Auth", "Phone Login Success, token: ${AuthorizationManager.getAuthorization()}")
         testAuthorization()
-        _navigateToHome.postValue(true)
     }
 
 
@@ -163,9 +162,5 @@ class AuthViewModel : ViewModel() {
 
     fun clearPasswordError() {
         _passwordError.value = ""
-    }
-
-    fun logout() {
-        AuthorizationManager.clearAuthorization()
     }
 }

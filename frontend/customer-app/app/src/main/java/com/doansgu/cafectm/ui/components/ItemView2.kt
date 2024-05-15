@@ -42,7 +42,7 @@ import coil.compose.AsyncImage
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
-import com.doansgu.cafectm.util.BackendImageRoute.backendImageRoute
+import com.doansgu.cafectm.util.backendImageRoute
 
 @Preview
 @Composable
@@ -72,7 +72,10 @@ fun ItemViewRow2Preview() {
 
 @Composable
 fun ItemView2(
-    name: String?, image: String?, description: String?, price: Double?,
+    name: String?,
+    image: String?,
+    description: String?,
+    price: Double?,
     rating: Double?,
     navController: NavController
 ) {
@@ -179,7 +182,10 @@ fun ItemView2(
 
 @Composable
 fun ItemViewRow2(
-    name: String?, image: String?, description: String?, price: Double?,
+    name: String?,
+    image: String?,
+    description: String?,
+    price: Double?,
     rating: Double?,
     navController: NavController
 ) {

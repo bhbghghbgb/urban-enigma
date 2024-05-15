@@ -73,33 +73,11 @@ import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import com.doansgu.cafectm.viewmodel.CartViewModel
 
-val TIMEOUT_THRESHOLD = 5000 // 5 giây (đơn vị: millisecond)
-val CHECK_INTERVAL = 5000 // 1 phút (đơn vị: millisecond)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderScreen(
-    navController: NavController,
-    bottom: @Composable () -> Unit,
-    viewModel: CartViewModel
+    navController: NavController, bottom: @Composable () -> Unit, viewModel: CartViewModel
 ) {
-//    var lastInteractionTime by remember { mutableStateOf(System.currentTimeMillis()) }
-//    LaunchedEffect(Unit) {
-//        while (true) {
-//            val currentTime = System.currentTimeMillis()
-//            val elapsedTime = currentTime - lastInteractionTime
-//            if (elapsedTime > TIMEOUT_THRESHOLD) {
-//                // Thực hiện hành động khi không tương tác
-//                // Ví dụ: hiển thị thông báo
-//                // Thực hiện việc này trên main thread
-//                withContext(Dispatchers.Main) {
-//                    Log.d("WAIT", "THẰNG USER KHÔNG LÀM GÌ NÈ QUÝNH NÓ")
-//                }
-//            }
-//            delay(CHECK_INTERVAL.toLong())
-//        }
-//    }
-//    lastInteractionTime = System.currentTimeMillis()
     Box {
         Scaffold(
             topBar = { TopBarCenter(navController) },
@@ -133,11 +111,8 @@ fun TopBarCenter(navController: NavController) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentOrder(
-    paddingValues: PaddingValues,
-    viewModel: CartViewModel,
-    navController: NavController
+    paddingValues: PaddingValues, viewModel: CartViewModel, navController: NavController
 ) {
-    val authorization = AuthorizationManager.authorization
     val cart by viewModel.cart.observeAsState()
     var isEditAddressDialogVisible by remember { mutableStateOf(false) }
     var noteText by remember { mutableStateOf("") }
@@ -145,11 +120,10 @@ fun ContentOrder(
     var selectedPaymentMethod by remember { mutableStateOf("Cash") }
     val activity = LocalContext.current as? Activity
     LaunchedEffect(Unit) {
-        authorization?.let { viewModel.getCardOfUser() }
+        AuthorizationManager.getAuthorization()?.let { viewModel.getCardOfUser() }
     }
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         LazyColumn(contentPadding = paddingValues, modifier = Modifier.fillMaxSize()) {
             item {
@@ -174,12 +148,10 @@ fun ContentOrder(
                     Row {
                         Button(
                             onClick = { isEditAddressDialogVisible = true },
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp)),
+                            modifier = Modifier.clip(RoundedCornerShape(20.dp)),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                             border = BorderStroke(1.dp, Color.Gray)
-                        )
-                        {
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "EditIcon",
@@ -196,12 +168,10 @@ fun ContentOrder(
                         Spacer(modifier = Modifier.width(10.dp))
                         Button(
                             onClick = { /* location services deleted*/ },
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(20.dp)),
+                            modifier = Modifier.clip(RoundedCornerShape(20.dp)),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                             border = BorderStroke(1.dp, Color.Gray)
-                        )
-                        {
+                        ) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "EditIcon",
@@ -218,12 +188,12 @@ fun ContentOrder(
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                     ElevatedCard(
-                        modifier = Modifier
-                            .wrapContentSize(),
+                        modifier = Modifier.wrapContentSize(),
                         shape = RoundedCornerShape(10.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = Color.White
-                        ), elevation = CardDefaults.cardElevation(
+                        ),
+                        elevation = CardDefaults.cardElevation(
                             defaultElevation = 5.dp
                         )
                     ) {
@@ -255,30 +225,25 @@ fun ContentOrder(
                     Spacer(modifier = Modifier.height(10.dp))
                     if (cart != null) {
                         for (item in cart!!.products) {
-                            ItemOrder(product = item,
-                                onDeleteClicked = {
-                                    val addToCart = AddToCartRequest(item.product._id)
-                                    authorization?.let {
-                                        viewModel.deleteProduct(
-                                            addToCart
-                                        )
-                                    }
-                                },
-                                onIncreaseClicked = {
-                                    viewModel.increaseProductQuantity(item.product._id)
-                                },
-                                onDecreaseClicked = {
-                                    val addToCart = AddToCartRequest(item.product._id)
-                                    authorization?.let { token ->
-                                        viewModel.decreaseProductQuantity(
-                                            item.product._id,
-                                            addToCart
-                                        )
-                                    }
-                                },
-                                onItemClick = {
-                                    navController.navigate("detail/${item.product._id}")
-                                })
+                            ItemOrder(product = item, onDeleteClicked = {
+                                val addToCart = AddToCartRequest(item.product._id)
+                                AuthorizationManager.getAuthorization()?.let {
+                                    viewModel.deleteProduct(
+                                        addToCart
+                                    )
+                                }
+                            }, onIncreaseClicked = {
+                                viewModel.increaseProductQuantity(item.product._id)
+                            }, onDecreaseClicked = {
+                                val addToCart = AddToCartRequest(item.product._id)
+                                AuthorizationManager.getAuthorization()?.let {
+                                    viewModel.decreaseProductQuantity(
+                                        item.product._id, addToCart
+                                    )
+                                }
+                            }, onItemClick = {
+                                navController.navigate("detail/${item.product._id}")
+                            })
                         }
                     }
                 }
@@ -376,21 +341,15 @@ fun ContentOrder(
                         fontSize = 20.sp,
                         fontFamily = FontFamily(fontPoppinsSemi)
                     )
-                    PaymentMethodItem(
-                        text = "Cash",
+                    PaymentMethodItem(text = "Cash",
                         isSelected = selectedPaymentMethod == "Cash",
-                        onClick = { selectedPaymentMethod = "Cash" }
-                    )
-                    PaymentMethodItem(
-                        text = "Momo",
+                        onClick = { selectedPaymentMethod = "Cash" })
+                    PaymentMethodItem(text = "Momo",
                         isSelected = selectedPaymentMethod == "Momo",
-                        onClick = { selectedPaymentMethod = "Momo" }
-                    )
-                    PaymentMethodItem(
-                        text = "Banking",
+                        onClick = { selectedPaymentMethod = "Momo" })
+                    PaymentMethodItem(text = "Banking",
                         isSelected = selectedPaymentMethod == "Banking",
-                        onClick = { selectedPaymentMethod = "Banking" }
-                    )
+                        onClick = { selectedPaymentMethod = "Banking" })
                 }
             }
             item { Spacer(modifier = Modifier.height(10.dp)) }
@@ -404,22 +363,18 @@ fun ContentOrder(
         }
     }
     if (isEditAddressDialogVisible) {
-        EditAddressDialog(
-            onDismiss = { isEditAddressDialogVisible = false },
+        EditAddressDialog(onDismiss = { isEditAddressDialogVisible = false },
             onSave = { newAddress ->
                 viewModel.setAddress(newAddress)
                 isEditAddressDialogVisible = false
-            }
-        )
+            })
     }
 }
 
 
 @Composable
 fun PaymentMethodItem(
-    text: String,
-    isSelected: Boolean,
-    onClick: () -> Unit
+    text: String, isSelected: Boolean, onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -433,8 +388,7 @@ fun PaymentMethodItem(
             fontFamily = FontFamily(fontPoppinsRegular)
         )
         RadioButton(
-            selected = isSelected,
-            onClick = onClick
+            selected = isSelected, onClick = onClick
         )
     }
 }
@@ -443,8 +397,7 @@ fun PaymentMethodItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditAddressDialog(
-    onDismiss: () -> Unit,
-    onSave: (String) -> Unit
+    onDismiss: () -> Unit, onSave: (String) -> Unit
 ) {
     var address by remember { mutableStateOf("") }
     Surface(
@@ -454,8 +407,7 @@ fun EditAddressDialog(
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize(),
+                modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -564,9 +516,7 @@ fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
             ) {
                 Column {
                     Text(
-                        text = "Total",
-                        fontSize = 18.sp,
-                        fontFamily = FontFamily(fontPoppinsSemi)
+                        text = "Total", fontSize = 18.sp, fontFamily = FontFamily(fontPoppinsSemi)
                     )
                     Text(
                         text = "${cart.total}$",
@@ -584,7 +534,7 @@ fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
                         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
                         StrictMode.setThreadPolicy(policy)
                         viewModel.pay(activity)
-                              },
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C7055))
                 ) {
@@ -597,25 +547,21 @@ fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
                 if (showDialog) {
                     when {
                         paymentState?.onSusses == true -> {
-                            ShowPaymentSuccessDialog(
-                                title = "Payment Success",
+                            ShowPaymentSuccessDialog(title = "Payment Success",
                                 message = "Thanh toán thành công",
-                                onDismissRequest = { showDialog = false }
-                            )
+                                onDismissRequest = { showDialog = false })
                         }
+
                         paymentState?.onCancel == true -> {
-                            ShowPaymentSuccessDialog(
-                                title = "Payment Canceled",
+                            ShowPaymentSuccessDialog(title = "Payment Canceled",
                                 message = "Thanh toán bị hủy",
-                                onDismissRequest = { showDialog = false }
-                            )
+                                onDismissRequest = { showDialog = false })
                         }
+
                         paymentState?.onFailed == true -> {
-                            ShowPaymentSuccessDialog(
-                                title = "Payment Error",
+                            ShowPaymentSuccessDialog(title = "Payment Error",
                                 message = "Thanh toán không thành công",
-                                onDismissRequest = { showDialog = false }
-                            )
+                                onDismissRequest = { showDialog = false })
                         }
                     }
                 }
@@ -627,35 +573,27 @@ fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
 
 @Composable
 fun ShowPaymentSuccessDialog(
-    title: String,
-    message: String,
-    onDismissRequest: () -> Unit
+    title: String, message: String, onDismissRequest: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = {
-            Text(text = title)
-        },
-        text = {
-            Text(
-                text = message
-            )
-        },
-        confirmButton = {
-            TextButton(
-                onClick = onDismissRequest
-            ) {
-                Text(text = "OK")
-            }
-        },
-        dismissButton = {
-            TextButton(
-                onClick = onDismissRequest
-            ) {
-                Text(text = "Cancel")
-            }
+    AlertDialog(onDismissRequest = onDismissRequest, title = {
+        Text(text = title)
+    }, text = {
+        Text(
+            text = message
+        )
+    }, confirmButton = {
+        TextButton(
+            onClick = onDismissRequest
+        ) {
+            Text(text = "OK")
         }
-    )
+    }, dismissButton = {
+        TextButton(
+            onClick = onDismissRequest
+        ) {
+            Text(text = "Cancel")
+        }
+    })
 }
 
 @Composable
@@ -683,8 +621,7 @@ fun ItemOrder(
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
                 text = product.product.name,
@@ -698,8 +635,7 @@ fun ItemOrder(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Row(
-                    modifier = Modifier.weight(2f),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.weight(2f), verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(onClick = onDecreaseClicked) {
                         Icon(

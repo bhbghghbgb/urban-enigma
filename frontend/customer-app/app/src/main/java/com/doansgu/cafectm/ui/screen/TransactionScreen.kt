@@ -95,9 +95,8 @@ fun TransactionScreen(navController: NavController) {
         tabItems.size
     })
     val scope = rememberCoroutineScope()
-    val token: String? = AuthorizationManager.authorization
     LaunchedEffect(key1 = true) {
-        if (token != null) {
+        if (AuthorizationManager.getAuthorization() != null) {
             viewModel.getOrdersNotYetDelivered()
             viewModel.getOrdersDelivered()
         }
@@ -112,8 +111,7 @@ fun TransactionScreen(navController: NavController) {
             )
         }) {
             tabItems.forEachIndexed { index, item ->
-                Tab(
-                    selected = pagerState.currentPage == index,
+                Tab(selected = pagerState.currentPage == index,
                     onClick = {
                         selectedTabIndex = index
                         scope.launch { pagerState.scrollToPage(index) }
@@ -137,19 +135,13 @@ fun TransactionScreen(navController: NavController) {
         ) { currentPage ->
             when (currentPage) {
                 0 -> {
-                    if (token != null) {
-                        HistoryScreen(navController, viewModel = viewModel, token = token)
-                    }
+                    HistoryScreen(navController, viewModel = viewModel)
                 }
 
                 1 -> {
-                    if (token != null) {
-                        DeliveredScreen(
-                            navController = navController,
-                            viewModel = viewModel,
-                            token = token
-                        )
-                    }
+                    DeliveredScreen(
+                        navController = navController, viewModel = viewModel
+                    )
                 }
             }
         }
@@ -163,7 +155,7 @@ data class TabItem(
 )
 
 @Composable
-fun HistoryScreen(navController: NavController, viewModel: OrderViewModel, token: String) {
+fun HistoryScreen(navController: NavController, viewModel: OrderViewModel) {
     val orders by viewModel.orders.observeAsState()
     val state by viewModel.state.observeAsState()
     LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxSize()) {
@@ -177,10 +169,7 @@ fun HistoryScreen(navController: NavController, viewModel: OrderViewModel, token
                     for (it in order) {
                         item {
                             OrderItem(
-                                navController = navController,
-                                order = it,
-                                viewModel,
-                                false
+                                navController = navController, order = it, viewModel, false
                             )
                         }
                         item { Spacer(modifier = Modifier.height(8.dp)) }
@@ -190,14 +179,11 @@ fun HistoryScreen(navController: NavController, viewModel: OrderViewModel, token
 
             State.ERROR -> {
                 item {
-                    ErrorScreen(
-                        errorMessage = "Failed to load orders.",
-                        onRetry = {
-                            token?.let {
-                                viewModel.getOrdersNotYetDelivered()
-                            }
+                    ErrorScreen(errorMessage = "Failed to load orders.", onRetry = {
+                        AuthorizationManager.getAuthorization()?.let {
+                            viewModel.getOrdersNotYetDelivered()
                         }
-                    )
+                    })
                 }
             }
 
@@ -207,7 +193,7 @@ fun HistoryScreen(navController: NavController, viewModel: OrderViewModel, token
 }
 
 @Composable
-fun DeliveredScreen(navController: NavController, viewModel: OrderViewModel, token: String) {
+fun DeliveredScreen(navController: NavController, viewModel: OrderViewModel) {
     val orders by viewModel.orderDelivered.observeAsState()
     val state by viewModel.state.observeAsState()
     LazyColumn(contentPadding = PaddingValues(16.dp), modifier = Modifier.fillMaxSize()) {
@@ -221,10 +207,7 @@ fun DeliveredScreen(navController: NavController, viewModel: OrderViewModel, tok
                     for (it in order) {
                         item {
                             OrderItem(
-                                navController = navController,
-                                order = it,
-                                viewModel,
-                                true
+                                navController = navController, order = it, viewModel, true
                             )
                         }
                         item { Spacer(modifier = Modifier.height(8.dp)) }
@@ -234,14 +217,11 @@ fun DeliveredScreen(navController: NavController, viewModel: OrderViewModel, tok
 
             State.ERROR -> {
                 item {
-                    ErrorScreen(
-                        errorMessage = "Failed to load orders.",
-                        onRetry = {
-                            token?.let {
-                                viewModel.getOrdersNotYetDelivered()
-                            }
+                    ErrorScreen(errorMessage = "Failed to load orders.", onRetry = {
+                        AuthorizationManager.getAuthorization()?.let {
+                            viewModel.getOrdersNotYetDelivered()
                         }
-                    )
+                    })
                 }
             }
 
@@ -291,10 +271,7 @@ fun ErrorScreen(errorMessage: String, onRetry: () -> Unit) {
 
 @Composable
 fun OrderItem(
-    navController: NavController,
-    order: Order,
-    viewModel: OrderViewModel,
-    status: Boolean
+    navController: NavController, order: Order, viewModel: OrderViewModel, status: Boolean
 ) {
     val timestamp = order.orderDateTime
     val date = Date(timestamp.time)
@@ -311,12 +288,9 @@ fun OrderItem(
             .wrapContentHeight()
             .clickable {
                 navController.navigate("information/${order.id}")
-            },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(
+            }, shape = RoundedCornerShape(8.dp), colors = CardDefaults.cardColors(
             containerColor = Color.White
-        ),
-        elevation = CardDefaults.cardElevation(
+        ), elevation = CardDefaults.cardElevation(
             defaultElevation = 5.dp
         )
     ) {
@@ -326,8 +300,7 @@ fun OrderItem(
                 .padding(8.dp),
         ) {
             Column(
-                modifier = Modifier.fillMaxHeight(),
-                verticalArrangement = Arrangement.Top
+                modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Top
             ) {
                 Card(
                     modifier = Modifier
@@ -415,8 +388,7 @@ fun OrderItem(
 fun InformationOrder(navController: NavController, id: String) {
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
-            topBar = { TopBarCenterOrderInformation(navController) },
-            containerColor = Color.White
+            topBar = { TopBarCenterOrderInformation(navController) }, containerColor = Color.White
         ) { paddingValues ->
             ContentInformationOrder(paddingValues, id)
         }
@@ -426,46 +398,41 @@ fun InformationOrder(navController: NavController, id: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBarCenterOrderInformation(navController: NavController) {
-    CenterAlignedTopAppBar(
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = Color.White
-        ),
-        title = {
-            Text(
-                "My Order",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                fontSize = 20.sp,
-                fontFamily = FontFamily(fontPoppinsSemi)
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = {
-                navController.navigate(NavigationItem.Transactions.route) {
-                    popUpTo(navController.graph.findStartDestination().id)
-                    launchSingleTop = true
-                }
-
-            }) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBack,
-                    contentDescription = "Localized description"
-                )
+    CenterAlignedTopAppBar(colors = TopAppBarDefaults.mediumTopAppBarColors(
+        containerColor = Color.White
+    ), title = {
+        Text(
+            "My Order",
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            fontSize = 20.sp,
+            fontFamily = FontFamily(fontPoppinsSemi)
+        )
+    }, navigationIcon = {
+        IconButton(onClick = {
+            navController.navigate(NavigationItem.Transactions.route) {
+                popUpTo(navController.graph.findStartDestination().id)
+                launchSingleTop = true
             }
+
+        }) {
+            Icon(
+                imageVector = Icons.Filled.ArrowBack,
+                contentDescription = "Localized description"
+            )
         }
-    )
+    })
 }
 
 @Composable
 fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
-    val token = AuthorizationManager.authorization;
     val viewModel = remember {
         OrderViewModel()
     }
     val state = viewModel.state.observeAsState()
     val orderList by viewModel.order.observeAsState()
     LaunchedEffect(Unit) {
-        if (token != null) {
+        if (AuthorizationManager.getAuthorization() != null) {
             viewModel.getOrderById(id)
         }
     }
@@ -670,14 +637,11 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
 
                 State.ERROR -> {
                     item {
-                        ErrorScreen(
-                            errorMessage = "Failed to load orders.",
-                            onRetry = {
-                                token?.let {
-                                    viewModel.getOrdersNotYetDelivered()
-                                }
+                        ErrorScreen(errorMessage = "Failed to load orders.", onRetry = {
+                            AuthorizationManager.getAuthorization()?.let {
+                                viewModel.getOrdersNotYetDelivered()
                             }
-                        )
+                        })
                     }
                 }
 
@@ -712,8 +676,7 @@ fun ItemProduct(product: Products, amount: Int) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.Start
+                modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = product.name,

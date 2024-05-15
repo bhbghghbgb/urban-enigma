@@ -8,43 +8,29 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navDeepLink
-import com.doansgu.cafectm.model.AuthorizationManager
 import com.doansgu.cafectm.ui.screen.LoginScreen
 import com.doansgu.cafectm.ui.screen.NavigateHomeScreen
 import com.doansgu.cafectm.ui.screen.OnboardingScreen
 import com.doansgu.cafectm.ui.screen.RegisterScreen
 import com.doansgu.cafectm.ui.screen.WelcomeScreen
+import com.doansgu.cafectm.util.activityViewModel
 import com.doansgu.cafectm.viewmodel.AuthViewModel
 import com.doansgu.cafectm.viewmodel.NavControllerViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(authViewModel: AuthViewModel = viewModel()) {
+fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold {
-        val authorization: String? = AuthorizationManager.authorization
-//        val viewModel = AuthViewModel();
-//        val isValidToken by viewModel.isValidToken.observeAsState()
-//        if (authorization != null) {
-//            viewModel.testAuthorization()
-//        }
-//        if (isValidToken == false && authorization != null) {
-//            AuthorizationManager.clearAuthorization()
-//        }
-//        val startDestination =
-//            if (authorization != null && isValidToken == true) "homescreen" else "onboarding"
-//        if (authorization == null || (isValidToken != null && isValidToken == true)) {
-        val startDestination = "onboarding"
+        val startDestination = "login"
         NavHost(navController, startDestination = startDestination) {
             composable(
-                "onboarding",
-                deepLinks = listOf(navDeepLink {
+                "onboarding", deepLinks = listOf(navDeepLink {
                     uriPattern = "android-app://androidx.navigation/onboarding"
                 })
             ) {
@@ -54,6 +40,7 @@ fun MainScreen(authViewModel: AuthViewModel = viewModel()) {
                 WelcomeScreen(navController = navController)
             }
             composable("login") {
+                val authViewModel: AuthViewModel = activityViewModel()
                 LoginScreen(navController = navController, authViewModel)
             }
             composable("register") {
@@ -71,8 +58,7 @@ fun MainScreen(authViewModel: AuthViewModel = viewModel()) {
 @Composable
 fun LoadingScreen() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
     ) {
         CircularProgressIndicator()
     }

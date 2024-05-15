@@ -8,7 +8,9 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
+import com.doansgu.cafectm.CART_UPDATE_DEBOUNCE_DURATION
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.model.Cart
 import com.doansgu.cafectm.model.PaymentState
@@ -17,6 +19,7 @@ import com.doansgu.cafectm.util.Zalopay.Api.CreateOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import vn.zalopay.sdk.ZaloPayError
@@ -29,6 +32,8 @@ class CartViewModel : ViewModel() {
 
     private val _cart = MutableLiveData<Cart>()
     val cart: LiveData<Cart> = _cart
+
+    private val cartUpdateFlow = cart.asFlow().debounce(CART_UPDATE_DEBOUNCE_DURATION)
 
     private val _isValidAddToCart = MutableLiveData<Boolean>()
     val isValidAddToCart: LiveData<Boolean> = _isValidAddToCart
@@ -115,13 +120,11 @@ class CartViewModel : ViewModel() {
                 val updatedProductIndex = mutableProducts.indexOf(product)
                 if (updatedProductIndex != -1) {
                     mutableProducts[updatedProductIndex] = product.copy(
-                        amount = updatedQuantity,
-                        price = updatedPrice
+                        amount = updatedQuantity, price = updatedPrice
                     )
                 }
                 _cart.value = cart.copy(
-                    total = updatedTotal,
-                    products = mutableProducts
+                    total = updatedTotal, products = mutableProducts
                 )
             }
         }
@@ -151,8 +154,7 @@ class CartViewModel : ViewModel() {
     }
 
     fun decreaseProductQuantity(
-        productId: String,
-        addToCartRequest: AddToCartRequest
+        productId: String, addToCartRequest: AddToCartRequest
     ) {
         _cart.value?.let { cart ->
             val mutableProducts = cart.products.toMutableList()
@@ -170,14 +172,12 @@ class CartViewModel : ViewModel() {
                     val updatedProductIndex = mutableProducts.indexOf(product)
                     if (updatedProductIndex != -1) {
                         mutableProducts[updatedProductIndex] = product.copy(
-                            amount = updatedQuantity,
-                            price = updatedPrice
+                            amount = updatedQuantity, price = updatedPrice
                         )
                     }
                 }
                 _cart.value = cart.copy(
-                    total = updatedTotal,
-                    products = mutableProducts
+                    total = updatedTotal, products = mutableProducts
                 )
             }
         }
@@ -187,7 +187,8 @@ class CartViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val response = repository.updateCart(
-                    _cart.value!!)
+                    _cart.value!!
+                )
                 if (!response.isSuccessful) {
                     Log.e("Update cart", "Error updating cart")
                 }
@@ -202,24 +203,27 @@ class CartViewModel : ViewModel() {
         viewModelScope.launch {
             val token = createOrder()
             if (token.isNotEmpty()) {
-                ZaloPaySDK.getInstance().payOrder(activity, token, "demozpdk://app", object: PayOrderListener {
-                    override fun onPaymentSucceeded(transactionId: String?, transToken: String?, appId: String?) {
+                ZaloPaySDK.getInstance()
+                    .payOrder(activity, token, "demozpdk://app", object : PayOrderListener {
+                        override fun onPaymentSucceeded(
+                            transactionId: String?, transToken: String?, appId: String?
+                        ) {
 //                        TODO("Cập nhật giá trị của susses")
-                        _paymentState.value!!.onSusses = true;
-                    }
+                            _paymentState.value!!.onSusses = true;
+                        }
 
-                    override fun onPaymentCanceled(p0: String?, p1: String?) {
+                        override fun onPaymentCanceled(p0: String?, p1: String?) {
 //                        TODO("Cập nhật giá trị on canceled")
-                        _paymentState.value!!.onCancel = true;
+                            _paymentState.value!!.onCancel = true;
 
-                    }
+                        }
 
-                    override fun onPaymentError(p0: ZaloPayError?, p1: String?, p2: String?) {
+                        override fun onPaymentError(p0: ZaloPayError?, p1: String?, p2: String?) {
 //                        TODO("Cập nhật giá trị on failed")
-                        _paymentState.value!!.onFailed = true;
-                    }
+                            _paymentState.value!!.onFailed = true;
+                        }
 
-                })
+                    })
             }
         }
     }
@@ -235,7 +239,7 @@ class CartViewModel : ViewModel() {
                 return data.getString("zp_trans_token")
             }
 
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         return ""
