@@ -3,11 +3,13 @@ package com.doansgu.cafectm.model
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @GET("/helloworld")
@@ -86,4 +88,12 @@ interface ApiService {
     suspend fun updateCart(
         @Body cart: Cart
     ): Response<ResponseFromServer>
+
+    @PUT("/notification")
+    suspend fun bindDeviceNotification(
+        @Query("device-token") deviceToken: String,
+    ): Response<Unit>
+
+    @DELETE("/notification")
+    suspend fun unbindDeviceNotification(): Response<Unit>
 }

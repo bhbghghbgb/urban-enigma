@@ -14,12 +14,14 @@ class AuthorizationManager {
         fun clearAuthorization() {
             Log.d("AuthorizationManager", "clearAuthorization: sign out")
             App.firebaseAuth.signOut()
+            NotificationManager.unbindDeviceFromCurrentUser()
         }
 
         suspend fun setAuthorization(credential: AuthCredential) {
             Log.d("AuthorizationManager", "setAuthorization: sign in")
             App.firebaseAuth.signInWithCredential(credential).await()
             Log.d("AuthorizationManager", "setAuthorization: firebase sign in complete")
+            NotificationManager.bindDeviceToCurrentUser()
         }
 
         suspend fun testAuthorization(): Boolean {

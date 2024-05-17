@@ -28,6 +28,7 @@ function main() {
 
     const publicFilesRoutes = require("./app/routes/publicFilesRouter");
     const authRoutes = require("./app/routes/authRouter");
+    const notificationRoutes = require("./app/routes/notificationRouter");
     const testRoutes = require("./app/routes/testRouter");
 
     // Middleware
@@ -66,6 +67,7 @@ function main() {
     app.use("/accountinfo", accountInfoRoutes);
 
     app.use("/auth", authRoutes);
+    app.use("/notification", notificationRoutes);
     app.use("/test", testRoutes);
     app.use("/helloworld", (req, res) => res.json("Hello world"));
     app.use("/", publicFilesRoutes);

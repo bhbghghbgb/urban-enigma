@@ -8,6 +8,7 @@ const accountSchema = new mongoose.Schema({
     emailVerified: { type: String, default: false },
     phone: { type: String, required: false },
     phoneVerified: { type: String, default: false },
+    notificationDeviceToken: {type: String, required: false}
 });
 
 const Account = mongoose.model("Account", accountSchema);
