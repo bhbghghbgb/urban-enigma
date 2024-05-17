@@ -1,7 +1,7 @@
 package com.doansgu.cafectm
 
 import android.util.Log
-import com.doansgu.cafectm.model.NotificationManager
+import com.doansgu.cafectm.model.FCMManager
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -10,11 +10,15 @@ class FirebaseNotificationService : FirebaseMessagingService() {
         super.onNewToken(token)
         Log.d("FCM", "Refreshed token: $token")
         // if user logged in, also update token to server
-        NotificationManager.bindDeviceToCurrentUser()
+        FCMManager.bindDeviceToCurrentUser()
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        // TODO: handle notification
+        Log.d("FCM", "Message received")
+        // show the notification anyway even if the app is in foreground
+        FCMManager.postForegroundNotification(
+            message.notification?.title, message.notification?.body
+        )
     }
 }

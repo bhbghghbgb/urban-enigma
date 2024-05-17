@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.AddToCartRequest
-import com.doansgu.cafectm.model.AuthorizationManager
 import com.doansgu.cafectm.model.Cart
 import com.doansgu.cafectm.model.ProductOfCart
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
@@ -120,7 +119,7 @@ fun ContentOrder(
     var selectedPaymentMethod by remember { mutableStateOf("Cash") }
     val activity = LocalContext.current as? Activity
     LaunchedEffect(Unit) {
-        AuthorizationManager.getAuthorization()?.let { viewModel.getCardOfUser() }
+        viewModel.getCardOfUser()
     }
     Box(
         modifier = Modifier.fillMaxSize()
@@ -227,20 +226,16 @@ fun ContentOrder(
                         for (item in cart!!.products) {
                             ItemOrder(product = item, onDeleteClicked = {
                                 val addToCart = AddToCartRequest(item.product._id)
-                                AuthorizationManager.getAuthorization()?.let {
-                                    viewModel.deleteProduct(
-                                        addToCart
-                                    )
-                                }
+                                viewModel.deleteProduct(
+                                    addToCart
+                                )
                             }, onIncreaseClicked = {
                                 viewModel.increaseProductQuantity(item.product._id)
                             }, onDecreaseClicked = {
                                 val addToCart = AddToCartRequest(item.product._id)
-                                AuthorizationManager.getAuthorization()?.let {
-                                    viewModel.decreaseProductQuantity(
-                                        item.product._id, addToCart
-                                    )
-                                }
+                                viewModel.decreaseProductQuantity(
+                                    item.product._id, addToCart
+                                )
                             }, onItemClick = {
                                 navController.navigate("detail/${item.product._id}")
                             })

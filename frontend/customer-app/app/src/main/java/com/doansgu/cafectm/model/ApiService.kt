@@ -18,6 +18,9 @@ interface ApiService {
     @GET("/products")
     suspend fun getAllProducts(): Response<List<Product2>>
 
+    @GET("/test/homescreen")
+    suspend fun getHomeScreen2Products(): Response<HomeScreen2Products>
+
     @GET("/products/lists/popular")
     suspend fun getProductList(): Response<List<Product2>>
 
@@ -89,11 +92,11 @@ interface ApiService {
         @Body cart: Cart
     ): Response<ResponseFromServer>
 
-    @PUT("/notification")
+    @PUT("/notification/device-link")
     suspend fun bindDeviceNotification(
         @Query("device-token") deviceToken: String,
     ): Response<Unit>
 
-    @DELETE("/notification")
+    @DELETE("/notification/device-link")
     suspend fun unbindDeviceNotification(): Response<Unit>
 }

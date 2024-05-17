@@ -6,11 +6,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.doansgu.cafectm.model.Product2
-import com.doansgu.cafectm.model.RetrofitInstance
+import com.doansgu.cafectm.repository.ProductRepository
 import kotlinx.coroutines.launch
 
 class HomeScreen2ViewModel : ViewModel() {
-    //    private val _threeProductList = MutableStateFlow(HomeScreen2())
+    //    private val _threeProductList = MutableStateFlow(HomeScreen2Products())
 //    val threeProductList = _threeProductList.asStateFlow()
     private var _productListLiveData = MutableLiveData<List<Product2>>()
     val productList: LiveData<List<Product2>> get() = _productListLiveData
@@ -25,32 +25,15 @@ class HomeScreen2ViewModel : ViewModel() {
 //        }
     }
 
-    fun fetchData() {
+    private fun fetchData() {
         viewModelScope.launch {
             try {
 //                val response = RetrofitInstance.apiService.getProductListLimit()
-                val response = RetrofitInstance.apiService.getAllProducts()
-                if (response.isSuccessful) {
-                    response.body()?.let { _productListLiveData.postValue(it) }
-                } else {
-                    Log.d("Failed", "Response not successful: ${response.code()}")
-                }
-            } catch (e: Exception) {
-                Log.e("Error", "Error fetching data", e)
-            }
-        }
-    }
-
-    fun fetchFullData() {
-        viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.apiService.getProductList()
-                if (response.isSuccessful) {
-                    val data = response.body()
-                    _productListLiveData.postValue(data!!)
-                    _stateCallFullPopular.postValue(true)
-                } else {
-                    Log.d("Failed", "Response not successful: ${response.code()}")
+                val homeScreen2Products = ProductRepository.getHomeScreen2Products()
+                homeScreen2Products?.let {
+                    _productListLiveData.postValue(
+                        it.forYou ?: emptyList()
+                    )
                 }
             } catch (e: Exception) {
                 Log.e("Error", "Error fetching data", e)

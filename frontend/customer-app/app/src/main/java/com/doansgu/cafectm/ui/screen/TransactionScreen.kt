@@ -70,7 +70,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.doansgu.cafectm.R
-import com.doansgu.cafectm.model.AuthorizationManager
 import com.doansgu.cafectm.model.NavigationItem
 import com.doansgu.cafectm.model.Order
 import com.doansgu.cafectm.model.Products
@@ -96,10 +95,8 @@ fun TransactionScreen(navController: NavController) {
     })
     val scope = rememberCoroutineScope()
     LaunchedEffect(key1 = true) {
-        if (AuthorizationManager.getAuthorization() != null) {
-            viewModel.getOrdersNotYetDelivered()
-            viewModel.getOrdersDelivered()
-        }
+        viewModel.getOrdersNotYetDelivered()
+        viewModel.getOrdersDelivered()
     }
 //    InformationOrder()
     Column(modifier = Modifier.fillMaxSize()) {
@@ -180,9 +177,7 @@ fun HistoryScreen(navController: NavController, viewModel: OrderViewModel) {
             State.ERROR -> {
                 item {
                     ErrorScreen(errorMessage = "Failed to load orders.", onRetry = {
-                        AuthorizationManager.getAuthorization()?.let {
-                            viewModel.getOrdersNotYetDelivered()
-                        }
+                        viewModel.getOrdersNotYetDelivered()
                     })
                 }
             }
@@ -218,9 +213,7 @@ fun DeliveredScreen(navController: NavController, viewModel: OrderViewModel) {
             State.ERROR -> {
                 item {
                     ErrorScreen(errorMessage = "Failed to load orders.", onRetry = {
-                        AuthorizationManager.getAuthorization()?.let {
-                            viewModel.getOrdersNotYetDelivered()
-                        }
+                        viewModel.getOrdersNotYetDelivered()
                     })
                 }
             }
@@ -432,9 +425,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
     val state = viewModel.state.observeAsState()
     val orderList by viewModel.order.observeAsState()
     LaunchedEffect(Unit) {
-        if (AuthorizationManager.getAuthorization() != null) {
-            viewModel.getOrderById(id)
-        }
+        viewModel.getOrderById(id)
     }
     Box(
         modifier = Modifier
@@ -638,9 +629,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                 State.ERROR -> {
                     item {
                         ErrorScreen(errorMessage = "Failed to load orders.", onRetry = {
-                            AuthorizationManager.getAuthorization()?.let {
-                                viewModel.getOrdersNotYetDelivered()
-                            }
+                            viewModel.getOrdersNotYetDelivered()
                         })
                     }
                 }

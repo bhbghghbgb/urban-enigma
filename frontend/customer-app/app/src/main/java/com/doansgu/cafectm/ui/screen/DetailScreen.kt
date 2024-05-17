@@ -62,7 +62,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.AddToCartRequest
-import com.doansgu.cafectm.model.AuthorizationManager
 import com.doansgu.cafectm.ui.components.CustomToast
 import com.doansgu.cafectm.ui.components.IconButtonCustom
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
@@ -110,10 +109,8 @@ fun DetailScreen(navController: NavController, _id: String) {
         } else {
             Scaffold(bottomBar = {
                 AddtoCart(onClick = {
-                    AuthorizationManager.getAuthorization()?.let {
-                        carViewModel.addToCart(AddToCartRequest(_id))
-                        showToast = true
-                    }
+                    carViewModel.addToCart(AddToCartRequest(_id))
+                    showToast = true
                 })
             }) {
                 Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {

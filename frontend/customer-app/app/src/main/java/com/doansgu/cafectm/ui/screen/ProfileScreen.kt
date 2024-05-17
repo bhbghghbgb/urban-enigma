@@ -218,7 +218,7 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
     val state by viewModel.state.observeAsState()
     val qrCode = remember { mutableStateOf<ImageBitmap?>(null) }
     LaunchedEffect(customer) {
-        AuthorizationManager.getAuthorization()?.let { viewModel.getInfoUser() }
+        viewModel.getInfoUser()
     }
     when (state) {
         StateProfile.LOADING -> {
