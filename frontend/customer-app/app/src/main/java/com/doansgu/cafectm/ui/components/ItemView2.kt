@@ -97,7 +97,7 @@ fun ItemView2(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight()
+                .wrapContentHeight()
                 .clip(RoundedCornerShape(16.dp))
         ) {
             Box {
