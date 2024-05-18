@@ -11,6 +11,29 @@ exports.getStaffs = async (req, res) => {
     }
 };
 
+exports.getUsernameAndName = async (req, res) => {
+    try {
+        const staffs = await Staff.find().populate('commonuser.account', 'username');
+        const staffData = staffs.map(staff => {
+            return {
+                name: staff.commonuser.name,
+                username: staff.commonuser.account.username
+            };
+        });
+        const customers = await Customer.find().populate('commonuser.account', 'username');
+        const customerData = customers.map(customer => {
+            return {
+                name: customer.commonuser.name,
+                username: customer.commonuser.account.username
+            };
+        });
+        const userData = staffData.concat(customerData);
+        res.json(userData);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
+
 exports.getInfo = async (req, res) => {
     try {
         const user = await (

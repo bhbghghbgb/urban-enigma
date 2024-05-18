@@ -16,6 +16,8 @@ router.get(
 );
 // -> lấy danh sách customer
 router.get("/customer", userController.getCustomers);
+// -> lấy danh sách customer
+router.get("/username-name", userController.getUsernameAndName);
 // -> thêm 1 staff
 router.post("/add/staff", userController.createStaff);
 // -> thêm 1 customer
