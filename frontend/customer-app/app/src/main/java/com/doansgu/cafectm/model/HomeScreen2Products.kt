@@ -1,9 +1,9 @@
 package com.doansgu.cafectm.model
 
-import kotlinx.serialization.SerialName
+import com.google.gson.annotations.SerializedName
 
 data class HomeScreen2Products(
-    @SerialName("banners") val banners: List<Product2>? = null,
-    @SerialName("best_sellers") val bestSellers: List<Product2>? = null,
-    @SerialName("for_you") val forYou: List<Product2>? = null,
+    @SerializedName("banners") val banners: List<Product2>? = null,
+    @SerializedName("bestSellers") val bestSellers: List<Product2>? = null,
+    @SerializedName("forYou") val forYou: List<Product2>? = null,
 )

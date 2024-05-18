@@ -247,7 +247,7 @@ fun ContentProfile(paddingValues: PaddingValues, viewModel: ProfileViewModel) {
                     Image(
                         bitmap = it,
                         contentDescription = "Customer QR Code",
-                        modifier = Modifier.size(height = 120.dp, width = 120.dp),
+//                        modifier = Modifier.size(height = 120.dp, width = 120.dp),
                         contentScale = ContentScale.Crop,
                     )
                 }

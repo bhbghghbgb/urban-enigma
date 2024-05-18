@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -23,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -68,149 +72,134 @@ fun HomeScreen2(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            LazyColumn() {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(85.dp)
-                            .offset(y = (-10).dp)
-                            .background(Color.White)
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(85.dp)
+                        .offset(y = (-10).dp)
+                        .background(Color.White)
 
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(55.dp)
+                            .clip(
+                                RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp)
+                            )
+                            .background(Color(0xFF9C7055))
+                    ) {}
+                    Row {
+                        SearchView(navController, false, {
+                            navController.navigate("menuproduct") {
+                                launchSingleTop = true
+                            }
+                        }, {}, null)
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    ImageSliderWithIndicator(
+                        imageList = listOf(
+                            R.drawable.poster4, R.drawable.poster5, R.drawable.postercoffee3
+                        )
+                    )
+                }
+                Box(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .height(55.dp)
-                                .clip(
-                                    RoundedCornerShape(bottomStart = 40.dp, bottomEnd = 40.dp)
-                                )
-                                .background(Color(0xFF9C7055))
-                        ) {}
                         Row {
-                            SearchView(navController, false, {
-                                navController.navigate("menuproduct") {
-                                    launchSingleTop = true
-                                }
-                            }, {}, null)
+                            Text(
+                                text = "Special For You!",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight(1000),
+                                fontFamily = FontFamily(fontPoppinsSemi),
+                                color = Color.Black
+                            )
+                        }
+                        Row {
+                            TextButton(onClick = { /*TODO*/ }) {
+                                Text(
+                                    text = "View All", color = Color(0xFF9C7055)
+                                )
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                    contentDescription = "",
+                                    tint = Color(0xFF9C7055)
+                                )
+                            }
                         }
                     }
-                    Box(
-                        modifier = Modifier
-                            .padding(top = 5.dp)
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        ImageSliderWithIndicator(
-                            imageList = listOf(
-                                R.drawable.poster4, R.drawable.poster5, R.drawable.postercoffee3
-                            )
+                }
+                val productListForYou by viewModel.productListForYou.observeAsState(emptyList())
+                val productListBestSellers by viewModel.productListBestSellers.collectAsState()
+                LazyRow(
+                    contentPadding = PaddingValues(16.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(productListBestSellers) { product ->
+                        ItemView2(
+                            name = product.name,
+                            image = product.image,
+                            description = product.description,
+                            price = product.price,
+                            rating = product.rating,
+                            navController = navController,
                         )
                     }
-                    Box(
-                        modifier = Modifier.padding(horizontal = 16.dp)
+                }
+                Box(
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row {
-                                Text(
-                                    text = "Special For You!",
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight(1000),
-                                    fontFamily = FontFamily(fontPoppinsSemi),
-                                    color = Color.Black
-                                )
-                            }
-                            Row {
-                                TextButton(onClick = { /*TODO*/ }) {
-                                    Text(
-                                        text = "View All", color = Color(0xFF9C7055)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                                        contentDescription = "",
-                                        tint = Color(0xFF9C7055)
-                                    )
-                                }
-                            }
-                        }
-                    }
-                    val productList by viewModel.productList.observeAsState(emptyList())
-                    LazyRow(
-                        contentPadding = PaddingValues(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(productList) { product ->
-                            ItemView2(
-                                name = product.name,
-                                image = product.image,
-                                description = product.description,
-                                price = product.price,
-                                rating = product.rating,
-                                navController = navController,
+                        Row {
+                            Text(
+                                text = "Popular Menu",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight(1000),
+                                fontFamily = FontFamily(fontPoppinsSemi),
+                                color = Color.Black
                             )
                         }
-//                    items {
-//                        productList.forEach {
-//                            ItemView2(
-//                                name = it.name,
-//                                image = it.image,
-//                                description = it.description,
-//                                price = it.price,
-//                                rating = it.rating,
-//                                navController = navController,
-//                            )
-//                        }
-//                    }
-                    }
-                    Box(
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row {
+                        Row {
+                            TextButton(onClick = { /*TODO*/ }) {
                                 Text(
-                                    text = "Popular Menu",
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight(1000),
-                                    fontFamily = FontFamily(fontPoppinsSemi),
-                                    color = Color.Black
+                                    text = "View All", color = Color(0xFF9C7055)
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowRight,
+                                    contentDescription = "",
+                                    tint = Color(0xFF9C7055)
                                 )
                             }
-                            Row {
-                                TextButton(onClick = { /*TODO*/ }) {
-                                    Text(
-                                        text = "View All", color = Color(0xFF9C7055)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Default.KeyboardArrowRight,
-                                        contentDescription = "",
-                                        tint = Color(0xFF9C7055)
-                                    )
-                                }
-                            }
                         }
                     }
-                    Column(
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    ) {
-//                        item {
-                        productList.forEach {
-                            ItemViewRow2(
-                                name = it.name,
-                                image = it.image,
-                                description = it.description,
-                                price = it.price,
-                                rating = it.rating,
-                                navController = navController,
-                            )
-                        }
-//                        }
+                }
+                LazyColumn(
+                    modifier = Modifier.padding(horizontal = 16.dp).heightIn(0.dp, 400.dp)
+                ) {
+                    items(productListForYou) {
+                        ItemViewRow2(
+                            name = it.name,
+                            image = it.image,
+                            description = it.description,
+                            price = it.price,
+                            rating = it.rating,
+                            navController = navController,
+                        )
                     }
                 }
             }

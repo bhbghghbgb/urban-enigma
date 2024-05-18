@@ -208,7 +208,7 @@ exports.getHomeScreenProducts = async function (req, res) {
     console.log(random)
     return res.json({
         banner: random.slice(0, 3),
-        bestSeller: random.slice(3, 8),
+        bestSellers: random.slice(3, 8),
         forYou: random.slice(8, 13),
     });
 };
