@@ -60,12 +60,14 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.ui.components.CustomToast
 import com.doansgu.cafectm.ui.components.IconButtonCustom
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
+import com.doansgu.cafectm.util.backendImageRoute
 import com.doansgu.cafectm.viewmodel.CartViewModel
 import com.doansgu.cafectm.viewmodel.DetailViewModel
 import kotlinx.coroutines.delay
@@ -74,15 +76,15 @@ import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailScreen(navController: NavController, _id: String) {
+fun DetailScreen(navController: NavController, id: String) {
     val viewModel = DetailViewModel()
     val carViewModel = CartViewModel()
     val product by viewModel.product.observeAsState()
     var showToast by remember { mutableStateOf(false) }
 
-    LaunchedEffect(_id) {
-        viewModel.fetchData(_id)
-    }
+//    LaunchedEffect(id) {
+        viewModel.fetchData(id)
+//    }
     val scollState = rememberLazyListState()
     Box(
         modifier = Modifier.fillMaxSize()
@@ -90,7 +92,7 @@ fun DetailScreen(navController: NavController, _id: String) {
         if (product == null) {
             LazyColumn(
                 contentPadding = PaddingValues(top = 420.dp),
-                modifier = Modifier.background(White),
+                modifier = Modifier.background(White).fillMaxSize(),
             ) {
                 item {
                     Row(
@@ -109,13 +111,13 @@ fun DetailScreen(navController: NavController, _id: String) {
         } else {
             Scaffold(bottomBar = {
                 AddtoCart(onClick = {
-                    carViewModel.addToCart(AddToCartRequest(_id))
+                    carViewModel.addToCart(AddToCartRequest(id))
                     showToast = true
                 })
             }) {
                 Box(modifier = Modifier.padding(bottom = it.calculateBottomPadding())) {
-                    Content(scollState, product?.description, null, product?.price)
-                    TopBarDetail(scollState, navController, product?.name)
+                    Content(scollState, product?.description, product?.rating, product?.price)
+                    TopBarDetail(scollState, navController, product?.name, product?.image)
 
                     if (showToast) {
                         LaunchedEffect(showToast) {
@@ -131,7 +133,7 @@ fun DetailScreen(navController: NavController, _id: String) {
 }
 
 @Composable
-fun TopBarDetail(scrollState: LazyListState, navController: NavController, name: String?) {
+fun TopBarDetail(scrollState: LazyListState, navController: NavController, name: String?, image: String?) {
     val imageHeight = 350.dp
 //    val screenHeight = LocalConfiguration.current.screenHeightDp
 
@@ -156,11 +158,14 @@ fun TopBarDetail(scrollState: LazyListState, navController: NavController, name:
                     .graphicsLayer {
                         alpha = 1f - offsetProgress
                     }) {
-                Image(
-                    painter = painterResource(id = R.drawable.mocha),
+                AsyncImage(
+                    model = backendImageRoute(image),
+                    placeholder = painterResource(id = R.drawable.ic_img_loading),
+                    error = painterResource(id = R.drawable.img_404_not_found),
+                    modifier = Modifier
+                        .fillMaxSize(),
                     contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
+                    contentScale = ContentScale.Crop
                 )
                 Box(
                     modifier = Modifier

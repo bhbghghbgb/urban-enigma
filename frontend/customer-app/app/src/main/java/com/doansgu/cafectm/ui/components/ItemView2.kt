@@ -25,6 +25,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,9 +46,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.doansgu.cafectm.R
+import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
 import com.doansgu.cafectm.util.backendImageRoute
+import com.doansgu.cafectm.viewmodel.CartViewModel
+import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -87,7 +96,7 @@ fun ItemView2(
             .width(180.dp)
             .wrapContentHeight()
             .clickable {
-                navController.navigate("detail")
+                navController.navigate("detail/$id")
             },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -193,6 +202,23 @@ fun ItemViewRow2(
     rating: Double?,
     navController: NavController
 ) {
+    val viewModel = remember { CartViewModel() }
+    val addToCart = id?.let { AddToCartRequest(it) }
+    val isValidAddToCart by viewModel.isValidAddToCart.observeAsState()
+    var showToast by remember { mutableStateOf(false) }
+    if (isValidAddToCart == true) {
+        LaunchedEffect(isValidAddToCart) {
+            showToast = true
+        }
+    }
+
+    if (showToast) {
+        LaunchedEffect(showToast) {
+            delay(2000)
+            showToast = false
+        }
+        CustomToast(message = "Add to cart succesfully!!!")
+    }
     ElevatedCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -279,7 +305,10 @@ fun ItemViewRow2(
                         Text(text = rating.toString(), fontSize = 16.sp, color = Color.Black)
                     }
                     Spacer(modifier = Modifier.height(10.dp))
-                    IconButton(onClick = {}, modifier = Modifier.size(40.dp)) {
+                    IconButton(onClick = {
+                        addToCart?.let { viewModel.addToCart(it) }
+                        showToast = true
+                    }, modifier = Modifier.size(40.dp)) {
                         Icon(
                             modifier = Modifier
                                 .fillMaxHeight()
