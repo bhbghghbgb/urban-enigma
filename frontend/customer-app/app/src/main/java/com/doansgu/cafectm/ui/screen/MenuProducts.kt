@@ -184,8 +184,9 @@ fun RenderProductList(
                 item {
                     Box(modifier = Modifier.padding(horizontal = 16.dp)) {
                         ItemViewRow2(
+                            id = product.id,
                             name = product.name,
-                            image = /*R.drawable.mocha,*/ null,
+                            image = product.image,
                             description = product.description,
                             price = product.price,
                             rating = product.rating,
