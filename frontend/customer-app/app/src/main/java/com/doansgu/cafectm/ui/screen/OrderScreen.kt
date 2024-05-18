@@ -64,12 +64,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.model.Cart
 import com.doansgu.cafectm.model.ProductOfCart
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
+import com.doansgu.cafectm.util.backendImageRoute
 import com.doansgu.cafectm.viewmodel.CartViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -606,11 +608,13 @@ fun ItemOrder(
             .clickable(onClick = onItemClick),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
+        AsyncImage(
+            model = backendImageRoute(product.product.image),
+            placeholder = painterResource(id = R.drawable.ic_img_loading),
+            error = painterResource(id = R.drawable.img_404_not_found),
             modifier = Modifier
                 .size(80.dp)
                 .clip(RoundedCornerShape(10.dp)),
-            painter = painterResource(id = R.drawable.mocha),
             contentDescription = null,
             contentScale = ContentScale.FillBounds
         )

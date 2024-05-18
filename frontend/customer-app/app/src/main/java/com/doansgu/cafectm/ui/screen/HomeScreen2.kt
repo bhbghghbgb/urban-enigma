@@ -195,7 +195,9 @@ fun HomeScreen2(
                     }
                 }
                 LazyColumn(
-                    modifier = Modifier.padding(horizontal = 16.dp).heightIn(0.dp, 400.dp)
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .heightIn(0.dp, 400.dp)
                 ) {
                     items(productListForYou) {
                         ItemViewRow2(
@@ -207,6 +209,7 @@ fun HomeScreen2(
                             rating = it.rating,
                             navController = navController,
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
                     }
                 }
             }
