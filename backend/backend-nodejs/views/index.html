@@ -1266,6 +1266,17 @@
                         </li>
                         <li>
                             <a
+                                href="?pushnotification"
+                                class="item-menu"
+                            >
+                                <span class="icon"
+                                    ><i class="fa-solid fa-envelope"></i
+                                ></span>
+                                <span class="item">Notification</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a
                                 href="?staff"
                                 class="item-menu"
                             >
@@ -1312,6 +1323,7 @@
                 </div>
             </div>
         </div>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             let staffID;
             function formatDateReverse(inputDate) {
@@ -1712,18 +1724,23 @@
                         setDisplayCategory();
                         break;
                     case "staff":
-                        list[3].classList.add("active");
+                        list[4].classList.add("active");
                         title_navbar.innerText = "Staff";
                         setDisplayStaff();
                         break;
                     case "delivery":
-                        list[4].classList.add("active");
+                        list[5].classList.add("active");
                         title_navbar.innerText = "Delivery";
                         setDisplayDelivery();
                         break;
                     case "settings":
-                        list[5].classList.add("active");
+                        list[6].classList.add("active");
                         title_navbar.innerText = "Settings";
+                        break;
+                    case "pushnotification":
+                        list[3].classList.add("active");
+                        title_navbar.innerText = "Notification";
+                        setDisplayNotification();
                         break;
                 }
             };
@@ -1736,6 +1753,71 @@
                         alert("Delete this category is not successfully");
                     }
                 }
+            }
+
+            function setDisplayNotification() {
+                let container = document.querySelector(".container");
+                container.innerHTML = `
+                <h1>Notification</h1><br>
+                <label for="title-notification" style="font-size:20px">Title:</label><br>
+                <input type="text" id="title-notification" name="title" style="font-size:16px; border: 1px solid #ccc; padding:10px"><br>
+                <label style="font-size:20px">Description:</label><br>
+                <div id="editor-description" contenteditable="true" style="height: 400px; border: 1px solid #ccc; background:white; padding: 10px; font-size: 17px"></div><br>
+
+                <div style="display: flex; align-items: center;">
+                    <label for="userList" style="font-size:20px; margin-right: 10px;">Select User:</label>
+                    <select id="userList" style="font-size:16px; border: 1px solid #ccc; padding:10px;">
+                        <option value="user1">Nguyễn Văn An</option>
+                        <option value="user2">Trần Thị A</option>
+                        <option value="user3">Hoàng Văn A</option>
+                    </select>
+                    <button id="sendNotificationButton" style="font-size:16px; padding:10px; margin-left: 10px; ">Send</button>
+                </div>
+                `
+                let script = document.createElement('script');
+                script.text = `
+                    $(document).ready(function(){
+
+                        $.ajax({
+                            url: 'http://localhost:3001/user/username-name',
+                            method: 'GET',
+                            success: function(response) {
+                                console.log(response)
+                                $('#userList').empty();
+                                response.forEach(function(user) {
+                                    $('#userList').append(\`<option value="\${user.username}">\${user.name}</option>\`);
+                                });
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error:', error);
+                            }
+                        });
+
+                        $('#sendNotificationButton').click(function(){
+                            var title = $('#title-notification').val();
+                            var description = $('#editor-description').html();
+                            var selectedUser = $('#userList').val();
+                            var data = {
+                                title: title,
+                                desc: description,
+                                account: selectedUser,
+                            }
+                            $.ajax({
+                                url: 'http://localhost:3001/notification',
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify(data),
+                                success: function(response) {
+                                    
+                                },
+                                error: function(xhr, status, error) {
+                                    alert("Error");
+                                }
+                            });
+                        });
+                    });
+                `;
+                document.body.appendChild(script);
             }
 
             async function setDisplayCategory() {
