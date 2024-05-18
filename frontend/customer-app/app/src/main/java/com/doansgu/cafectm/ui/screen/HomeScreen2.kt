@@ -1,11 +1,13 @@
 package com.doansgu.cafectm.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -33,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +65,8 @@ fun HomeScreen2(
     viewModel: HomeScreen2ViewModel,
     bottom: @Composable () -> Unit
 ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    keyboardController?.hide()
     Scaffold(
         topBar = {
             TopBarHome()
@@ -148,6 +153,7 @@ fun HomeScreen2(
                 ) {
                     items(productListBestSellers) { product ->
                         ItemView2(
+                            id = product.id,
                             name = product.name,
                             image = product.image,
                             description = product.description,
@@ -193,6 +199,7 @@ fun HomeScreen2(
                 ) {
                     items(productListForYou) {
                         ItemViewRow2(
+                            id = it.id,
                             name = it.name,
                             image = it.image,
                             description = it.description,

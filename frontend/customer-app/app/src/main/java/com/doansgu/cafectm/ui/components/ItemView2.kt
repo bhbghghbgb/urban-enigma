@@ -48,6 +48,7 @@ import com.doansgu.cafectm.util.backendImageRoute
 @Composable
 fun ItemView2Preview() {
     ItemView2(
+        id = "TEST",
         name = "Tra sua",
         image = null,
         description = "Tra sua khong duong",
@@ -61,6 +62,7 @@ fun ItemView2Preview() {
 @Composable
 fun ItemViewRow2Preview() {
     ItemViewRow2(
+        id = "TEST",
         name = "Tra sua",
         image = null,
         description = "Tra sua khong duong",
@@ -72,6 +74,7 @@ fun ItemViewRow2Preview() {
 
 @Composable
 fun ItemView2(
+    id: String?,
     name: String?,
     image: String?,
     description: String?,
@@ -182,6 +185,7 @@ fun ItemView2(
 
 @Composable
 fun ItemViewRow2(
+    id: String?,
     name: String?,
     image: String?,
     description: String?,
@@ -194,7 +198,7 @@ fun ItemViewRow2(
             .fillMaxWidth()
             .fillMaxHeight()
             .clickable {
-                navController.navigate("detail")
+                navController.navigate("detail/$id")
             }, shape = RoundedCornerShape(10.dp), colors = CardDefaults.cardColors(
             containerColor = Color.White
         ), elevation = CardDefaults.cardElevation(
@@ -227,7 +231,8 @@ fun ItemViewRow2(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(
-                    horizontalAlignment = Alignment.Start
+                    horizontalAlignment = Alignment.Start,
+                    modifier = Modifier.weight(3f)
                 ) {
                     Text(
                         text = name ?: "null",
@@ -256,6 +261,7 @@ fun ItemViewRow2(
                 Column(
                     modifier = Modifier
                         .wrapContentWidth()
+                        .weight(1f)
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {

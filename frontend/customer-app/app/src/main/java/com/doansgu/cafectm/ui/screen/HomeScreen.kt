@@ -255,6 +255,7 @@ fun ContentHome(
                     } else {
                         productLists.forEach { product ->
                             ItemViewRow2(
+                                id = product.id,
                                 name = product.name,
                                 image = /*R.drawable.mocha*/ null,
                                 description = product.description,
