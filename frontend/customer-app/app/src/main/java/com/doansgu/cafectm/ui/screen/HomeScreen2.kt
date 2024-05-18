@@ -68,7 +68,7 @@ fun HomeScreen2(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            Column(modifier = Modifier.padding(paddingValues)) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
