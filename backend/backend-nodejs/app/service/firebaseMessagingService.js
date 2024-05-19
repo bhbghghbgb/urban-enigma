@@ -10,13 +10,23 @@ async function send_notification(accountDocument, title, body) {
         err.statusCode = StatusCodes.NOT_FOUND;
         throw err;
     }
-    return await admin.messaging().send({
+    
+    const message = {
         notification: {
             title,
             body,
         },
-        token,
-    });
+        token: token,
+    };
+
+    try {
+        const response = await admin.messaging().send(message);
+        console.log("Successfully sent message:", response);
+        return response;
+    } catch (error) {
+        console.error("Error sending message:", error);
+        throw error;
+    }
 }
 module.exports = {
     send_notification,

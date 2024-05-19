@@ -1798,9 +1798,9 @@
                             var description = $('#editor-description').html();
                             var selectedUser = $('#userList').val();
                             var data = {
+                                account: selectedUser,
                                 title: title,
                                 desc: description,
-                                account: selectedUser,
                             }
                             $.ajax({
                                 url: 'http://localhost:3001/notification',
@@ -1811,7 +1811,7 @@
                                     
                                 },
                                 error: function(xhr, status, error) {
-                                    alert("Error");
+                                    alert(error);
                                 }
                             });
                         });
