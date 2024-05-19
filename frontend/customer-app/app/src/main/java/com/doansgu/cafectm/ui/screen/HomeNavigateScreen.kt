@@ -3,13 +3,11 @@ package com.doansgu.cafectm.ui.screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -75,10 +73,9 @@ fun BottomBar(navController: NavHostController) {
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    BottomNavigation(
+    NavigationBar(
         modifier = Modifier.height(65.dp),
         contentColor = Color(0xFFEDC0A9),
-        backgroundColor = Color.White
     ) {
         screens.forEach { screen ->
             AddItem(
@@ -142,21 +139,16 @@ fun BottomNavGraph(
 fun RowScope.AddItem(
     screen: NavigationItem, currentDestination: NavDestination?, navController: NavHostController
 ) {
-    BottomNavigationItem(label = {
+    NavigationBarItem(label = {
         Text(text = screen.title, fontSize = 10.sp)
-    },
-        icon = {
-            Icon(imageVector = screen.icon, contentDescription = null)
-        },
-        selected = currentDestination?.hierarchy?.any {
-            it.route == screen.route
-        } == true,
-        selectedContentColor = Color(0xFF9C7055),
-        unselectedContentColor = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
-        onClick = {
-            navController.navigate(screen.route) {
-                popUpTo(navController.graph.findStartDestination().id)
-                launchSingleTop = true
-            }
-        })
+    }, icon = {
+        Icon(imageVector = screen.icon, contentDescription = null)
+    }, selected = currentDestination?.hierarchy?.any {
+        it.route == screen.route
+    } == true, onClick = {
+        navController.navigate(screen.route) {
+            popUpTo(navController.graph.findStartDestination().id)
+            launchSingleTop = true
+        }
+    })
 }
