@@ -563,7 +563,7 @@ fun BottomCheckOut(
 
                 Button(
                     onClick = {
-                        viewModel.updateCart()
+//                        viewModel.updateCart()
                         viewModel.pay(discount = pointUsed, address = deliveryAddress, note = noteText,
                             paymentMethod = selectedPaymentMethod)
                     },
