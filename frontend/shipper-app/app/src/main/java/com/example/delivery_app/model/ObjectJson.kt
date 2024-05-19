@@ -101,3 +101,7 @@ data class IncreasePoint(
     val username: String,
     val point: Int
 )
+
+data class Status(
+    val status: String
+)

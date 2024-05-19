@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -34,12 +35,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +52,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,12 +61,14 @@ import androidx.navigation.NavController
 import com.example.delivery_app.R
 import com.example.delivery_app.model.DetailOrders
 import com.example.delivery_app.model.Order
+import com.example.delivery_app.model.Status
 import com.example.delivery_app.viewmodel.OrderViewModel
 import com.example.delivery_app.viewmodel.State
 import com.example.delivery_app.util.FormatDateTime
 
 @Composable
 fun InformationOrder(navController: NavController, id: String, viewModel: OrderViewModel) {
+    var showOrderConfirmationDialog by remember { mutableStateOf(false) }
     val order by viewModel.order.observeAsState()
     val state by viewModel.state.observeAsState()
     LaunchedEffect(Unit) {
@@ -82,10 +91,83 @@ fun InformationOrder(navController: NavController, id: String, viewModel: OrderV
                 }
 
                 State.SUCCESS -> {
-                    ContentInformationOrder(paddingValues, order = order!!, viewModel = viewModel)
+                    ContentInformationOrder(paddingValues, order = order!!, viewModel = viewModel) {
+                        showOrderConfirmationDialog = true
+                    }
                 }
 
                 else -> {}
+            }
+        }
+        if (showOrderConfirmationDialog) {
+            Surface(
+                color = Color.Black.copy(alpha = 0.5f),
+                modifier = Modifier.fillMaxSize(),
+                contentColor = Color.Transparent,
+            ) {
+                AlertDialog(
+                    onDismissRequest = { showOrderConfirmationDialog = false },
+                    title = {
+                        Text(
+                            text = "Delivery confirmation",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "Do customers want to accumulate membership points?",
+                            fontWeight = FontWeight.W400,
+                            fontSize = 18.sp,
+                            color = Color.Black,
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                    confirmButton = {
+                        Button(
+                            onClick = {
+                                viewModel.updateStatusDelivery(id, Status("delivered"))
+                                showOrderConfirmationDialog = false
+                                navController.popBackStack()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(
+                                    0xFF9c7055
+                                )
+                            ),
+                            modifier = Modifier.padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Yes", color = Color.White,
+                                fontWeight = FontWeight.W400,
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        Button(
+                            onClick = {
+                                showOrderConfirmationDialog = false
+                            },
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .padding(start = 8.dp)
+                                .height(48.dp)
+                                .clip(RoundedCornerShape(24.dp)),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.LightGray.copy(
+                                    alpha = 0.1f
+                                )
+                            ),
+                        ) {
+                            Text(
+                                text = "No", color = Color.Gray,
+                                fontWeight = FontWeight.W400,
+                            )
+                        }
+                    },
+                    containerColor = Color.White,
+                    textContentColor = Color.Transparent
+                )
             }
         }
     }
@@ -130,7 +212,12 @@ fun TopBarCenterOrderInformation(navController: NavController) {
 }
 
 @Composable
-fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewModel: OrderViewModel) {
+fun ContentInformationOrder(
+    paddingValues: PaddingValues,
+    order: Order,
+    viewModel: OrderViewModel,
+    onclick: () -> Unit
+) {
     val formatDateTime = FormatDateTime()
     Box(
         modifier = Modifier
@@ -307,7 +394,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewMode
                             )
                             Spacer(modifier = Modifier.height(5.dp))
                             Button(
-                                onClick = { },
+                                onClick = { onclick() },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 0.dp),
