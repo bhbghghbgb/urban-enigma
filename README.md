@@ -4,6 +4,7 @@ do an android nang cao sgu app cua hang giao do an
 ## Chu y
 1. ⚠ xem update mới ngày `Tue May 14 2024 22:27:42 GMT+0700 (Indochina Time)`: [nhập thêm app shipper vào firebase](#add-app-shipper-to-firebase)
 2. ⚠ xem update mới ngày `Wed May 15 2024 00:42:23 GMT+0700 (Indochina Time)`: [kết nối qua internet](#connecting-over-the-internet)
+3. ⚠ xem update mới ngày `Mon May 20 2024 01:14:49 GMT+0700 (Indochina Time)`: [đổi format log ip access control](#whitelist-ip-on-backend)
 
 ## thông tin setup để chạy local
 
@@ -89,12 +90,12 @@ do an android nang cao sgu app cua hang giao do an
 4. Tránh commit file config tránh để bị lộ IP nếu không thích.
 5. ℹ️ các ip có ghi sẵn như `["127.0.0.1", "localhost", "::1", "10.0.2.2", "10.0.3.2"]` là các ip loopback và loopback cho host của android studio emulator
 ###### whitelist ip on backend
-6. nếu kết nối local (test bằng GET `/helloworld`) cũng bị `403 Forbidden, this client IP is not whitelisted.`, hoặc muốn add ip qua mạng này vào danh sách
-7. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/a62fd88c-ef95-4761-a3d5-68cfb08d13ed)
-8. đọc log của server, ví dụ thấy `::1 denied` bị chặn mà đó là của mình, thì thêm vào `WHITELIST_IPS` trong `/backend/app/config/_APP.js`
-9. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/ab4a4d79-2483-45cc-9e96-aaf11e0e35d2)
-10. **restart server**, bảo đảm đã GET `/helloworld` được, log show `_ accessed`
-11. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/06a3ab83-5408-4613-88d3-e787760998e3)
+6. nếu kết nối local (test bằng GET `/helloworld`) cũng bị `403 Forbidden, this client IP ${chuoi gi do} is not whitelisted.`, hoặc muốn add ip qua mạng này vào danh sách
+7. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/13836d0b-5a36-4242-a277-3918f9dfebf0)
+8. đọc log của server, **ví dụ** thấy `::ffff:127.0.0.1 (forwarded for 2402:0000:0000:0000:0000:0000:0000:9cba)` bị chặn mà đó là của mình, thì thêm vào `WHITELIST_IPS` trong `/backend/app/config/_APP.js`. thì thêm cả 2 cái IP `::ffff:127.0.0.1` và `2402:0000:0000:0000:0000:0000:0000:9cba`.
+9. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/8b51033f-d414-4fff-b066-74bf90585643)
+10. **restart server**, bảo đảm đã GET `/helloworld` được, hoặc vào được trang chủ, log show `_ accessed`
+11. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/4deb9c4b-02da-4db2-b32e-f804a230ae7c)
 
 ### Ngrok
 1. vào https://dashboard.ngrok.com/login đăng nhập google
