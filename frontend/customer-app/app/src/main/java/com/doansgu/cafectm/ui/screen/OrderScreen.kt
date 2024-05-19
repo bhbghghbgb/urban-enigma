@@ -1,9 +1,7 @@
 package com.doansgu.cafectm.ui.screen
 
 import android.app.Activity
-import android.os.StrictMode
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Switch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -68,6 +67,7 @@ import coil.compose.AsyncImage
 import com.doansgu.cafectm.R
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.model.Cart
+import com.doansgu.cafectm.model.PaymentState
 import com.doansgu.cafectm.model.ProductOfCart
 import com.doansgu.cafectm.ui.theme.fontPoppinsRegular
 import com.doansgu.cafectm.ui.theme.fontPoppinsSemi
@@ -116,12 +116,15 @@ fun ContentOrder(
 ) {
     val cart by viewModel.cart.observeAsState()
     var isEditAddressDialogVisible by remember { mutableStateOf(false) }
+    val user by viewModel.userData.observeAsState()
     var noteText by remember { mutableStateOf("") }
     val deliveryAddress by viewModel.address.observeAsState("")
     var selectedPaymentMethod by remember { mutableStateOf("Cash") }
+    val total by viewModel.total.collectAsState()
     val activity = LocalContext.current as? Activity
-    LaunchedEffect(Unit) {
-        viewModel.getCardOfUser()
+    var pointUsed by remember { mutableStateOf(0) }
+    LaunchedEffect(cart, total, user) {
+        viewModel.fetchData()
     }
     Box(
         modifier = Modifier.fillMaxSize()
@@ -227,19 +230,25 @@ fun ContentOrder(
                     if (cart != null) {
                         for (item in cart!!.products) {
                             ItemOrder(product = item, onDeleteClicked = {
-                                val addToCart = AddToCartRequest(item.product._id)
-                                viewModel.deleteProduct(
-                                    addToCart
-                                )
+                                val addToCart = item.product.id?.let { AddToCartRequest(it) }
+                                if (addToCart != null) {
+                                    viewModel.deleteProduct(
+                                        addToCart
+                                    )
+                                }
                             }, onIncreaseClicked = {
-                                viewModel.increaseProductQuantity(item.product._id)
+                                item.product.id?.let { viewModel.increaseProductQuantity(it) }
                             }, onDecreaseClicked = {
-                                val addToCart = AddToCartRequest(item.product._id)
-                                viewModel.decreaseProductQuantity(
-                                    item.product._id, addToCart
-                                )
+                                val addToCart = item.product.id?.let { AddToCartRequest(it) }
+                                item.product.id?.let {
+                                    if (addToCart != null) {
+                                        viewModel.decreaseProductQuantity(
+                                            it, addToCart
+                                        )
+                                    }
+                                }
                             }, onItemClick = {
-                                navController.navigate("detail/${item.product._id}")
+                                navController.navigate("detail/${item.product.id}")
                             })
                         }
                     }
@@ -283,7 +292,7 @@ fun ContentOrder(
                                 fontFamily = FontFamily(fontPoppinsRegular)
                             )
                             Text(
-                                text = "${cart!!.total}$",
+                                text = "${total}$",
                                 fontSize = 18.sp,
                                 fontFamily = FontFamily(fontPoppinsSemi)
                             )
@@ -317,11 +326,24 @@ fun ContentOrder(
                                 fontFamily = FontFamily(fontPoppinsRegular)
                             )
                             Text(
-                                text = "0$",
+                                text = "${user!!.membershipPoint}",
                                 fontSize = 16.sp,
                                 fontFamily = FontFamily(fontPoppinsSemi)
                             )
+                            // Declaring a boolean value for storing checked state
+                            val mCheckedState = remember{ mutableStateOf(false)}
+
+                            // Creating a Switch, when value changes,
+                            // it updates mCheckedState value
+                            Switch(checked = mCheckedState.value, onCheckedChange = {mCheckedState.value = it})
+                            if (mCheckedState.value) {
+                                pointUsed = user!!.membershipPoint
+                                Text(text = "-${pointUsed * 10} VND",
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily(fontPoppinsSemi))
+                            }
                         }
+
                     }
                 }
             }
@@ -353,7 +375,7 @@ fun ContentOrder(
             item {
                 cart?.let { cart ->
                     if (activity != null) {
-                        BottomCheckOut(cart = cart, viewModel, activity)
+                        BottomCheckOut(cart = cart, viewModel, activity, pointUsed, selectedPaymentMethod, deliveryAddress, noteText)
                     }
                 }
             }
@@ -496,7 +518,15 @@ fun EditAddressDialog(
 
 
 @Composable
-fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
+fun BottomCheckOut(
+    cart: Cart,
+    viewModel: CartViewModel,
+    activity: Activity,
+    pointUsed: Int,
+    selectedPaymentMethod: String,
+    deliveryAddress: String,
+    noteText: String
+) {
     if (cart.products.isNotEmpty()) {
         Box(
             modifier = Modifier
@@ -523,14 +553,12 @@ fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 val paymentState by viewModel.paymentState.collectAsState()
-                var showDialog by remember { mutableStateOf(false) }
 
                 Button(
                     onClick = {
                         viewModel.updateCart()
-                        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-                        StrictMode.setThreadPolicy(policy)
-                        viewModel.pay(activity)
+                        viewModel.pay(discount = pointUsed, address = deliveryAddress, note = noteText,
+                            paymentMethod = selectedPaymentMethod)
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C7055))
@@ -541,25 +569,27 @@ fun BottomCheckOut(cart: Cart, viewModel: CartViewModel, activity: Activity) {
                         fontFamily = FontFamily(fontPoppinsSemi)
                     )
                 }
-                if (showDialog) {
-                    when {
-                        paymentState?.onSusses == true -> {
-                            ShowPaymentSuccessDialog(title = "Payment Success",
-                                message = "Thanh toán thành công",
-                                onDismissRequest = { showDialog = false })
-                        }
 
-                        paymentState?.onCancel == true -> {
-                            ShowPaymentSuccessDialog(title = "Payment Canceled",
-                                message = "Thanh toán bị hủy",
-                                onDismissRequest = { showDialog = false })
-                        }
+                when (paymentState) {
+                    PaymentState.Loading -> {
 
-                        paymentState?.onFailed == true -> {
-                            ShowPaymentSuccessDialog(title = "Payment Error",
-                                message = "Thanh toán không thành công",
-                                onDismissRequest = { showDialog = false })
-                        }
+                    }
+                    PaymentState.Success -> {
+                        ShowPaymentSuccessDialog(title = "Payment Success",
+                            message = "Thanh toán thành công",
+                            onDismissRequest = { viewModel.closeDialog() })
+
+                    }
+
+                    PaymentState.Cancel -> {
+                        ShowPaymentSuccessDialog(title = "Payment Cancel",
+                            message = "Thanh toán bị hủy",
+                            onDismissRequest = { viewModel.closeDialog() })
+                    }
+                    PaymentState.Error -> {
+                        ShowPaymentSuccessDialog(title = "Payment Error",
+                            message = "Thanh toán không thành công",
+                            onDismissRequest = { viewModel.closeDialog() })
                     }
                 }
 
@@ -584,13 +614,8 @@ fun ShowPaymentSuccessDialog(
         ) {
             Text(text = "OK")
         }
-    }, dismissButton = {
-        TextButton(
-            onClick = onDismissRequest
-        ) {
-            Text(text = "Cancel")
-        }
-    })
+    }
+    )
 }
 
 @Composable
@@ -622,13 +647,15 @@ fun ItemOrder(
         Column(
             modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Text(
-                text = product.product.name,
-                maxLines = 1,
-                fontSize = 17.sp,
-                fontFamily = FontFamily(fontPoppinsSemi),
-                overflow = TextOverflow.Ellipsis,
-            )
+            product.product.name?.let {
+                Text(
+                    text = it,
+                    maxLines = 1,
+                    fontSize = 17.sp,
+                    fontFamily = FontFamily(fontPoppinsSemi),
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)

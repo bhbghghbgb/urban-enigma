@@ -1,8 +1,8 @@
 package com.doansgu.cafectm.model
 
 data class ProductOfCart(
-    val product: Products,
-    val amount: Int,
+    val product: Product2,
+    var amount: Int,
     val price: Double,
     val _id: String
 )

@@ -99,4 +99,8 @@ interface ApiService {
 
     @DELETE("/notification/device-link")
     suspend fun unbindDeviceNotification(): Response<Unit>
+    @POST("/orders2/create")
+    suspend fun createOrder(orderRequest: OrderRequest): Response<Order>
+
+
 }
