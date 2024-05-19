@@ -31,7 +31,9 @@ exports.createNewDelivery = async (req, res) => {
 
 exports.changeStatusDelivery = async (req, res) => {
     try {
-        const delivery = await Delivery.findById(req.params.id);
+        const delivery = await Delivery.findOne({
+            order: req.params.id
+        });
         if (!delivery) {
             res.status(400).json({ message: "Delivery is not found" });
             return;

@@ -157,13 +157,8 @@ exports.updateStatus = async (req, res) => {
             res.status(404).json({ message: "Order is not found" });
         }
         const { status } = req.body;
-        var myQuery = { _id: req.params.id };
-        var newData = {
-            $set: {
-                status: status,
-            },
-        };
-        await Order.updateOne(myQuery, newData);
+        order.status = status;
+        await order.save();
         res.status(201).json({ message: "Order updated successfully" });
         return;
     } catch (err) {
