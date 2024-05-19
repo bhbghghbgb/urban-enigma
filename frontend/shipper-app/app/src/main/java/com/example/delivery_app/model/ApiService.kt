@@ -4,7 +4,10 @@ import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -30,4 +33,11 @@ interface ApiService {
 
     @POST("/user/increase-membership-point")
     suspend fun increaseMembershipPoint(@Body increasePoint: IncreasePoint) : Response<IncreasePointResponse>
+
+    @PUT("/delivery/update/{id}")
+    suspend fun updateStatusDelivery(@Path("id") id: String): Response<ResponseFromServer>
+
+    @PATCH("/orders/update/{id}")
+    suspend fun updateStatusOrder(@Path("id") id: String, @Body status: Status): Response<ResponseFromServer>
+
 }
