@@ -1,6 +1,7 @@
 const { Staff, Customer } = require("../models/userModel");
 const { ObjectId } = require("mongoose").Types;
 const { account2staff, account2customer } = require("../service/account2shits");
+const Account = require('../models/accountModel');
 exports.getStaffs = async (req, res) => {
     try {
         const staffs = await Staff.find().populate("commonuser.account");
@@ -194,3 +195,29 @@ exports.deleteStaff = async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 };
+
+exports.increaseMembershipPoint = async (req, res) => {
+    try {
+        const { username, point } = req.body;
+        const account = await Account.findOne({ username: username });
+        if (!account) {
+            res.status(404).json({ message: "Account is not found" });
+            return;
+        }
+        const customer = await Customer.findOne({
+            "commonuser.account": account._id,
+        }).populate("commonuser.account");
+        if (!customer) {
+            res.status(404).json({ message: "Customer is not found" });
+            return;
+        }
+        customer.membershipPoint += point;
+        res.status(200).json({
+            message: "Increate Membership Point successfully",
+            customer
+        });
+        return;
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+}
