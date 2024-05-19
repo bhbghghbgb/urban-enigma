@@ -1,10 +1,12 @@
 package com.example.delivery_app.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.delivery_app.model.Order
+import com.example.delivery_app.model.Status
 import com.example.delivery_app.repository.OrderRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -66,5 +68,45 @@ class OrderViewModel : ViewModel() {
         }
 
         return total - discount
+    }
+
+    fun updateStatusDelivery(id: String, status: Status) {
+        _state.postValue(State.LOADING)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                Log.d("ERROR","DÔ ROI NÈ")
+                val response = repository.updateStatusDelivery(id)
+                if (response.isSuccessful) {
+                    if (response.body()!!.message == "Successfully" && response.code() == 200) {
+                        updateStatusOrder(id, status)
+                        _state.postValue(State.SUCCESS)
+                    } else {
+                        _state.postValue(State.ERROR)
+                    }
+                }
+            } catch (ex: Exception) {
+                _state.postValue(State.ERROR)
+                Log.d("ERROR", ex.message.toString())
+            }
+        }
+    }
+
+    private fun updateStatusOrder(id: String, status: Status) {
+        _state.postValue(State.LOADING)
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val response = repository.updateStatusOrder(id, status)
+                if (response.isSuccessful) {
+                    if (response.body()!!.message == "Order updated successfully" && response.code() == 201) {
+                        _state.postValue(State.SUCCESS)
+                    } else {
+                        _state.postValue(State.ERROR)
+                    }
+                }
+            } catch (ex: Exception) {
+                _state.postValue(State.ERROR)
+                Log.d("ERROR", ex.message.toString())
+            }
+        }
     }
 }
