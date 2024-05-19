@@ -91,3 +91,13 @@ data class Category(
 data class ResponseFromServer(
     val message: String
 )
+
+data class IncreasePointResponse (
+    val message: String,
+    val customer: Customer
+)
+
+data class IncreasePoint(
+    val username: String,
+    val point: Int
+)

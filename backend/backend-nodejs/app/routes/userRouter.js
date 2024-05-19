@@ -36,4 +36,8 @@ router.get(
     userController.getCustomerInfo,
 );
 
+router.put("/increase-membership-point",
+    userController.increaseMembershipPoint,
+);
+
 module.exports = router;
