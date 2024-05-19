@@ -1,5 +1,6 @@
 package com.example.delivery_app.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -14,6 +15,7 @@ import com.example.delivery_app.viewmodel.AuthViewModel
 import com.example.delivery_app.viewmodel.HomeViewModel
 import com.example.delivery_app.viewmodel.OrderViewModel
 import com.example.delivery_app.viewmodel.ProfileViewModel
+import com.example.delivery_app.viewmodel.QRTestViewModel
 
 @Composable
 fun MainNavHost() {
@@ -27,10 +29,12 @@ fun MainNavHost() {
         composable("home") {
             val homeViewModel: HomeViewModel = viewModel()
             val profileViewModel: ProfileViewModel = viewModel()
+            val qrCodeViewModel: QRTestViewModel = activityViewModel()
             HomeView(
                 navControllerMain = navController,
                 homeViewModel = homeViewModel,
-                profileViewModel = profileViewModel
+                profileViewModel = profileViewModel,
+                qrCodeViewModel = qrCodeViewModel,
             )
         }
         composable("information/{id}") {
@@ -40,9 +44,6 @@ fun MainNavHost() {
                 it.arguments?.getString("id").toString(),
                 viewModel = orderViewModel
             )
-        }
-        composable("qrcode") {
-            QRTestScreen()
         }
     }
 }

@@ -5,8 +5,8 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Resources
+import com.example.delivery_app.model.FCMManager.createNotificationChannel
 import com.google.firebase.Firebase
-import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 
@@ -16,14 +16,14 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         mContext = applicationContext
-        FirebaseApp.initializeApp(this)
+        createNotificationChannel()
         firebaseAuth.setLanguageCode("vi")
         firebaseAuth.firebaseAuthSettings.forceRecaptchaFlowForTesting(true)
     }
 
     companion object {
         @SuppressLint("StaticFieldLeak")
-        private var mContext: Context? = null
+        var mContext: Context? = null
         val resources: Resources
             get() = mContext!!.resources
         val sharedPreferences: SharedPreferences

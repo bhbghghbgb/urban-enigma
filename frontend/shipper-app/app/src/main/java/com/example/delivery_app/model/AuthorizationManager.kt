@@ -3,31 +3,43 @@ package com.example.delivery_app.model
 import android.util.Log
 import com.example.delivery_app.App
 import com.example.delivery_app.repository.AuthRepository
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.AuthCredential
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class AuthorizationManager {
     companion object {
-        fun getAuthorization(): String? =
-            App.firebaseAuth.currentUser?.getIdToken(false)?.result?.token
+        fun getAuthorization(): String? = App.firebaseAuth.currentUser?.let {
+            Tasks.await(it.getIdToken(false)).token
+        }
 
         fun clearAuthorization() {
             Log.d("AuthorizationManager", "clearAuthorization: sign out")
             App.firebaseAuth.signOut()
+            FCMManager.unbindDeviceFromCurrentUser()
         }
 
         suspend fun setAuthorization(credential: AuthCredential) {
             Log.d("AuthorizationManager", "setAuthorization: sign in")
             App.firebaseAuth.signInWithCredential(credential).await()
             Log.d("AuthorizationManager", "setAuthorization: firebase sign in complete")
+            FCMManager.bindDeviceToCurrentUser()
         }
 
         suspend fun testAuthorization(): Boolean {
             try {
-                Log.d("Auth", "Testing Authorization: ${getAuthorization()}")
+                withContext(Dispatchers.IO) {
+                    Log.d("Auth", "Testing Authorization: ${getAuthorization()}")
+                }
+                if (App.firebaseAuth.currentUser == null) {
+                    Log.d("Auth", "Firebase is signed out")
+                    return false
+                }
                 val authorized = AuthRepository.testAuthorization()
                 Log.d("Auth", "Authorized: $authorized")
-                return true
+                return authorized
             } catch (e: Exception) {
                 Log.e("Auth", "Test Authorization Error: $e")
                 return false

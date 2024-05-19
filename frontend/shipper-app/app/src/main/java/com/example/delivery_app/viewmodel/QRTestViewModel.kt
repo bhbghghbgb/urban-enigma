@@ -9,9 +9,13 @@ import com.example.delivery_app.model.Customer
 import com.example.delivery_app.model.IncreasePoint
 import com.example.delivery_app.repository.UserRepository
 import com.google.mlkit.vision.barcode.common.Barcode
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -28,7 +32,7 @@ class QRTestViewModel : ViewModel() {
     private val _message = MutableStateFlow("Click button to open GmsBarcodeInit")
     val message = _message.asStateFlow()
 
-    private val _openScanner = Channel<Unit>(Channel.RENDEZVOUS)
+    private val _openScanner = Channel<Unit>(Channel.CONFLATED)
     val openScanner = _openScanner.receiveAsFlow()
 
     fun openScanner() {
@@ -36,6 +40,8 @@ class QRTestViewModel : ViewModel() {
             _openScanner.send(Unit)
         }
         Log.d("QRScanner", "Sent an event")
+        Log.d("FlowTest", "openScanner: $openScanner")
+        Log.d("FlowTest", "openScanner: $this")
     }
 
     fun onScanSuccess(barcode: Barcode) {
