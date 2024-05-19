@@ -229,7 +229,8 @@ fun ContentOrder(
                     Spacer(modifier = Modifier.height(10.dp))
                     if (cart != null) {
                         for (item in cart!!.products) {
-                            ItemOrder(product = item, onDeleteClicked = {
+                            var amount by remember { mutableStateOf(item.amount) }
+                            ItemOrder(product = item,amount, onDeleteClicked = {
                                 val addToCart = item.product.id?.let { AddToCartRequest(it) }
                                 if (addToCart != null) {
                                     viewModel.deleteProduct(
@@ -237,15 +238,21 @@ fun ContentOrder(
                                     )
                                 }
                             }, onIncreaseClicked = {
-                                item.product.id?.let { viewModel.increaseProductQuantity(it) }
+//                                item.product.id?.let { viewModel.increaseProductQuantity(it) }
+                                amount++
+                                viewModel.increase(detailOfCart = item, price = item.price, amount = amount)
                             }, onDecreaseClicked = {
-                                val addToCart = item.product.id?.let { AddToCartRequest(it) }
-                                item.product.id?.let {
-                                    if (addToCart != null) {
-                                        viewModel.decreaseProductQuantity(
-                                            it, addToCart
-                                        )
-                                    }
+//                                val addToCart = item.product.id?.let { AddToCartRequest(it) }
+//                                item.product.id?.let {
+//                                    if (addToCart != null) {
+//                                        viewModel.decreaseProductQuantity(
+//                                            it, addToCart
+//                                        )
+//                                    }
+//                                }
+                                if (amount > 1) {
+                                    amount--
+                                    viewModel.decrease(detailOfCart = item, price = item.price, amount = amount)
                                 }
                             }, onItemClick = {
                                 navController.navigate("detail/${item.product.id}")
@@ -621,6 +628,7 @@ fun ShowPaymentSuccessDialog(
 @Composable
 fun ItemOrder(
     product: ProductOfCart,
+    amount: Int,
     onDeleteClicked: () -> Unit,
     onIncreaseClicked: () -> Unit,
     onDecreaseClicked: () -> Unit,
@@ -671,7 +679,7 @@ fun ItemOrder(
                         )
                     }
                     Text(
-                        text = product.amount.toString(),
+                        text = amount.toString(),
                         fontSize = 18.sp,
                         fontFamily = FontFamily(fontPoppinsRegular),
                         modifier = Modifier.padding(horizontal = 4.dp) // Thêm padding ngang để tách các thành phần

@@ -273,7 +273,7 @@ fun OrderItem(
     var total = 0.0
     for (item in order.detailOrders) {
         amount += item.amount
-        total += item.product.price * item.amount
+        total += item.product.price?.times(item.amount) ?: 0.0
     }
     ElevatedCard(
         modifier = Modifier
@@ -537,17 +537,29 @@ fun ContentInformationOrder(paddingValues: PaddingValues, id: String) {
                             Column {
                                 orderList?.let { orderList ->
                                     orderList.detailOrders.forEach { detailOrder ->
-                                        val product = Products(
-                                            _id = detailOrder.product._id,
-                                            image = "",
-                                            name = detailOrder.product.name,
-                                            description = detailOrder.product.description,
-                                            price = detailOrder.product.price,
-                                            popular = detailOrder.product.popular,
-                                            category = detailOrder.product.category,
-                                            avgRating = 0.0
-                                        )
-                                        ItemProduct(product = product, detailOrder.amount)
+                                        val product = detailOrder.product.id?.let {
+                                            detailOrder.product.name?.let { it1 ->
+                                                detailOrder.product.description?.let { it2 ->
+                                                    detailOrder.product.price?.let { it3 ->
+                                                        detailOrder.product.popular?.let { it4 ->
+                                                            Products(
+                                                                _id = it,
+                                                                image = "",
+                                                                name = it1,
+                                                                description = it2,
+                                                                price = it3,
+                                                                popular = it4,
+                                                                category = detailOrder.product.category,
+                                                                avgRating = 0.0
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        if (product != null) {
+                                            ItemProduct(product = product, detailOrder.amount)
+                                        }
                                     }
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))

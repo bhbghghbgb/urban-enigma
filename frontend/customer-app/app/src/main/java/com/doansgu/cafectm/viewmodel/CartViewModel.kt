@@ -45,6 +45,7 @@ class CartViewModel : ViewModel() {
     val cart: LiveData<Cart> = _cart
 
 //    Dùng debounce để theo dõi sự thay đổi của giỏ hàng
+//    Nếu giỏ hàng thay đổi, sẽ gửi request lên server
     private val cartUpdateFlow = cart.asFlow().debounce(CART_UPDATE_DEBOUNCE_DURATION)
 
     private val _isValidAddToCart = MutableLiveData<Boolean>()
@@ -239,11 +240,11 @@ init {
         }
     }
 
-    fun increaseTotalOfCart(price: Double, detailOfCart: ProductOfCart, amount: Int) {
+    fun increase(price: Double, detailOfCart: ProductOfCart, amount: Int) {
         updateTotalOfCart(price, detailOfCart, amount)
     }
 
-    fun decreaseTotalOfCart(price: Double, detailOfCart: ProductOfCart, amount: Int) {
+    fun decrease(price: Double, detailOfCart: ProductOfCart, amount: Int) {
         updateTotalOfCart(-price, detailOfCart, amount)
     }
 
