@@ -13,9 +13,11 @@ import com.google.firebase.FirebaseException
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
 class AuthViewModel : ViewModel() {
@@ -33,7 +35,7 @@ class AuthViewModel : ViewModel() {
     private val _isInvalidDataDialogVisible = MutableLiveData<Boolean>()
     val isInvalidDataDialogVisible: LiveData<Boolean> = _isInvalidDataDialogVisible
 
-    private val _requestSendCode = Channel<String>()
+    private val _requestSendCode = Channel<String>(Channel.CONFLATED)
     val requestSendCode = _requestSendCode.receiveAsFlow()
 
     private var verifyingPhoneNumber: String? = null
@@ -51,7 +53,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 if (AuthorizationManager.testAuthorization()) {
-                    _isValidToken.postValue(AuthorizationManager.testAuthorization())
+                    _isValidToken.postValue(true)
                     _navigateToHome.postValue(true)
                 }
             } catch (e: Exception) {
@@ -131,7 +133,9 @@ class AuthViewModel : ViewModel() {
     fun tryLogin(credential: PhoneAuthCredential) = viewModelScope.launch {
         Log.d("Auth", "Try Login")
         AuthorizationManager.setAuthorization(credential)
-        Log.d("Auth", "Phone Login Success, token: ${AuthorizationManager.getAuthorization()}")
+        withContext(Dispatchers.IO) {
+            Log.d("Auth", "Phone Login Success, token: ${AuthorizationManager.getAuthorization()}")
+        }
         testAuthorization()
     }
 

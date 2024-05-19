@@ -58,7 +58,6 @@ import com.example.delivery_app.viewmodel.OrderViewModel
 import com.example.delivery_app.viewmodel.State
 import com.example.delivery_app.util.FormatDateTime
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InformationOrder(navController: NavController, id: String, viewModel: OrderViewModel) {
     val order by viewModel.order.observeAsState()
@@ -148,7 +147,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewMode
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(text = "ID: ", color = Color.Gray, fontSize = 16.sp)
-                    Text(text = "${order.id}", fontSize = 16.sp)
+                    Text(text = order.id, fontSize = 16.sp)
                 }
             }
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -176,7 +175,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewMode
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "${order.deliveryLocation}",
+                                    text = order.deliveryLocation,
                                     fontSize = 16.sp,
                                     modifier = Modifier.wrapContentHeight()
                                 )
@@ -190,7 +189,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewMode
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "${order.user.commonuser.name}",
+                                    text = order.user.commonuser.name,
                                     fontSize = 16.sp,
                                     modifier = Modifier.wrapContentHeight()
                                 )
@@ -204,7 +203,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewMode
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "${order.user.commonuser.phone}",
+                                    text = order.user.commonuser.phone,
                                     fontSize = 16.sp,
                                     modifier = Modifier.wrapContentHeight()
                                 )
@@ -218,7 +217,7 @@ fun ContentInformationOrder(paddingValues: PaddingValues, order: Order, viewMode
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "${formatDateTime.formattedDateTime(order.orderDateTime)}",
+                                    text = formatDateTime.formattedDateTime(order.orderDateTime),
                                     fontSize = 16.sp,
                                     modifier = Modifier.wrapContentHeight()
                                 )
@@ -355,13 +354,13 @@ fun ItemProduct(detailOrders: DetailOrders) {
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "${detailOrders.product.name}",
+                    text = detailOrders.product.name,
                     maxLines = 1,
                     fontSize = 17.sp,
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = "${detailOrders.product.description}",
+                    text = detailOrders.product.description,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontSize = 12.sp,

@@ -205,7 +205,6 @@ exports.getFullProducts = async (req, res) => {
 exports.getHomeScreenProducts = async function (req, res) {
     // 3 product tren banner, 5 best seller, 5 for you
     const random = await Product.aggregate().sample(13).exec();
-    console.log(random)
     return res.json({
         banner: random.slice(0, 3),
         bestSellers: random.slice(3, 8),

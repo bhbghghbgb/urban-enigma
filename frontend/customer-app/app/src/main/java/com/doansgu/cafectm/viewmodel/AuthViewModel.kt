@@ -35,7 +35,7 @@ class AuthViewModel : ViewModel() {
     private val _isInvalidDataDialogVisible = MutableLiveData<Boolean>()
     val isInvalidDataDialogVisible: LiveData<Boolean> = _isInvalidDataDialogVisible
 
-    private val _requestSendCode = Channel<String>()
+    private val _requestSendCode = Channel<String>(Channel.CONFLATED)
     val requestSendCode = _requestSendCode.receiveAsFlow()
 
     private var verifyingPhoneNumber: String? = null

@@ -50,6 +50,7 @@ import com.example.delivery_app.model.Order
 import com.example.delivery_app.util.FormatDateTime
 import com.example.delivery_app.viewmodel.HomeViewModel
 import com.example.delivery_app.viewmodel.ProfileViewModel
+import com.example.delivery_app.viewmodel.QRTestViewModel
 import com.example.delivery_app.viewmodel.State
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +58,8 @@ import com.example.delivery_app.viewmodel.State
 fun HomeView(
     navControllerMain: NavController,
     homeViewModel: HomeViewModel,
-    profileViewModel: ProfileViewModel
+    profileViewModel: ProfileViewModel,
+    qrCodeViewModel: QRTestViewModel,
 ) {
     val navController = rememberNavController()
     var currentScreen by rememberSaveable {
@@ -161,7 +163,7 @@ fun HomeView(
 
                 "scanner" -> {
                     title = "Scanner"
-                    QRTestScreen()
+                    QRTestScreen(qrCodeViewModel)
                 }
             }
         }
