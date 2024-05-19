@@ -1,4 +1,6 @@
 const { mongodbConnection, initConnection } = require("./app/config/connect");
+const {firebaseAuthBearer} = require("./app/middleware/firebaseAuthPassport");
+const {userRole} = require("./app/middleware/connectRoles");
 
 initConnection(main);
 var started = false;
@@ -30,6 +32,8 @@ function main() {
     const authRoutes = require("./app/routes/authRouter");
     const notificationRoutes = require("./app/routes/notificationRouter");
     const testRoutes = require("./app/routes/testRouter");
+
+    const order2Routes = require("./app/routes/order.route");
 
     // Middleware
     const { ipAccessControl } = require("./app/middleware/ipAccessControl");
@@ -65,6 +69,8 @@ function main() {
     app.use("/user", userRoutes);
     app.use("/delivery", deliveryRoutes);
     app.use("/accountinfo", accountInfoRoutes);
+
+    app.use("/oders2", firebaseAuthBearer, userRole.is("customer"), order2Routes)
 
     app.use("/auth", authRoutes);
     app.use("/notification", notificationRoutes);
