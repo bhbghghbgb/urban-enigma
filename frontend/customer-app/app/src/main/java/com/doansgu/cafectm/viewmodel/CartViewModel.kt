@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.os.StrictMode
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,13 +14,21 @@ import androidx.lifecycle.viewModelScope
 import com.doansgu.cafectm.CART_UPDATE_DEBOUNCE_DURATION
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.model.Cart
+import com.doansgu.cafectm.model.OrderRequest
 import com.doansgu.cafectm.model.PaymentState
+import com.doansgu.cafectm.model.ProductOfCart
+import com.doansgu.cafectm.model.UserClass
 import com.doansgu.cafectm.repository.CartRepository
+import com.doansgu.cafectm.repository.OrderRepository
+import com.doansgu.cafectm.repository.ProfileRepository
 import com.doansgu.cafectm.util.Zalopay.Api.CreateOrder
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import vn.zalopay.sdk.ZaloPayError
@@ -29,10 +38,14 @@ import java.util.Locale
 
 class CartViewModel : ViewModel() {
     private val repository = CartRepository()
+    private val orderRepository = OrderRepository()
+    private val customerRepository = ProfileRepository()
 
     private val _cart = MutableLiveData<Cart>()
     val cart: LiveData<Cart> = _cart
 
+    //    Dùng debounce để theo dõi sự thay đổi của giỏ hàng
+//    Nếu giỏ hàng thay đổi, sẽ gửi request lên server
     private val cartUpdateFlow = cart.asFlow().debounce(CART_UPDATE_DEBOUNCE_DURATION)
 
     private val _isValidAddToCart = MutableLiveData<Boolean>()
@@ -44,8 +57,36 @@ class CartViewModel : ViewModel() {
     private val _address = MutableLiveData<String>()
     val address: LiveData<String> = _address
 
-    private val _paymentState = MutableStateFlow<PaymentState?>(null)
-    val paymentState: StateFlow<PaymentState?> = _paymentState
+    private val _paymentState = MutableStateFlow<PaymentState>(PaymentState.Loading)
+    val paymentState: StateFlow<PaymentState> = _paymentState.asStateFlow()
+
+    private val _total = MutableStateFlow<Double>(0.0)
+    val total: StateFlow<Double> = _total
+
+    private val _requestPay = Channel<String>()
+    val requestPay = _requestPay.receiveAsFlow()
+
+    private val _userData = MutableLiveData<UserClass.Customer>()
+    val userData: LiveData<UserClass.Customer> = _userData
+
+    init {
+//    Sử dụng flow để cập nhật giỏ hàng, giảm thiểu việc gửi request lên server bằng Debounce
+        viewModelScope.launch {
+            cartUpdateFlow.collect {
+                if (it !== null) {
+                    repository.updateCart(
+                        it
+                    )
+                }
+            }
+        }
+    }
+
+    fun fetchData() {
+        getCardOfUser()
+        caculateTotal()
+        getInfoUser()
+    }
 
     fun reverseGeocode(context: Context, latitude: Double, longitude: Double) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -111,17 +152,19 @@ class CartViewModel : ViewModel() {
     fun increaseProductQuantity(productId: String) {
         _cart.value?.let { cart ->
             val mutableProducts = cart.products.toMutableList()
-            val productToUpdate = mutableProducts.find { it.product._id == productId }
+            val productToUpdate = mutableProducts.find { it.product.id == productId }
 
             productToUpdate?.let { product ->
                 val updatedQuantity = product.amount + 1
-                val updatedPrice = product.product.price * updatedQuantity
-                val updatedTotal = cart.total + product.product.price
+                val updatedPrice = product.product.price?.times(updatedQuantity)
+                val updatedTotal = cart.total + product.product.price!!
                 val updatedProductIndex = mutableProducts.indexOf(product)
                 if (updatedProductIndex != -1) {
-                    mutableProducts[updatedProductIndex] = product.copy(
-                        amount = updatedQuantity, price = updatedPrice
-                    )
+                    mutableProducts[updatedProductIndex] = updatedPrice?.let {
+                        product.copy(
+                            amount = updatedQuantity, price = it
+                        )
+                    }!!
                 }
                 _cart.value = cart.copy(
                     total = updatedTotal, products = mutableProducts
@@ -158,11 +201,11 @@ class CartViewModel : ViewModel() {
     ) {
         _cart.value?.let { cart ->
             val mutableProducts = cart.products.toMutableList()
-            val productToUpdate = mutableProducts.find { it.product._id == productId }
+            val productToUpdate = mutableProducts.find { it.product.id == productId }
             productToUpdate?.let { product ->
                 val updatedQuantity = product.amount - 1
-                val updatedPrice = product.product.price * updatedQuantity
-                val updatedTotal = cart.total - product.product.price
+                val updatedPrice = product.product.price?.times(updatedQuantity)
+                val updatedTotal = cart.total - product.product.price!!
                 if (updatedQuantity == 0) {
                     deleteProduct(addToCartRequest);
                     if (isValidDeleteProduct.value == true) {
@@ -171,9 +214,11 @@ class CartViewModel : ViewModel() {
                 } else {
                     val updatedProductIndex = mutableProducts.indexOf(product)
                     if (updatedProductIndex != -1) {
-                        mutableProducts[updatedProductIndex] = product.copy(
-                            amount = updatedQuantity, price = updatedPrice
-                        )
+                        mutableProducts[updatedProductIndex] = updatedPrice?.let {
+                            product.copy(
+                                amount = updatedQuantity, price = it
+                            )
+                        }!!
                     }
                 }
                 _cart.value = cart.copy(
@@ -181,6 +226,28 @@ class CartViewModel : ViewModel() {
                 )
             }
         }
+    }
+
+    fun caculateTotal() {
+        val total = _cart.value?.products?.sumByDouble { it.price * it.amount } ?: 0.0
+        _total.value = total
+    }
+
+    private fun updateTotalOfCart(priceChange: Double, detailOfCart: ProductOfCart, amount: Int) {
+        _total.value += priceChange
+        _cart.value?.let { cart ->
+            cart.total = _total.value
+            val index = cart.products.indexOf(detailOfCart)
+            cart.products[index].amount = amount
+        }
+    }
+
+    fun increase(price: Double, detailOfCart: ProductOfCart, amount: Int) {
+        updateTotalOfCart(price, detailOfCart, amount)
+    }
+
+    fun decrease(price: Double, detailOfCart: ProductOfCart, amount: Int) {
+        updateTotalOfCart(-price, detailOfCart, amount)
     }
 
     fun updateCart() {
@@ -199,9 +266,65 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun pay(activity: Activity) {
+
+    fun getInfoUser() {
+        viewModelScope.launch(Dispatchers.Main) {
+            try {
+                val response = customerRepository.getInfoOfCustomer()
+                if (response.isSuccessful) {
+                    Log.d("Get User Info Success", response.toString())
+                    _userData.postValue(response.body())
+                } else {
+                    Log.d("abc", response.toString())
+                }
+            } catch (ex: Exception) {
+                Log.d("Get User Info Error", ex.toString())
+            }
+        }
+    }
+
+    fun createOders(
+        discount: Int,
+        address: String,
+        note: String,
+        paymentMethod: String,
+    ): Boolean {
+        var result = false
         viewModelScope.launch {
-            val token = createOrder()
+            try {
+                val orderRequest = _cart.value?.let {
+                    OrderRequest(
+                        it.products, discount, address, note, paymentMethod
+                    )
+                }
+                val response = orderRequest?.let { orderRepository.createOrder(orderRequest) }
+                result = response?.isSuccessful ?: false
+                if (!result) {
+                    Log.e("Create Order Error", "Error creating order")
+                }
+            } catch (e: Exception) {
+                // Handle the exception
+                Log.e("Network Error", "Error: ${e.message}")
+            }
+        }
+        return result
+    }
+
+    fun pay(discount: Int, address: String, note: String, paymentMethod: String) {
+        viewModelScope.launch {
+            if (createOders(discount, address, note, paymentMethod)) {
+                val token = createOrderZalo()
+                if (token.isNotEmpty()) {
+                    _requestPay.send(token)
+                }
+            }
+        }
+    }
+
+    fun pay(activity: Activity, token: String) {
+        viewModelScope.launch {
+            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
             if (token.isNotEmpty()) {
                 ZaloPaySDK.getInstance()
                     .payOrder(activity, token, "demozpdk://app", object : PayOrderListener {
@@ -209,29 +332,37 @@ class CartViewModel : ViewModel() {
                             transactionId: String?, transToken: String?, appId: String?
                         ) {
 //                        TODO("Cập nhật giá trị của susses")
-                            _paymentState.value!!.onSusses = true;
+                            _paymentState.value = PaymentState.Success
                         }
 
                         override fun onPaymentCanceled(p0: String?, p1: String?) {
 //                        TODO("Cập nhật giá trị on canceled")
-                            _paymentState.value!!.onCancel = true;
+                            _paymentState.value = PaymentState.Cancel
 
                         }
 
                         override fun onPaymentError(p0: ZaloPayError?, p1: String?, p2: String?) {
-//                        TODO("Cập nhật giá trị on failed")
-                            _paymentState.value!!.onFailed = true;
+                            _paymentState.value = PaymentState.Error
+                            Log.d("Zalo Pau Error ", p0.toString())
                         }
-
                     })
             }
         }
     }
 
-    fun createOrder(): String {
+    fun closeDialog() {
+        _paymentState.value = PaymentState.Loading
+    }
+
+    private fun convertToVND(total: Double): Double {
+        val exchangeRate = 23000.0
+        return total * exchangeRate
+    }
+
+    fun createOrderZalo(): String {
         val orderAPI: CreateOrder = CreateOrder()
         try {
-            val totalString = String.format("%.0f", _cart.value!!.total)
+            val totalString = String.format("%.0f", convertToVND(_total.value))
             val data: JSONObject = orderAPI.createOrder(totalString)
             Log.d("Test Total", totalString)
             val code = data.getString("return_code")

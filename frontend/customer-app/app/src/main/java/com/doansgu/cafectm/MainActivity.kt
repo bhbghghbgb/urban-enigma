@@ -16,12 +16,14 @@ import com.doansgu.cafectm.repository.HelloRepository
 import com.doansgu.cafectm.ui.main.MainScreen
 import com.doansgu.cafectm.ui.theme.LearnCodeTheme
 import com.doansgu.cafectm.viewmodel.AuthViewModel
+import com.doansgu.cafectm.viewmodel.CartViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val authViewModel: AuthViewModel by viewModels()
+        val cartViewModel: CartViewModel by viewModels()
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
                 Log.d("HelloBackend", "onCreate: ${HelloRepository.helloBackend()}")
@@ -30,6 +32,14 @@ class MainActivity : ComponentActivity() {
                     authViewModel.requestSendCode.collect {
                         authViewModel.sendCode(it, this@MainActivity)
                     }
+                }
+
+                launch {
+                    // register to send code request Channel and send back data example
+                    cartViewModel.requestPay.collect {
+                        cartViewModel.pay(this@MainActivity, it)
+                    }
+
                 }
             }
         }

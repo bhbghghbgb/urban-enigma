@@ -68,7 +68,7 @@ class OrderViewModel : ViewModel() {
                 order.detailOrders.forEach { item ->
                     val product = item.product
                     if (product != null) {
-                        total += product.price * item.amount
+                        total += product.price?.times(item.amount) ?: 0.0
                     }
                 }
             }
@@ -85,7 +85,7 @@ class OrderViewModel : ViewModel() {
                 order.detailOrders.forEach { item ->
                     val product = item.product
                     if (product != null) {
-                        total += product.price * item.amount
+                        total += product.price?.times(item.amount) ?: 0.0
                     }
                 }
                 discount = order.discount

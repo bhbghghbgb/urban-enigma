@@ -6,7 +6,7 @@ import java.sql.Timestamp
 data class Cart(
     val _id: String,
     val user: String,
-    val total: Double,
+    var total: Double,
     val products: MutableList<ProductOfCart>
 )
 
@@ -28,12 +28,14 @@ data class Order(
     @SerializedName("detailOrders")
     val detailOrders: List<DetailOrders>,
     @SerializedName("paymentMethod")
-    val paymentMethod: String
+    val paymentMethod: String,
+    @SerializedName("totalPrice")
+    val totalPrice: Double
 );
 
 data class DetailOrders(
     @SerializedName("product")
-    val product: Products,
+    val product: Product2,
     @SerializedName("amount")
     val amount: Int,
     @SerializedName("_id")

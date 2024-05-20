@@ -7,6 +7,6 @@ data class Products(
     val description: String,
     val price: Double,
     val popular: Boolean,
-    val category: Category,
+    val category: Category2?,
     val avgRating: Double
 )

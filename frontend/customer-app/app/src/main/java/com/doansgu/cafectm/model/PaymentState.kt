@@ -1,8 +1,9 @@
 package com.doansgu.cafectm.model
 
-data class PaymentState(
-    var onSusses: Boolean = false,
-    var onCancel: Boolean = false,
-    var onFailed: Boolean = false,
-)
+sealed class PaymentState() {
+    object Loading : PaymentState()
+    object Success : PaymentState()
+    object Error : PaymentState()
+    object Cancel : PaymentState()
+}
 

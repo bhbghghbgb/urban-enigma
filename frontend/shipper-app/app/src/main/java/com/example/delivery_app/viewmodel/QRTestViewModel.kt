@@ -64,7 +64,13 @@ class QRTestViewModel : ViewModel() {
     fun increaseMembershipPoint() {
         viewModelScope.launch {
             try {
-                val username = message.value.split("/")[2]
+                val username =
+                    Regex("doansgu/customer/([a-zA-Z0-9]+)").find(message.value)?.groups?.get(1)?.value
+                if (username.isNullOrBlank()) {
+                    _increaseMembershipPointResult.value =
+                        Result.failure(Exception("Username is null or blank"))
+                    return@launch
+                }
                 val increasePoint = IncreasePoint(username, _point.value)
                 val response = repository.increaseMembershipPoint(increasePoint)
                 if (response.isSuccessful) {
