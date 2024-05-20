@@ -36,7 +36,7 @@ router.get(
     userController.getCustomerInfo,
 );
 
-router.put("/increase-membership-point",
+router.post("/increase-membership-point",
     userController.increaseMembershipPoint,
 );
 

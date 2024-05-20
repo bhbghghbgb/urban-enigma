@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const { Customer } = require("../models/userModel");
 const { account2customer } = require("../service/account2shits");
 const { s_updateCart } = require("../service/cartService");
+const productService = require("../service/product.service")
 exports.getCartOfUser = async (req, res) => {
     try {
         const customer = await account2customer(req.user);

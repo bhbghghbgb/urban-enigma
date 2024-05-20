@@ -5,7 +5,7 @@ const  ProductService = require("../service/product.service");
 const s_updateCart = async (customerId, products) => {
     // Find or create the cart
     const currentCart = await Cart.findOneAndUpdate(
-        { customer: customerId },
+        { user: customerId },
         { $set: { customer: customerId, total: 0, products: [] } },
         { upsert: true, new: true }
     );
