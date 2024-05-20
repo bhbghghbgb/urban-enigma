@@ -199,20 +199,35 @@ exports.resetCart = async (req, res) => {
 exports.updateCart = async function (req, res) {
     try {
         const customer = await account2customer(req.user);
-        console.log("[P]:::Update Status");
-        const products = req.body.products.map((item) => {
+        console.log("[P]:::Update Cart:::")
+        // Nhận vào cả một cart, nhưng chỉ cần lấy products
+        const products = req.body.products;
+
+        // Check if any property in products is null
+        if (products?.length <= 0) {
+            return res.status(400).json({message: 'Products cannot be null'});
+        }
+
+        for (const item of products) {
+            console.log("[P]:::Product:::", item)
+            if (item?.amount == null) {
+                return res.status(400).json({message: 'Product or amount cannot be null'});
+            }
+        }
+
+        // Map all products in the cart
+        const updatedProducts = await Promise.all(products.map(async item => {
+            const product = await productService.findProductById(item.product);
             return {
                 product: item.product,
                 amount: item.amount,
+                price: product.price
             };
-        });
+        }));
 
-        const cart = await s_updateCart(customer._id, req.body.total, products);
-        res.status(200).json({
-            message: "Update cart successfully!",
-            metadata: cart,
-        });
+        const cart = await s_updateCart(customer._id, updatedProducts);
+        res.status(200).json({message: 'Update cart successfully!', metadata: cart});
     } catch (error) {
-        res.status(error.statusCode | 500).json({ message: error.message });
+        res.status(error.statusCode || 500).json({message: error.message});
     }
 };
