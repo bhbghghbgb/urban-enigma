@@ -370,9 +370,9 @@ fun ContentOrder(
                     PaymentMethodItem(text = "Cash",
                         isSelected = selectedPaymentMethod == "Cash",
                         onClick = { selectedPaymentMethod = "Cash" })
-                    PaymentMethodItem(text = "Momo",
-                        isSelected = selectedPaymentMethod == "Momo",
-                        onClick = { selectedPaymentMethod = "Momo" })
+                    PaymentMethodItem(text = "ZaloPay",
+                        isSelected = selectedPaymentMethod == "ZaloPay",
+                        onClick = { selectedPaymentMethod = "ZaloPay" })
                     PaymentMethodItem(text = "Banking",
                         isSelected = selectedPaymentMethod == "Banking",
                         onClick = { selectedPaymentMethod = "Banking" })
@@ -563,8 +563,11 @@ fun BottomCheckOut(
 
                 Button(
                     onClick = {
-//                        viewModel.updateCart()
-                        viewModel.pay(discount = pointUsed, address = deliveryAddress, note = noteText,
+                        if (selectedPaymentMethod == "ZaloPay") {
+                            viewModel.pay(discount = pointUsed, address = deliveryAddress, note = noteText,
+                                paymentMethod = selectedPaymentMethod)
+                        }
+                        viewModel.createOders(discount = pointUsed, address = deliveryAddress, note = noteText,
                             paymentMethod = selectedPaymentMethod)
                     },
                     modifier = Modifier.fillMaxWidth(),
