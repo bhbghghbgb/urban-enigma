@@ -7,7 +7,7 @@ data class Cart(
     val _id: String,
     val user: String,
     var total: Double,
-    val products: MutableList<ProductOfCart>
+    val products: List<ProductOfCart>
 )
 
 data class Order(

@@ -1,5 +1,6 @@
 package com.doansgu.cafectm.repository
 
+import android.util.Log
 import com.doansgu.cafectm.model.AddToCartRequest
 import com.doansgu.cafectm.model.Cart
 import com.doansgu.cafectm.model.ResponseFromServer
@@ -28,6 +29,7 @@ class CartRepository {
     suspend fun updateCart(
         updateCartRequest: Cart
     ): Response<ResponseFromServer> {
+        Log.d("UpdateCart", "updateCart: $updateCartRequest")
         return cartService.updateCart(updateCartRequest)
     }
 }

@@ -1,7 +1,7 @@
 // import Order from '../models/oder.model';
 
 const Order = require('../models/orderModel');
-const ProductService = require('../controllers/productController');
+const ProductService = require('../service/product.service');
 // const {CustomError} = require("../middleware/CustomError.middleware");
 
 class OderService {
@@ -25,7 +25,7 @@ class OderService {
         }));
 
         return await Order.create({
-            customer: customer,
+            user: customer,
             orderDateTime: new Date(),
             deliveryLocation: deliveryLocation,
             note: note,

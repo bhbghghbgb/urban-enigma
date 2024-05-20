@@ -43,7 +43,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -124,9 +123,6 @@ fun ContentOrder(
     val total by viewModel.total.collectAsState()
     val activity = LocalContext.current as? Activity
     var pointUsed by remember { mutableIntStateOf(0) }
-    LaunchedEffect(cart, total, user) {
-        viewModel.fetchData()
-    }
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -347,8 +343,10 @@ fun ContentOrder(
 
                             // Creating a Switch, when value changes,
                             // it updates mCheckedState value
-                            Switch(checked = mCheckedState.value,
-                                onCheckedChange = { mCheckedState.value = it })
+                            Switch(checked = mCheckedState.value, onCheckedChange = {
+                                mCheckedState.value = it
+                                viewModel.fetchData()
+                            })
                             if (mCheckedState.value) {
                                 pointUsed = user?.membershipPoint ?: 0
                                 Text(
@@ -609,12 +607,12 @@ fun BottomCheckOut(
                         ShowPaymentSuccessDialog(title = "Payment Success",
                             message = "Thanh toán thành công",
                             onDismissRequest = { viewModel.closeDialog() })
-                            viewModel.createOders(
-                                discount = pointUsed,
-                                address = deliveryAddress,
-                                note = noteText,
-                                paymentMethod = selectedPaymentMethod
-                            )
+                        viewModel.createOders(
+                            discount = pointUsed,
+                            address = deliveryAddress,
+                            note = noteText,
+                            paymentMethod = selectedPaymentMethod
+                        )
                     }
 
                     PaymentState.Cancel -> {

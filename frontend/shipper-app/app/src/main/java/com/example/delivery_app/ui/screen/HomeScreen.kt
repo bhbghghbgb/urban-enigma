@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -146,7 +147,7 @@ fun HomeView(
             when (currentScreen) {
                 "home" -> {
                     title = "Current orders"
-                    HomeScreen(navController = navController, viewModel = homeViewModel)
+                    HomeScreen(navControllerMain, navController = navController, viewModel = homeViewModel)
                 }
 
                 "history" -> {
@@ -171,9 +172,12 @@ fun HomeView(
 }
 
 @Composable
-fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
+fun HomeScreen(mainNavController: NavController, navController: NavController, viewModel: HomeViewModel) {
     val order by viewModel.order.observeAsState()
     val state by viewModel.state.observeAsState()
+    LaunchedEffect(Unit) {
+        viewModel.getOrderByStaff()
+    }
     when (state) {
         State.LOADING -> {
             LoadingScreen()
@@ -184,7 +188,7 @@ fun HomeScreen(navController: NavController, viewModel: HomeViewModel) {
                 item {
                     if (order != null) {
                         OrderItemNow(
-                            navController = navController, order = order!!, viewModel = viewModel
+                            navController = mainNavController, order = order!!, viewModel = viewModel
                         )
                     } else {
                         Text(

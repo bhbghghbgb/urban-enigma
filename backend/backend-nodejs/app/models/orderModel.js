@@ -10,9 +10,9 @@ const orderSchema = new mongoose.Schema({
         trim: true,
     },
     orderDateTime: { type: Date, required: true },
-    status: { type: String, default: 'now', required: true },
-    deliveryLocation: { type: String, default: 'VietNam', required: true },
-    note: { type: String, default: 'note', required: true },
+    status: { type: String, default: "now" },
+    deliveryLocation: { type: String, default: "VietNam" },
+    note: { type: String, default: "note" },
     discount: { type: Number, required: true, default: 0 },
     paymentMethod: { type: String, required: true },
     detailOrders: [
@@ -23,10 +23,10 @@ const orderSchema = new mongoose.Schema({
                 required: true,
             },
             amount: { type: Number, required: true },
-            price:{ type: Number, required: true}
+            price: { type: Number, required: true },
         },
     ],
-    totalPrice: { type: Number, required: true},
+    totalPrice: { type: Number, required: true },
 });
 
 const Order = mongoose.model("Order", orderSchema);

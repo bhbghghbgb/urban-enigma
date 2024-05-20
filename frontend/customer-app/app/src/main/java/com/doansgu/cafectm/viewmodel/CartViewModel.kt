@@ -72,11 +72,10 @@ class CartViewModel : ViewModel() {
     init {
 //    Sử dụng flow để cập nhật giỏ hàng, giảm thiểu việc gửi request lên server bằng Debounce
         viewModelScope.launch {
+            fetchData()
             cartUpdateFlow.collect {
                 if (it !== null) {
-                    repository.updateCart(
-                        it
-                    )
+                    updateCart()
                 }
             }
         }
@@ -235,11 +234,13 @@ class CartViewModel : ViewModel() {
 
     private fun updateTotalOfCart(priceChange: Double, detailOfCart: ProductOfCart, amount: Int) {
         _total.value += priceChange
-        _cart.value?.let { cart ->
-            cart.total = _total.value
-            val index = cart.products.indexOf(detailOfCart)
-            cart.products[index].amount = amount
+        val newProducts = cart.value!!.products.map {
+            if (it.product.id == detailOfCart.product.id) {
+                return@map it.copy(amount = amount)
+            }
+            it
         }
+        _cart.value = cart.value?.copy(total = total.value, products = newProducts)
     }
 
     fun increase(price: Double, detailOfCart: ProductOfCart, amount: Int) {
@@ -317,7 +318,7 @@ class CartViewModel : ViewModel() {
         }
     }
 
-    fun pay(activity: Activity, token: String, ) {
+    fun pay(activity: Activity, token: String) {
         viewModelScope.launch {
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
