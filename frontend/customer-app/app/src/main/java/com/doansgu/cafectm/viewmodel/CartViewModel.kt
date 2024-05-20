@@ -316,8 +316,8 @@ class CartViewModel : ViewModel() {
             }
         }
     }
-
-    fun pay(activity: Activity, token: String, ) {
+    
+    fun pay(activity: Activity, token: String) {
         viewModelScope.launch {
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
