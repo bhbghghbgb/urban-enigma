@@ -1,6 +1,7 @@
 const { Customer } = require("../models/userModel");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const  ProductService = require("../service/product.service");
 const s_updateCart = async (customerId, products) => {
     // Find or create the cart
     const currentCart = await Cart.findOneAndUpdate(
