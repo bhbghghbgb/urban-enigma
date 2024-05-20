@@ -9,13 +9,9 @@ import com.example.delivery_app.model.Customer
 import com.example.delivery_app.model.IncreasePoint
 import com.example.delivery_app.repository.UserRepository
 import com.google.mlkit.vision.barcode.common.Barcode
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
@@ -64,7 +60,13 @@ class QRTestViewModel : ViewModel() {
     fun increaseMembershipPoint() {
         viewModelScope.launch {
             try {
-                val username = message.value.split("/")[2]
+                val username =
+                    Regex("doansgu/customer/([a-zA-Z0-9]+)").find(message.value)?.groups?.get(1)?.value
+                if (username.isNullOrBlank()) {
+                    _increaseMembershipPointResult.value =
+                        Result.failure(Exception("Username is null or blank"))
+                    return@launch
+                }
                 val increasePoint = IncreasePoint(username, _point.value)
                 val response = repository.increaseMembershipPoint(increasePoint)
                 if (response.isSuccessful) {

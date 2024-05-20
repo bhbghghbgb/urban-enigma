@@ -212,6 +212,7 @@ exports.increaseMembershipPoint = async (req, res) => {
             return;
         }
         customer.membershipPoint += point;
+        await customer.save()
         res.status(200).json({
             message: "Increate Membership Point successfully",
             customer
