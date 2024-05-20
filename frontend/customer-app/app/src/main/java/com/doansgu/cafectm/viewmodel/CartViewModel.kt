@@ -288,7 +288,7 @@ class CartViewModel : ViewModel() {
         address: String,
         note: String,
         paymentMethod: String,
-    ): Boolean {
+    ) {
         var result = false
         viewModelScope.launch {
             try {
@@ -298,8 +298,7 @@ class CartViewModel : ViewModel() {
                     )
                 }
                 val response = orderRequest?.let { orderRepository.createOrder(orderRequest) }
-                result = response?.isSuccessful ?: false
-                if (!result) {
+                if (!response!!.isSuccessful) {
                     Log.e("Create Order Error", "Error creating order")
                 }
             } catch (e: Exception) {
@@ -307,21 +306,18 @@ class CartViewModel : ViewModel() {
                 Log.e("Network Error", "Error: ${e.message}")
             }
         }
-        return result
     }
 
-    fun pay(discount: Int, address: String, note: String, paymentMethod: String) {
+    fun pay() {
         viewModelScope.launch {
-            if (createOders(discount, address, note, paymentMethod)) {
-                val token = createOrderZalo()
-                if (token.isNotEmpty()) {
-                    _requestPay.send(token)
-                }
+            val token = createOrderZalo()
+            if (token.isNotEmpty()) {
+                _requestPay.send(token)
             }
         }
     }
 
-    fun pay(activity: Activity, token: String) {
+    fun pay(activity: Activity, token: String, ) {
         viewModelScope.launch {
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)

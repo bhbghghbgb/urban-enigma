@@ -581,10 +581,6 @@ fun BottomCheckOut(
                     onClick = {
                         if (selectedPaymentMethod == "ZaloPay") {
                             viewModel.pay(
-                                discount = pointUsed,
-                                address = deliveryAddress,
-                                note = noteText,
-                                paymentMethod = selectedPaymentMethod
                             )
                         }
                         viewModel.createOders(
@@ -613,7 +609,12 @@ fun BottomCheckOut(
                         ShowPaymentSuccessDialog(title = "Payment Success",
                             message = "Thanh toán thành công",
                             onDismissRequest = { viewModel.closeDialog() })
-
+                            viewModel.createOders(
+                                discount = pointUsed,
+                                address = deliveryAddress,
+                                note = noteText,
+                                paymentMethod = selectedPaymentMethod
+                            )
                     }
 
                     PaymentState.Cancel -> {
