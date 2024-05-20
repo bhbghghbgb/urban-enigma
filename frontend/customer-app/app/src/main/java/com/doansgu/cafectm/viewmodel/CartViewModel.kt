@@ -39,12 +39,12 @@ import java.util.Locale
 class CartViewModel : ViewModel() {
     private val repository = CartRepository()
     private val orderRepository = OrderRepository()
-    private val customerRepository= ProfileRepository()
+    private val customerRepository = ProfileRepository()
 
     private val _cart = MutableLiveData<Cart>()
     val cart: LiveData<Cart> = _cart
 
-//    Dùng debounce để theo dõi sự thay đổi của giỏ hàng
+    //    Dùng debounce để theo dõi sự thay đổi của giỏ hàng
 //    Nếu giỏ hàng thay đổi, sẽ gửi request lên server
     private val cartUpdateFlow = cart.asFlow().debounce(CART_UPDATE_DEBOUNCE_DURATION)
 
@@ -69,13 +69,15 @@ class CartViewModel : ViewModel() {
     private val _userData = MutableLiveData<UserClass.Customer>()
     val userData: LiveData<UserClass.Customer> = _userData
 
-init {
+    init {
 //    Sử dụng flow để cập nhật giỏ hàng, giảm thiểu việc gửi request lên server bằng Debounce
         viewModelScope.launch {
             cartUpdateFlow.collect {
-                repository.updateCart(
-                    it
-                )
+                if (it !== null) {
+                    repository.updateCart(
+                        it
+                    )
+                }
             }
         }
     }
@@ -265,7 +267,6 @@ init {
     }
 
 
-
     fun getInfoUser() {
         viewModelScope.launch(Dispatchers.Main) {
             try {
@@ -293,11 +294,7 @@ init {
             try {
                 val orderRequest = _cart.value?.let {
                     OrderRequest(
-                        it.products,
-                        discount,
-                        address,
-                        note,
-                        paymentMethod
+                        it.products, discount, address, note, paymentMethod
                     )
                 }
                 val response = orderRequest?.let { orderRepository.createOrder(orderRequest) }
@@ -315,7 +312,7 @@ init {
 
     fun pay(discount: Int, address: String, note: String, paymentMethod: String) {
         viewModelScope.launch {
-            if (createOders(discount, address, note, paymentMethod)){
+            if (createOders(discount, address, note, paymentMethod)) {
                 val token = createOrderZalo()
                 if (token.isNotEmpty()) {
                     _requestPay.send(token)
@@ -361,6 +358,7 @@ init {
         val exchangeRate = 23000.0
         return total * exchangeRate
     }
+
     fun createOrderZalo(): String {
         val orderAPI: CreateOrder = CreateOrder()
         try {

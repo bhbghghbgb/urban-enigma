@@ -47,6 +47,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -122,7 +123,7 @@ fun ContentOrder(
     var selectedPaymentMethod by remember { mutableStateOf("Cash") }
     val total by viewModel.total.collectAsState()
     val activity = LocalContext.current as? Activity
-    var pointUsed by remember { mutableStateOf(0) }
+    var pointUsed by remember { mutableIntStateOf(0) }
     LaunchedEffect(cart, total, user) {
         viewModel.fetchData()
     }
@@ -230,7 +231,7 @@ fun ContentOrder(
                     if (cart != null) {
                         for (item in cart!!.products) {
                             var amount by remember { mutableStateOf(item.amount) }
-                            ItemOrder(product = item,amount, onDeleteClicked = {
+                            ItemOrder(product = item, amount, onDeleteClicked = {
                                 val addToCart = item.product.id?.let { AddToCartRequest(it) }
                                 if (addToCart != null) {
                                     viewModel.deleteProduct(
@@ -240,7 +241,9 @@ fun ContentOrder(
                             }, onIncreaseClicked = {
 //                                item.product.id?.let { viewModel.increaseProductQuantity(it) }
                                 amount++
-                                viewModel.increase(detailOfCart = item, price = item.price, amount = amount)
+                                viewModel.increase(
+                                    detailOfCart = item, price = item.price, amount = amount
+                                )
                             }, onDecreaseClicked = {
 //                                val addToCart = item.product.id?.let { AddToCartRequest(it) }
 //                                item.product.id?.let {
@@ -252,7 +255,9 @@ fun ContentOrder(
 //                                }
                                 if (amount > 1) {
                                     amount--
-                                    viewModel.decrease(detailOfCart = item, price = item.price, amount = amount)
+                                    viewModel.decrease(
+                                        detailOfCart = item, price = item.price, amount = amount
+                                    )
                                 }
                             }, onItemClick = {
                                 navController.navigate("detail/${item.product.id}")
@@ -333,21 +338,24 @@ fun ContentOrder(
                                 fontFamily = FontFamily(fontPoppinsRegular)
                             )
                             Text(
-                                text = "${user!!.membershipPoint}",
+                                text = "${user?.membershipPoint}",
                                 fontSize = 16.sp,
                                 fontFamily = FontFamily(fontPoppinsSemi)
                             )
                             // Declaring a boolean value for storing checked state
-                            val mCheckedState = remember{ mutableStateOf(false)}
+                            val mCheckedState = remember { mutableStateOf(false) }
 
                             // Creating a Switch, when value changes,
                             // it updates mCheckedState value
-                            Switch(checked = mCheckedState.value, onCheckedChange = {mCheckedState.value = it})
+                            Switch(checked = mCheckedState.value,
+                                onCheckedChange = { mCheckedState.value = it })
                             if (mCheckedState.value) {
-                                pointUsed = user!!.membershipPoint
-                                Text(text = "-${pointUsed * 10} VND",
+                                pointUsed = user?.membershipPoint ?: 0
+                                Text(
+                                    text = "-${pointUsed * 10} VND",
                                     fontSize = 16.sp,
-                                    fontFamily = FontFamily(fontPoppinsSemi))
+                                    fontFamily = FontFamily(fontPoppinsSemi)
+                                )
                             }
                         }
 
@@ -382,7 +390,15 @@ fun ContentOrder(
             item {
                 cart?.let { cart ->
                     if (activity != null) {
-                        BottomCheckOut(cart = cart, viewModel, activity, pointUsed, selectedPaymentMethod, deliveryAddress, noteText)
+                        BottomCheckOut(
+                            cart = cart,
+                            viewModel,
+                            activity,
+                            pointUsed,
+                            selectedPaymentMethod,
+                            deliveryAddress,
+                            noteText
+                        )
                     }
                 }
             }
@@ -564,11 +580,19 @@ fun BottomCheckOut(
                 Button(
                     onClick = {
                         if (selectedPaymentMethod == "ZaloPay") {
-                            viewModel.pay(discount = pointUsed, address = deliveryAddress, note = noteText,
-                                paymentMethod = selectedPaymentMethod)
+                            viewModel.pay(
+                                discount = pointUsed,
+                                address = deliveryAddress,
+                                note = noteText,
+                                paymentMethod = selectedPaymentMethod
+                            )
                         }
-                        viewModel.createOders(discount = pointUsed, address = deliveryAddress, note = noteText,
-                            paymentMethod = selectedPaymentMethod)
+                        viewModel.createOders(
+                            discount = pointUsed,
+                            address = deliveryAddress,
+                            note = noteText,
+                            paymentMethod = selectedPaymentMethod
+                        )
                     },
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9C7055))
@@ -584,6 +608,7 @@ fun BottomCheckOut(
                     PaymentState.Loading -> {
 
                     }
+
                     PaymentState.Success -> {
                         ShowPaymentSuccessDialog(title = "Payment Success",
                             message = "Thanh toán thành công",
@@ -596,6 +621,7 @@ fun BottomCheckOut(
                             message = "Thanh toán bị hủy",
                             onDismissRequest = { viewModel.closeDialog() })
                     }
+
                     PaymentState.Error -> {
                         ShowPaymentSuccessDialog(title = "Payment Error",
                             message = "Thanh toán không thành công",
@@ -624,8 +650,7 @@ fun ShowPaymentSuccessDialog(
         ) {
             Text(text = "OK")
         }
-    }
-    )
+    })
 }
 
 @Composable
