@@ -207,7 +207,7 @@ exports.updateCart = async function (req, res) {
             };
         });
 
-        const cart = await s_updateCart(customer._id, req.body.total, products);
+        const cart = await s_updateCart(customer._id, products);
         res.status(200).json({
             message: "Update cart successfully!",
             metadata: cart,
