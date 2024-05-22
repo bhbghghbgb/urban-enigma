@@ -152,7 +152,7 @@ exports.createOrder = async (req, res) => {
 
 exports.updateStatus = async (req, res) => {
     try {
-        const order = Order.findById(req.params.id);
+        const order = await Order.findById(req.params.id);
         if (!order) {
             res.status(404).json({ message: "Order is not found" });
         }

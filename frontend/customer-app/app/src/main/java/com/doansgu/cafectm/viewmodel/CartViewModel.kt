@@ -72,11 +72,10 @@ class CartViewModel : ViewModel() {
     init {
 //    Sử dụng flow để cập nhật giỏ hàng, giảm thiểu việc gửi request lên server bằng Debounce
         viewModelScope.launch {
+            fetchData()
             cartUpdateFlow.collect {
                 if (it !== null) {
-                    repository.updateCart(
-                        it
-                    )
+                    updateCart()
                 }
             }
         }
@@ -235,11 +234,13 @@ class CartViewModel : ViewModel() {
 
     private fun updateTotalOfCart(priceChange: Double, detailOfCart: ProductOfCart, amount: Int) {
         _total.value += priceChange
-        _cart.value?.let { cart ->
-            cart.total = _total.value
-            val index = cart.products.indexOf(detailOfCart)
-            cart.products[index].amount = amount
+        val newProducts = cart.value!!.products.map {
+            if (it.product.id == detailOfCart.product.id) {
+                return@map it.copy(amount = amount)
+            }
+            it
         }
+        _cart.value = cart.value?.copy(total = total.value, products = newProducts)
     }
 
     fun increase(price: Double, detailOfCart: ProductOfCart, amount: Int) {
@@ -288,7 +289,7 @@ class CartViewModel : ViewModel() {
         address: String,
         note: String,
         paymentMethod: String,
-    ): Boolean {
+    ) {
         var result = false
         viewModelScope.launch {
             try {
@@ -298,8 +299,7 @@ class CartViewModel : ViewModel() {
                     )
                 }
                 val response = orderRequest?.let { orderRepository.createOrder(orderRequest) }
-                result = response?.isSuccessful ?: false
-                if (!result) {
+                if (!response!!.isSuccessful) {
                     Log.e("Create Order Error", "Error creating order")
                 }
             } catch (e: Exception) {
@@ -307,16 +307,13 @@ class CartViewModel : ViewModel() {
                 Log.e("Network Error", "Error: ${e.message}")
             }
         }
-        return result
     }
 
-    fun pay(discount: Int, address: String, note: String, paymentMethod: String) {
+    fun pay() {
         viewModelScope.launch {
-            if (createOders(discount, address, note, paymentMethod)) {
-                val token = createOrderZalo()
-                if (token.isNotEmpty()) {
-                    _requestPay.send(token)
-                }
+            val token = createOrderZalo()
+            if (token.isNotEmpty()) {
+                _requestPay.send(token)
             }
         }
     }
