@@ -1,3 +1,0 @@
-[submodule "backend-fastapi/fastapi-best-practices"]
-	path = backend-fastapi/fastapi-best-practices
-	url = https://github.com/zhanymkanov/fastapi-best-practices
