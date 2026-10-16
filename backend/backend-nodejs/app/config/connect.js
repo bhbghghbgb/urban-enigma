@@ -16,10 +16,10 @@ function initConnection(callback) {
     initMongodb(() => initFirebase(callback));
 }
 function initMongodb(callback) {
+    // NOTE: useNewUrlParser / useUnifiedTopology were removed in Mongoose 6 and are
+    // no-ops on Mongoose 9, so they are deliberately not passed here.
     mongoose.connect(DATABASE_CONNECTION_URL, {
         dbName: DATABASE_NAME,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
     });
     mongodbConnection = mongoose.connection;
     mongodbConnection.on("error", function (err) {
@@ -35,7 +35,7 @@ function initMongodb(callback) {
 function initFirebase(callback) {
     try {
         firebaseApp = admin.initializeApp({
-            credential: admin.credential.cert(serviceAccount), // eslint-disable-line no-undef
+            credential: admin.credential.cert(serviceAccount),
         });
         console.info("Connect Firebase without errors");
         // test get an user

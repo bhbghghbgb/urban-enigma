@@ -1,6 +1,4 @@
 const { mongodbConnection, initConnection } = require("./app/config/connect");
-const {firebaseAuthBearer} = require("./app/middleware/firebaseAuthPassport");
-const {userRole} = require("./app/middleware/connectRoles");
 
 initConnection(main);
 var started = false;

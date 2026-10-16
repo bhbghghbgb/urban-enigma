@@ -102,7 +102,7 @@ do an android nang cao sgu app cua hang giao do an
 2. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/34ad64b9-0b7e-4ba2-b1f1-ef7bb45b7d4e)
 3. đăng ký xong, vào Your authtoken copy dòng lệnh `ngrok config add-authtoken` được chỉ dẫn
 4. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/67c1f446-0c98-4bb1-9865-760d4a554f34)
-5. chạy `npx <lệnh đã copy>` trong terminal của backend (đã được install bằng npm)
+5. chạy `npx <lệnh đã copy>` trong terminal của backend. ℹ️ package `ngrok` **không** còn nằm trong `dependencies` của `backend/backend-nodejs` (bản `5.0.0-beta.2` dính CVE command injection chưa có bản vá), nên `npx` sẽ tự tải bản mới nhất khi chạy. nếu muốn cài cố định thì `npm i -g ngrok@latest` rồi dùng lệnh `ngrok` trực tiếp. xem thêm ở [`MAINTENANCE.md`](./MAINTENANCE.md)
 6. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/7d9432c7-a28c-4f43-b810-327e14c49dd8)
 7. mở thêm 1 terminal, cái để chạy server, cái để chạy `npx ngrok http 3001`. **CHÚ Ý** port server mặc định `3001`, nếu muốn đổi server mở port khác thì ghi port đó vào
 8. ![image](https://github.com/bhbghghbgb/urban-enigma/assets/113711814/b7ecd510-6fb6-4814-a0c8-a8132e8be6ac)

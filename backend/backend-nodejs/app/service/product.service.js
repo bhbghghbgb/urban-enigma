@@ -3,45 +3,26 @@
 // import Rating from '../models/rating.model';
 
 const Product = require('../models/productModel');
+const Rating = require('../models/ratingModel');
 class ProductService{
     getProducts = async () => {
-        try {
-            return await Product.find().populate('category');
-        } catch (error) {
-            throw error;
-        }
+        return await Product.find().populate('category');
     };
 
     getAllProductsPopular = async () => {
-        try {
-            return await Product.find({popular: true});
-        } catch (error) {
-            throw error;
-        }
+        return await Product.find({popular: true});
     }
 
     getAllProductsOfCategory = async (id) => {
-        try {
-            return await Product.find({category: id});
-        } catch (error) {
-            throw error;
-        }
+        return await Product.find({category: id});
     }
 
     findProductById = async (id) => {
-        try {
-            return await Product.findById(id).exec();
-        } catch (error) {
-            throw error;
-        }
+        return await Product.findById(id).exec();
     }
 
     findProductByName = async (name) => {
-        try {
-            return await Product.find({name: {$regex: name, $options: 'i'}});
-        } catch (err) {
-            throw err;
-        }
+        return await Product.find({name: {$regex: name, $options: 'i'}});
     }
 
     createProduct = async (data) => {
@@ -70,56 +51,48 @@ class ProductService{
     }
 
     getProductsWithRating = async () => {
-        try {
-            const products = await Product.find();
-            const productRatings = await Rating.aggregate([
-                {
-                    $group: {
-                        _id: "$product",
-                        avgRating: {$avg: "$rating"},
-                    },
+        const products = await Product.find();
+        const productRatings = await Rating.aggregate([
+            {
+                $group: {
+                    _id: "$product",
+                    avgRating: {$avg: "$rating"},
                 },
-            ]);
+            },
+        ]);
 
-            const productsWithRatings = products.map((product) => {
-                const avgRatingObj = productRatings.find(
-                    (rating) => rating._id.toString() === product._id.toString()
-                );
-                const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
-                return {...product.toObject(), avgRating};
-            });
-        } catch (err) {
-            throw err;
-        }
+        return products.map((product) => {
+            const avgRatingObj = productRatings.find(
+                (rating) => rating._id.toString() === product._id.toString()
+            );
+            const avgRating = avgRatingObj ? avgRatingObj.avgRating : 0;
+            return {...product.toObject(), avgRating};
+        });
     }
 
     getProductsWithRating_Hung = async () => {
-        try {
-            return await Product.aggregate([
-                {
-                    $lookup: {
-                        from: 'ratings',
-                        localField: '_id',
-                        foreignField: 'product',
-                        as: 'ratings',
+        return await Product.aggregate([
+            {
+                $lookup: {
+                    from: 'ratings',
+                    localField: '_id',
+                    foreignField: 'product',
+                    as: 'ratings',
+                },
+            },
+            {
+                $addFields: {
+                    avgRating: {
+                        $avg: '$ratings.rating',
                     },
                 },
-                {
-                    $addFields: {
-                        avgRating: {
-                            $avg: '$ratings.rating',
-                        },
-                    },
+            },
+            {
+                $project: {
+                    ratings: 0,
                 },
-                {
-                    $project: {
-                        ratings: 0,
-                    },
-                },
-            ]);
-        } catch (err) {
-            throw err;
-        }
+            },
+        ]);
     };
 }
 

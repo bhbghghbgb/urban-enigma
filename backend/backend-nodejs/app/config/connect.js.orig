@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 mongoose.connect(
-  'mongodb+srv://puenwyn:W1H5UlfgQPZiYrq3@cluster0.i5dplip.mongodb.net/CoffeeApp?retryWrites=true&w=majority',
+  'mongodb+srv://<user>:<password>@<cluster-host>/CoffeeApp?retryWrites=true&w=majority',
   {
     dbName: 'CoffeeApp',
     useNewUrlParser: true,

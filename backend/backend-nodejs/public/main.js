@@ -1,4 +1,7 @@
-/* eslint-env browser */
+// Browser globals (FileReader, FormData, fetch, alert, crypto, console) come from
+// the `public/**/*.js` block in eslint.config.mjs.
+// The functions below are intentionally global: views/index.html calls
+// getUniqueFileName() / uploadImage() from an inline <script>.
 
 function img2base64(file) {
     return new Promise((resolve, reject) => {
